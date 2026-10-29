@@ -4,7 +4,9 @@
 
 - 目标账号：49079986（连接器账号与Git凭据账号一致）。
 - 目标仓库：https://github.com/49079986/a2-code-review
-- 初次创建为私有仓库；公开发布尚待用户选择。
+- 初次创建为私有仓库；用户随后明确确认“公开仓库并发布网页，任何人可访问”，现已设为公开。
+- GitHub Pages入口：https://49079986.github.io/a2-code-review/
+- Pages发布来源：main分支根目录，HTTPS。
 - 分支：main；网站入口：根目录index.html。
 - 完整学习资料、SQL、PDF/Word与截图随项目上传；reports/qa、data/extracted、缓存、ZIP压缩包及凭据不提交。
 - .gitattributes将原始materials与图像标为不作文本换行转换，保留原文件字节。

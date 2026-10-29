@@ -2,11 +2,13 @@
 
 ## GitHub仓库与打开网页
 
-仓库：[49079986/a2-code-review](https://github.com/49079986/a2-code-review)。当前为私有仓库，需要登录49079986账号或获得仓库访问权限。
+在线网页：[打开 A2 Code Review](https://49079986.github.io/a2-code-review/)。在Mac、Windows或手机浏览器直接打开这个链接即可学习，无需登录或下载。
+
+公开仓库：[49079986/a2-code-review](https://github.com/49079986/a2-code-review)。仓库和网页均按用户确认设为任何人可访问。
 
 在GitHub点击 **Code → Download ZIP**，解压后打开项目内的 **index.html**。Mac和Windows都可使用；在GitHub直接点击index.html显示的是源代码，下载后才是本地网页。也可以按下文使用本地HTTP预览。
 
-在线公开网页需另启用GitHub Pages；在获得公开发布选择前，本项目保持私有。
+GitHub Pages已启用，来源为main分支根目录。提交更新后等待Pages部署完成，再刷新在线网页。
 
 独立、离线可读的 INFS7903 Assignment 2 学习网站。参考原 Study 的深色阅读界面，按原题编号覆盖全部24个学习单元，包括4道没有独立SQL的解释题。每题包含英文原题、忠实中文对照、题意、前置知识、原始代码、逐行分析、函数/语法、截图证据、推导、自测与讲解练习稿。
 
@@ -136,6 +138,6 @@ git push -u origin main
 - 本次没有重新运行PostgreSQL实验，数字来自已有实际记录；不同轮次并未拼接成受控性能测量。
 - 原生普通视图长过滤条件两处截断，补充早期完整重放；原始六行结果图有可见范围限制；Q3.1首末结果裁图有原生像素限制。逐题如实标明。
 - 浏览器file://行为存在差异，复制与存储均提供降级，原图和文件直接链接始终可用。
-- **未在真实Mac Safari设备实测**，也未公开部署到GitHub Pages。实际浏览器、宽度、路径迁移与检查结果见reports/checks.md。
+- **未在真实Mac Safari设备实测**。GitHub Pages已配置公开发布，在线访问检查与实际浏览器、宽度、路径迁移记录见reports/checks.md。
 
 阅读入口：[index.html](index.html) · 连续教材：[complete.html](complete.html) · 覆盖表：[reports/coverage.md](reports/coverage.md)。

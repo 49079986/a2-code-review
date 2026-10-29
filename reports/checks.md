@@ -56,7 +56,7 @@
 
 用check_portability.py复制完整项目到独立测试子路径 `reports/qa/relocated/A2 study/`，排除qa/extracted/缓存；在复制后的位置运行verify.py通过。通过HTTP仓库子路径（含空格编码）打开，Ctrl+K搜索ROW_NUMBER并进入子目录术语锚点成功。没有使用原A2/Study资源。所有运行引用均为项目相对路径，无域名或站点根路径依赖。
 
-本次未创建远程仓库或执行GitHub Pages实际部署；README提供官方流程。发布前的仓库子路径兼容性已用本地嵌套路径验证。
+初次本地交付时未部署；用户随后要求上传GitHub，并明确确认公开发布。仓库现为公开，GitHub Pages配置为main分支根目录，入口为https://49079986.github.io/a2-code-review/ 。发布前的仓库子路径兼容性已用本地嵌套路径验证。
 
 ## 未实测与明确限制
 
