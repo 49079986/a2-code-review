@@ -1,0 +1,11 @@
+SELECT * FROM V_BUSIEST_BAYS;
+  body_type   |  station_name  | collections 
+--------------+----------------+-------------
+ Sedan        | Carindale Park |         973
+ SUV          | Chermside Park |         838
+ Hatchback    | Chermside Park |         794
+ People Mover | St Lucia Hub   |         510
+ Van          | Chermside Park |         384
+ Ute          | Carindale Park |         333
+(6 rows)
+

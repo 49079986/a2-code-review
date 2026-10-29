@@ -1,0 +1,234 @@
+{
+  "1.1.1": {
+    "heading": "Q1.1 View A (1.5 marks)",
+    "context": "The co-operative's planners want to know where each kind of vehicle is actually being picked up, so they can decide where to add parking bays.",
+    "text": "(1) Create a view V_BUSIEST_BAYS that reports, for each body type, the single station at which vehicles of that body type have been collected the most times. The view should show the body type, the station name, and the number of collections, ordered from most collections to fewest. (1 mark) Hint: this is a \"top item within each group\" problem. Consider a window function such as RANK() or ROW_NUMBER() with a PARTITION BY clause, and use Common Table Expressions to build the query up in a semantically meaningful way.",
+    "page": 4,
+    "pages": [
+      4
+    ]
+  },
+  "1.1.2": {
+    "heading": "Q1.1 View A (1.5 marks)",
+    "context": "The co-operative's planners want to know where each kind of vehicle is actually being picked up, so they can decide where to add parking bays.",
+    "text": "(2) Query the view (SELECT * FROM V_BUSIEST_BAYS;) and report the results. Report and explain the query plan. You should refer to the reported times, costs, the number of rows fetched, your knowledge of query planning (and anything else you feel is relevant). (0.5 marks)",
+    "page": 4,
+    "pages": [
+      4
+    ]
+  },
+  "1.2": {
+    "heading": "Q1.2 View B (1.5 marks)",
+    "context": "",
+    "text": "Every charge a member incurs is ultimately billed to the account at the top of their sponsorship chain. A member with no sponsor pays their own charges. A sponsored member's charges pass to their sponsor — and if that sponsor is itself sponsored, the charges keep passing up the chain until they reach an account with no sponsor. Create a view V_ACCOUNT_LIABILITY that identifies the ten accounts liable for the largest total amount charged between 1 January 2026 and 30 June 2026 inclusive. The view should show the account's member id, member name, and the total amount billed to it. Hint: the chain can be more than one level deep, so an expression such as COALESCE(sponsor_id, member_id) will give the wrong answer. Consider a WITH RECURSIVE Common Table Expression.",
+    "page": 4,
+    "pages": [
+      4
+    ]
+  },
+  "1.3.1": {
+    "heading": "Q1.3 Materialised view (1 mark)",
+    "context": "",
+    "text": "(1) Create a materialised view using the same query as V_ACCOUNT_LIABILITY, called MV_ACCOUNT_LIABILITY. (0 marks)",
+    "page": 4,
+    "pages": [
+      4
+    ]
+  },
+  "1.3.2": {
+    "heading": "Q1.3 Materialised view (1 mark)",
+    "context": "",
+    "text": "(2) Report, compare and explain the following two queries, which select the contents of the view and the materialised view respectively. (0.5 marks) Query A: SELECT * FROM V_ACCOUNT_LIABILITY; Query B: SELECT * FROM MV_ACCOUNT_LIABILITY; You should refer to the reported times, costs, the number of rows fetched, your knowledge of query planning (and anything else you feel is relevant).",
+    "page": 4,
+    "pages": [
+      4,
+      5
+    ]
+  },
+  "1.3.3": {
+    "heading": "Q1.3 Materialised view (1 mark)",
+    "context": "",
+    "text": "(3) A member logs a large damage charge. Run the following statement, then re-run Query A and Query B and report what each returns. Explain the difference, then issue REFRESH MATERIALIZED VIEW MV_ACCOUNT_LIABILITY; and re-run Query B. In one or two sentences, state the trade-off a designer accepts when choosing a materialised view over an ordinary view. (0.5 marks) INSERT INTO BOOKING_EVENTS (member_id, vehicle_id, event_type, event_time, amount) SELECT member_id, 'VEH-0001', 'Incident', TIMESTAMP '2026-05-04 09:15:00', 90000.00 FROM MEMBERS WHERE sponsor_id IS NOT NULL ORDER BY member_id DESC LIMIT 1;",
+    "page": 5,
+    "pages": [
+      5
+    ]
+  },
+  "2.1.1": {
+    "heading": "Q2.1 Composite index (3 marks)",
+    "context": "",
+    "text": "(1) Create an index IDX_EVENT_TYPE_TIME on the event_type and event_time fields (in that order) of the BOOKING_EVENTS table. (0.5 marks)",
+    "page": 5,
+    "pages": [
+      5
+    ]
+  },
+  "2.1.2": {
+    "heading": "Q2.1 Composite index (3 marks)",
+    "context": "",
+    "text": "(2) Re-run your query from Q1.1 (SELECT * FROM V_BUSIEST_BAYS;). Report the query plan. Compare this query plan to the one from Q1.1 and explain the differences, if any. (1.5 marks)",
+    "page": 5,
+    "pages": [
+      5
+    ]
+  },
+  "2.1.3": {
+    "heading": "Q2.1 Composite index (3 marks)",
+    "context": "",
+    "text": "(3) Now report and explain the query plan for the query below, which counts the incidents logged in March 2026. Explain why the planner makes different use of IDX_EVENT_TYPE_TIME here than it did in part (2). (1 mark) SELECT count(*), sum(amount) FROM BOOKING_EVENTS WHERE event_type = 'Incident' AND event_time >= TIMESTAMP '2026-03-01' AND event_time < TIMESTAMP '2026-04-01';",
+    "page": 5,
+    "pages": [
+      5
+    ]
+  },
+  "2.2.1": {
+    "heading": "Q2.2 Function-based index (5 marks)",
+    "context": "The co-operative wants to know which e-mail providers its members use, so that it can investigate why its newsletter is being rejected by some of them. The provider domain is the part of the e-mail address after the @ character. Members have entered their addresses inconsistently, so domains must be compared case-insensitively — Bigpond.com and bigpond.com are the same provider.",
+    "text": "(1) Write an expression that identifies each member's e-mail provider domain, and use it to report each distinct domain together with the number of members who use it, most popular first. You may use string processing functions, including the regex functions. (1 mark)",
+    "page": 5,
+    "pages": [
+      5
+    ]
+  },
+  "2.2.2": {
+    "heading": "Q2.2 Function-based index (5 marks)",
+    "context": "The co-operative wants to know which e-mail providers its members use, so that it can investigate why its newsletter is being rejected by some of them. The provider domain is the part of the e-mail address after the @ character. Members have entered their addresses inconsistently, so domains must be compared case-insensitively — Bigpond.com and bigpond.com are the same provider.",
+    "text": "(2) Report and explain the query plan for the query in part (1). You should refer to the reported times, costs, the number of rows fetched, your knowledge of query planning (and anything else you feel is relevant). (1 mark)",
+    "page": 5,
+    "pages": [
+      5
+    ]
+  },
+  "2.2.3": {
+    "heading": "Q2.2 Function-based index (5 marks)",
+    "context": "The co-operative wants to know which e-mail providers its members use, so that it can investigate why its newsletter is being rejected by some of them. The provider domain is the part of the e-mail address after the @ character. Members have entered their addresses inconsistently, so domains must be compared case-insensitively — Bigpond.com and bigpond.com are the same provider.",
+    "text": "(3) MEMBERS.email already carries a UNIQUE constraint, and therefore already has an index on it. In one or two sentences, explain why that existing index cannot answer a query about provider domains. (1 mark)",
+    "page": 5,
+    "pages": [
+      5
+    ]
+  },
+  "2.2.4": {
+    "heading": "Q2.2 Function-based index (5 marks)",
+    "context": "The co-operative wants to know which e-mail providers its members use, so that it can investigate why its newsletter is being rejected by some of them. The provider domain is the part of the e-mail address after the @ character. Members have entered their addresses inconsistently, so domains must be compared case-insensitively — Bigpond.com and bigpond.com are the same provider.",
+    "text": "(4) Create a function-based index called IDX_MEMBER_DOMAIN to potentially speed up queries on the expression from part (1). (0.5 marks)",
+    "page": 5,
+    "pages": [
+      5
+    ]
+  },
+  "2.2.5": {
+    "heading": "Q2.2 Function-based index (5 marks)",
+    "context": "The co-operative wants to know which e-mail providers its members use, so that it can investigate why its newsletter is being rejected by some of them. The provider domain is the part of the e-mail address after the @ character. Members have entered their addresses inconsistently, so domains must be compared case-insensitively — Bigpond.com and bigpond.com are the same provider.",
+    "text": "(5) Report the query plan, with the function-based index in place, for both of the following: • the query you wrote in part (1); and • a lookup of the members at one specific, rare provider: SELECT member_id, member_name, email FROM MEMBERS WHERE <your expression> = 'exemail.com.au'; Explain the differences to the previous plans, if any, and why the index helps one of these queries much more than the other. You should refer to the reported times, costs, the number of rows fetched, your knowledge of query planning (and anything else you feel is relevant). (1.5 marks) Bonus content: an index built over an expression only helps when a query contains that same expression. This is why production systems often store a derived value (such as a normalised domain) in its own column — it can then be indexed, constrained and queried directly.",
+    "page": 5,
+    "pages": [
+      5,
+      6
+    ]
+  },
+  "3.1.1": {
+    "heading": "Q3.1 Two ways to ask the same question (3 marks)",
+    "context": "Some vehicles in the fleet have never actually been driven by a member — they may be new stock, or only ever reserved and then cancelled.",
+    "text": "(1) Write two different SQL statements that both report the vehicle_id of every vehicle that has never been the subject of a Collect event: (A) using NOT EXISTS; (B) without using NOT EXISTS or NOT IN — for example with an outer join. Both statements must return the same rows. (1.5 marks)",
+    "page": 6,
+    "pages": [
+      6
+    ]
+  },
+  "3.1.2": {
+    "heading": "Q3.1 Two ways to ask the same question (3 marks)",
+    "context": "Some vehicles in the fleet have never actually been driven by a member — they may be new stock, or only ever reserved and then cancelled.",
+    "text": "(2) Report and compare the execution plans of statements (A) and (B). Are they the same plan? Explain what the planner has done and why. (1.5 marks)",
+    "page": 6,
+    "pages": [
+      6
+    ]
+  },
+  "3.2": {
+    "heading": "Q3.2 Suppressing scan types (4 marks)",
+    "context": "",
+    "text": "PostgreSQL allows you to influence the query planner with runtime configuration parameters in psql. https://www.postgresql.org/docs/17/runtime-config-query.html In this section we will suppress the use of several different scan types in order to compare queries. Suppressing plan types is not recommended for production, but is useful for understanding why one plan would be chosen over another. Report and explain the execution plan for the following two queries (C & D): 3. with both index and sequential scans enabled; 4. with index scans enabled and sequential scans suppressed; 5. with index scans suppressed and sequential scans enabled. Explain why the query planner might choose one method over another. You should refer to the reported times and costs from the execution plan, the number of rows fetched, your knowledge of query planning (and anything else you feel is relevant). Note: For this question, bitmap and index-only scans count as index scans too. The index IDX_EVENT_TYPE_TIME from Q2.1 should still be in place. Query C: SELECT * FROM BOOKING_EVENTS WHERE event_type < 'Collect'; Query D: SELECT * FROM BOOKING_EVENTS WHERE event_type >= 'Collect'; (2 marks for explaining up to 6 possible query plans; 2 marks for explaining the query planner's choices.) Between them, Queries C and D return every row of BOOKING_EVENTS exactly once — they differ only in which side of 'Collect' they take. Your explanation should account for why that is enough to change the plan. Be sure to reset index, bitmap, index-only and sequential scans back to on before proceeding to another question.",
+    "page": 6,
+    "pages": [
+      6,
+      7
+    ]
+  },
+  "4.1.1": {
+    "heading": "Q4.1 A race for the same car (6 marks)",
+    "context": "Two members go after the same car at the same moment: • Session 1 is a member at the parking bay about to drive away. It checks that the vehicle is available, and then records a Collect. • Session 2 is a member on the website. It checks that the same vehicle is available, and then records a Reserve for three days' time, and commits — all while session 1 is still open. You will need two psql connections open side by side, both at the default isolation level. You can use the now() function to provide a timestamp. Include screenshots of both connections.",
+    "text": "(1) In your first psql connection, begin a transaction and then perform a query to identify a vehicle which is currently available — that is, a vehicle whose most recent event is a Return. Do not commit yet. (2 marks)",
+    "page": 8,
+    "pages": [
+      7,
+      8
+    ]
+  },
+  "4.1.2": {
+    "heading": "Q4.1 A race for the same car (6 marks)",
+    "context": "Two members go after the same car at the same moment: • Session 1 is a member at the parking bay about to drive away. It checks that the vehicle is available, and then records a Collect. • Session 2 is a member on the website. It checks that the same vehicle is available, and then records a Reserve for three days' time, and commits — all while session 1 is still open. You will need two psql connections open side by side, both at the default isolation level. You can use the now() function to provide a timestamp. Include screenshots of both connections.",
+    "text": "(2) In your second connection, begin another transaction. Run the same availability check for the vehicle session 1 picked, then record a Reserve on it for some other member, 3 days in the future, and commit. (0.5 marks)",
+    "page": 8,
+    "pages": [
+      7,
+      8
+    ]
+  },
+  "4.1.3": {
+    "heading": "Q4.1 A race for the same car (6 marks)",
+    "context": "Two members go after the same car at the same moment: • Session 1 is a member at the parking bay about to drive away. It checks that the vehicle is available, and then records a Collect. • Session 2 is a member on the website. It checks that the same vehicle is available, and then records a Reserve for three days' time, and commits — all while session 1 is still open. You will need two psql connections open side by side, both at the default isolation level. You can use the now() function to provide a timestamp. Include screenshots of both connections.",
+    "text": "(3) Back in your first connection, attempt to record a Collect on that vehicle for a different member at the present time, then commit. Report what happened at each step, and which event or events ended up recorded against the vehicle. (1 mark)",
+    "page": 8,
+    "pages": [
+      7,
+      8
+    ]
+  },
+  "4.1.4": {
+    "heading": "Q4.1 A race for the same car (6 marks)",
+    "context": "Two members go after the same car at the same moment: • Session 1 is a member at the parking bay about to drive away. It checks that the vehicle is available, and then records a Collect. • Session 2 is a member on the website. It checks that the same vehicle is available, and then records a Reserve for three days' time, and commits — all while session 1 is still open. You will need two psql connections open side by side, both at the default isolation level. You can use the now() function to provide a timestamp. Include screenshots of both connections.",
+    "text": "(4) Explain the outcome, both in database terms and in car-share terms. You may include a schedule or precedence graph of the transaction events if it aids your explanation. (2.5 marks) Hint: was the answer to the query in step (1) still true by the time step (3) ran? Which snapshot did the BI_COLLECT trigger use when it ran? And what, if anything, stopped session 2 from changing the answer underneath session 1?",
+    "page": 8,
+    "pages": [
+      7,
+      8
+    ]
+  },
+  "4.2.1": {
+    "heading": "Q4.2 Deadlock (3 marks)",
+    "context": "In Q4.1 neither transaction could make progress on the other's terms, but only one of them was ever blocked. A deadlock is the symmetric case: two transactions each hold something the other is waiting for, so neither can move. Neither has done anything wrong on its own — it is the interleaving that traps them. Two staff are correcting odometer readings after a service run, and they work through the same two vehicles in opposite orders.",
+    "text": "(1) In two psql connections, begin a transaction in each. In your first connection, update the odometer of VEH-0401, and then the odometer of VEH-0501. In your second connection, update those same two vehicles in the opposite order. Run the statements one at a time so you can see which one blocks. Report what happened at each step, quoting any error message in full. (1.5 marks)",
+    "page": 8,
+    "pages": [
+      8
+    ]
+  },
+  "4.2.2": {
+    "heading": "Q4.2 Deadlock (3 marks)",
+    "context": "In Q4.1 neither transaction could make progress on the other's terms, but only one of them was ever blocked. A deadlock is the symmetric case: two transactions each hold something the other is waiting for, so neither can move. Neither has done anything wrong on its own — it is the interleaving that traps them. Two staff are correcting odometer readings after a service run, and they work through the same two vehicles in opposite orders.",
+    "text": "(2) Draw the wait-for graph as it stood immediately before the DBMS intervened, and mark the cycle on it. State what the DBMS did about the deadlock, and what became of each of the two transactions. (1 mark)",
+    "page": 8,
+    "pages": [
+      8
+    ]
+  },
+  "4.2.3": {
+    "heading": "Q4.2 Deadlock (3 marks)",
+    "context": "In Q4.1 neither transaction could make progress on the other's terms, but only one of them was ever blocked. A deadlock is the symmetric case: two transactions each hold something the other is waiting for, so neither can move. Neither has done anything wrong on its own — it is the interleaving that traps them. Two staff are correcting odometer readings after a service run, and they work through the same two vehicles in opposite orders.",
+    "text": "(3) Name one strategy that would have prevented this deadlock rather than detecting it after the fact, and say what that strategy would cost the co-operative. (0.5 marks) Hint: an UPDATE takes a lock on the row it changes and holds it until the transaction ends. Which statement in each session was still waiting when the error appeared?",
+    "page": 8,
+    "pages": [
+      8
+    ]
+  },
+  "_q4_background": {
+    "heading": "Q4 Transactions (9 marks total)",
+    "context": "",
+    "text": "In PostgreSQL, a transaction is set up by surrounding the SQL commands of the transaction with BEGIN and COMMIT commands. For example, a banking transaction would look like: BEGIN; UPDATE accounts SET balance = balance - 100.00 WHERE name = 'Alice'; -- some more statements etc etc COMMIT; https://www.postgresql.org/docs/current/tutorial-transactions.html In this question we will examine what happens when two transactions occur concurrently. Background: how PostgreSQL reads You have seen two ways of keeping a concurrent schedule serialisable: locking protocols such as two-phase locking, and timestamp ordering. PostgreSQL uses neither of these for ordinary reads, so what you are about to observe will not follow from either one directly. This section gives you what you need; you are not expected to have met it before. Instead of taking read locks, a PostgreSQL query reads from a snapshot — a consistent picture of the database containing exactly those changes that were committed before the snapshot was taken. Because reading acquires no locks, readers never block writers and writers never block readers. At PostgreSQL's default isolation level, READ COMMITTED, a new snapshot is taken at the start of every statement. Two statements in the same transaction may therefore see different data, if another transaction committed in between them. Two consequences are worth holding on to as you work through this question: • A trigger runs inside the transaction that fired it. Any query the trigger makes is answered from that transaction's current snapshot. It gets no special or privileged view of the database. • A snapshot is not a lock. Reading a row records nothing and reserves nothing; it does not prevent another transaction from changing what you just read.",
+    "page": 7,
+    "pages": [
+      7
+    ]
+  }
+}

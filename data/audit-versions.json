@@ -1,0 +1,1103 @@
+{
+  "audit_date": "2026-10-29 Australia/Brisbane",
+  "authority": "A2/a2-2026-v1.pdf（内容标Assignment Version 1.0）",
+  "selected_answer": "A2/原生截图更新版/49079984_A2.pdf",
+  "selected_reason": "明确新增原生截图且标注补充重放；按内容和可见证据选择，不依据mtime。",
+  "documents": [
+    {
+      "version": "root",
+      "source": "A2/49079984_A2.pdf",
+      "bytes": 4923474,
+      "sha256": "c0f14b3c73c9115f0d2189f2bba596310db1793efdab0c7194c313edebddaab2",
+      "pages": 33,
+      "images": 51,
+      "text_sha256": "5dcdd22690b9f023b4b651f2ce113c1c8e992a43915edcae41de3ec79b942f19"
+    },
+    {
+      "version": "root",
+      "source": "A2/49079984_A2.docx",
+      "bytes": 9972250,
+      "sha256": "9b350a13daa9a4b13aa9353c056f4335499f0cd686a0a4284c8d0ea0f6f93c2a",
+      "embedded_images": 49,
+      "text_sha256": "433a67aa302dccbe143ff358706014733497c08eabc8c05b67c366ee194bfe36",
+      "image_sha256": {
+        "word/media/image1.png": "6e350c1ca9bb7e2fe0851470b771742f2e49b96dddd6e1b5cf74b7f87e8494c1",
+        "word/media/image10.png": "903cdbaace41984b9cddfcc39c69195cdfc532dd7abe1eb23a1c954c6f189455",
+        "word/media/image11.png": "cf229d52eeee74c7fcea733dca08deae8e832784feed5d6912c6a266ec6b8796",
+        "word/media/image12.png": "5679d2ba0b29cfd85e15adb6f779175389163c31f366180cd0d673bcd33cb7a2",
+        "word/media/image13.png": "85e483ec439c0685ecec5cbfdb20966c2a6a3b517630f605d8252b48d032c609",
+        "word/media/image14.png": "8945ee4ab5774ae3f2b27a88c3bf4496e0fc051bb01a4bd98f652c3677589dca",
+        "word/media/image15.png": "60d195ddebb8115ef5a81930b1e4b2f4a2f89b7a6ef57f0fad1941096341daa8",
+        "word/media/image16.png": "36347078ab538bea39e751b527bb4484f39a2d733d214a1bd3420c9637078fb6",
+        "word/media/image17.png": "69a308070b4201ea1e23f9c18779c1ca64d587915d2e01676693df42afcdc964",
+        "word/media/image18.png": "2acba5f30eec0fb0db87366474d5cfa3ea2bdfb6587d1be948e55131f81eff78",
+        "word/media/image19.png": "723b590bd778afe5122a5a9fb4ed3a8d8f69b64a39532e6e4e7f3679a867808b",
+        "word/media/image2.png": "baa4e31874921087f122e913d6d729459528e3a2f254e62df7591134a81e0248",
+        "word/media/image20.png": "01dff11d7f62b244366479b51b734a2fc36e4b52b249872c6c71e970e5867f15",
+        "word/media/image21.png": "d1558dfafae63550f8b2c3be6a3da513d03c98b2f2190f71d8a39099c4b0c625",
+        "word/media/image22.png": "6a8ab7599044e5af4c3c7f4b3c21c0f57d80da4343f2714ae08f0f87d429c5f0",
+        "word/media/image23.png": "a6f7dd7a4389ca9385f8c895bc7d0de6123db840f97b048d29d1731e673e3f3f",
+        "word/media/image24.png": "c27e781c2cb7ee2d815b8176c807c83560fedfe17f8f97e2aa17b9132ec3b87d",
+        "word/media/image25.png": "3f1668930dfb80ce25cf1d391217125736772dd20c1aac9de6545fe368969f92",
+        "word/media/image26.png": "c05f293c451cc20ab8bd9a2811dd852d61359c53354b0151a220c1c8b966e8ff",
+        "word/media/image27.png": "1bd031cfedc725bfb42982ba45ccb518a345c652af0d8e04da95bb19fa2ef444",
+        "word/media/image28.png": "2c846f9ce23795c2c0c96ebb79c671dbd801cdaf38e4a323f8288d6063285042",
+        "word/media/image29.png": "fab6f21d16249c0837c447489c32a68fc5d14e057b3c1e3fe7c2e5a99684487a",
+        "word/media/image3.png": "b29642abe0d3a8545025b055de57a79b11ccd2134beb8215bfe291ba0ef4842b",
+        "word/media/image30.png": "ecfe99f36a870185b635c3e4ee9acc5ec13b841a1a7f1019f4d3a9e120885f59",
+        "word/media/image31.png": "64035496f3b65c3155dd087384ff2ae448308cac6b91cc5b7d889562cd4b8c12",
+        "word/media/image32.png": "8c25856ec8964cfc10945533a595bb84b2cad6d4df89e25299ffac91ba248892",
+        "word/media/image33.png": "d7f8f2353a30aa7960f5f2e9785a429309df9a7958991527d39e6b034d60d25b",
+        "word/media/image34.png": "bf7b5ab2aa1ac8b44c31c05038fd6e54d21e800f6fff8d76b9d98c91abd7b069",
+        "word/media/image35.png": "30ced6038e5d4ec95dd12b934ca50e552bd6b230de2087cef41db0a01dc84b04",
+        "word/media/image36.png": "716d78ad1fe07dad827fe0829dc4b6b48a45f5df0aa8d20c68b7f30e5da2757a",
+        "word/media/image37.png": "6ca5c447f8be250f2ced14fdbd841cef8cf3adb1b8573144112cbc22d6dfae47",
+        "word/media/image38.png": "5a387c5afcd21100ed2e0a2a611f3ab1df7c55bd62f75151bbf3ae4379b6051a",
+        "word/media/image39.png": "cc576c80cfeed1ec6768a9b4cf45b66f24f398ad9186ec5afb268618655617e5",
+        "word/media/image4.png": "902d5583ab2addb103074f82b41f0c1385eeb60ac306b98362255a789cb0d358",
+        "word/media/image40.png": "58bb31212a1f0d78a01a8f532de2bb1960291405088a230a69fa73afb06dd761",
+        "word/media/image41.png": "d8ac26f0b62dd3e778b58628c1687ecdb6338520a0172ec884eaeb5b59e48d93",
+        "word/media/image42.png": "b49f10a63d35de1da7173a05d9be4293480e16688840e97ff5149a4ccb134719",
+        "word/media/image43.png": "a7dceb4d4144ee6f563375eca0f514c35afb118273fb108ab55ca382fd678f55",
+        "word/media/image44.png": "c02a9d98d05ed37cc49e358b31530cc1aa218e9812153bbbc3046129c1b07e5f",
+        "word/media/image45.png": "81feaa31e359855a28b00e5c9877fbc1138094c49add6df4b44010ed6e998950",
+        "word/media/image46.png": "c4249c470d9b1313bcd49aa0efff0e98a238e230af51e31e659a8bcdd32d5442",
+        "word/media/image47.png": "29fd6968f252056b8f9c2864de45ed9c69d7e00689da1a2acc1130adea901f13",
+        "word/media/image48.png": "1edbb9bbcb4b691672f2657ab8622bb4aabdbc1c1ec161ea8671dbe1b4c64a22",
+        "word/media/image49.jpg": "648704514bddb26bb8a32eb84f73b7b5d71a849f211a3eacbdf3cafdb91c6de5",
+        "word/media/image5.png": "d64f60c3643e41ddb9dd68f911b9314ef39d1256d71b479501f7e32f620cfcd1",
+        "word/media/image6.png": "23da5051d4efda7896940c58f2bd4d6241b98096d84370808b31a85dde2342d4",
+        "word/media/image7.png": "a9c46bb69e2a45dc589e52116571cc9b61397016cb4f88f856ee2ef9a687a907",
+        "word/media/image8.png": "cd2245cbb383f55f778adfb05619d3031bdf43143828d1c4efae573931d1c9fa",
+        "word/media/image9.png": "5ac12e607817746d28c0b729c56b92584754e312e807a212ff1e316c6e2cec4f"
+      }
+    },
+    {
+      "version": "completed",
+      "source": "A2/completed/49079984_A2.pdf",
+      "bytes": 4933138,
+      "sha256": "3f791d77b0ed2b4f2eb63e31912b0ef14ca27cb7fbe570d26b94adb9dca65938",
+      "pages": 36,
+      "images": 47,
+      "text_sha256": "04a24012b50cfce4c22ea456d6095cca823d817e44d95fe1f4c63f2e194c02ed"
+    },
+    {
+      "version": "completed",
+      "source": "A2/completed/49079984_A2.docx",
+      "bytes": 6520480,
+      "sha256": "5caabe1e919bb6064709df280d7b797510b1f236378f9394ecd32a13c8849565",
+      "embedded_images": 47,
+      "text_sha256": "e182bc68c8c53d9bc494c75625fa4219e14f1621eb17d393c7c195a1de813a71",
+      "image_sha256": {
+        "word/media/image1.png": "78f713253e935b67a1e7c6ee32c64cad9301738facde59b57c9fe33c670bab40",
+        "word/media/image10.png": "2226b7465baf0aa46aa6560ee897d598f7fe62a4b1ed1bed69e7872f24831412",
+        "word/media/image11.png": "b84eb724eb7c20039083cc136cda523914a0db96bf08acea22adc05f64cd4df7",
+        "word/media/image12.png": "d58f45472760ab80fd404b7e212ee30c046b3e432d5b98dfab3db52176c09b9f",
+        "word/media/image13.png": "5062bf57c5112b5bf5c38ddbfba7fe0bd5a8e8d34456471f26663ac3251b5661",
+        "word/media/image14.png": "bc689230ec21bd370345e93232e068b8be8e0b594f888e853664f88744dba3b6",
+        "word/media/image15.png": "bffa9d6c3cbd2c9e5defb654f6555bb27e9f44b596e6a380ab7acdfab625f1dd",
+        "word/media/image16.png": "3c27ae1a0d37b1d2025a97c2c97575ddde5728aaaf63dee5ef53c937503d006a",
+        "word/media/image17.png": "f7166a757aa35c1d1f21292da24a93dbc3a1116c0a054bd7034bf06d2b683dd6",
+        "word/media/image18.png": "7f76c4b2b142fd4ee57e6e5938c0c4c8eb85277779cd5455e099cf2cf9a0c12c",
+        "word/media/image19.png": "dd54d73c05d6e58b553110609ae1a594793860b58a3ccf3a925b6769641a7c51",
+        "word/media/image2.png": "ffc587279a4cfa0aac989760248b7eeaf05f235fbcf1962b9a29e42d7d088a00",
+        "word/media/image20.png": "5ec15118633cb27fe214d5bf86eab378e7e040942e1b7799279ce42785699b77",
+        "word/media/image21.png": "f21014ed94615168eb20068f88cd5835fa280b82a47d049b85e082a3d10f9772",
+        "word/media/image22.png": "8089714242271dee5872f1628c31f7dd29004b49af165af4d6c94b9007561f04",
+        "word/media/image23.png": "e73d23ff368a536a324006d84b51bf5ed3e394ce41272f01396f454e88549248",
+        "word/media/image24.png": "9651861a6d967bc187e14475ce0402a7bfcd93cc969e879a4214ed052da99512",
+        "word/media/image25.png": "9618a6ae4a9e4a78617fcec23f99411f7271caf94a6560479e5371d94a012e5a",
+        "word/media/image26.png": "da057beccc26ed45879eebe929d8d10bdf0b8d696ddd9117a993157422c224b5",
+        "word/media/image27.png": "7b9095a6a6e5d57409db62f0571c3789d835520bca2c0ee8cc44302e459b894c",
+        "word/media/image28.png": "969e396c61b8f036b095391650b933a1a0c8c508f054a933cd46d824e8431055",
+        "word/media/image29.png": "c0abb7098d5eb6af03c8ef514cc92b57a83e3dc15edf8dfea7bf7f4dc646cda3",
+        "word/media/image3.png": "6d75ea91deefea9c42b17687d9bc50baf095a060eb50832cd90befce430a3157",
+        "word/media/image30.png": "62aaac8c8bb5a105433bec0dceae1fa07347261d71d56d6c64ef337614a0b6b7",
+        "word/media/image31.png": "00acae74c59f6658e66bfba448a2dd103f62e7b79fb87da06d75891db46eb911",
+        "word/media/image32.png": "92bcbf11061fbc900fd5880d7c2ec8eb54b141981dafc98cbc697b8ee19541d2",
+        "word/media/image33.png": "7268398d4eb770a72767a0737a6923f473e00351c9da913c42b6db14c5ce512c",
+        "word/media/image34.png": "0cda7a1d7451f309f9bca3db911b7fda88952f207d981e72c562fb0c71b6a92c",
+        "word/media/image35.png": "9f90758330daedc4a2d12992ff90484ca82dc0e5b3e799758b2289888a1e8f79",
+        "word/media/image36.png": "d4bb3e23004bb37d990e55d1027fbf17abb17724db17edebc0faea72c53b4e32",
+        "word/media/image37.png": "70b4d79da6307c22251f6beb2e753dca62d635bf0c9c52ba36c50d3c5047f99d",
+        "word/media/image38.png": "b6a7d6fef3f9de8f6ec58698a4611839905e9878dbb666b7bd1bcb433f3a1ae0",
+        "word/media/image39.png": "925abe4e96065ca0150353a9020d58b1a619bde788781e9ed31200dfe7904e65",
+        "word/media/image4.png": "366fefbbc4ac5956484f517c6c111093b3e48f0165640df6ea8bb30cbe1cdcf6",
+        "word/media/image40.png": "4934e105479cb041cba46c8b78d70da32df24e4f340313411522bc34dcaef6f4",
+        "word/media/image41.png": "1202dd535df53e14ad50ac0c83e575d5f27dcd53ebf6b502581e30cf95229e2f",
+        "word/media/image42.png": "bb5c5336e08ac78b6fbd46a4774f7e5782a2195f017f3768c60ab7ed6f5071d1",
+        "word/media/image43.png": "3333d69a2a6b40e5da60331e906a3de220d918c64996306061e5f2ad9afbff9e",
+        "word/media/image44.png": "c08016493853a229786b4c81b95dbc152f00b555b05d95651f9d9b603a76f303",
+        "word/media/image45.png": "a736c66063795199c1922af4190172c43f4dd04c2b7d77d2085dfe51deea65b5",
+        "word/media/image46.png": "94803b79fd6d85e262563d66a423682bbdba142d0201fd4a8ed4825cded7ca92",
+        "word/media/image47.png": "d13bc4e92898bb93ce7022fb46d790828d46a16e106037f909c52fc2049f9cb3",
+        "word/media/image5.png": "6286f9ffeeb9f4a30ae5558deeeea3511ef3532328218867b78395a86a35ca13",
+        "word/media/image6.png": "19bc1133e799a54e8c602be6f7385f72ffb2060a1f018de4b7277a8ddc97fe30",
+        "word/media/image7.png": "35d4e5fa3ab033b75e295964ef7c1243e40fcb7a4cbe4aec5c5059579f51fce0",
+        "word/media/image8.png": "57434332692d4ecf2fefed53c265142d08b19cebe9fbdfdec734460eb57a08f2",
+        "word/media/image9.png": "667ad2c42a35a0ece699e8b6f14a169e43b75bf5991943620412c268d6ff8096"
+      }
+    },
+    {
+      "version": "supplemented",
+      "source": "A2/补齐版/49079984_A2.pdf",
+      "bytes": 6002345,
+      "sha256": "30352689336c759f0549a1eb493cb8f96c163f44c5a52071aa01666333cddb2d",
+      "pages": 47,
+      "images": 49,
+      "text_sha256": "bff1812b4bfe711b6414d7840e740289ff2b9fcb04278ed032975f35be0b76b6"
+    },
+    {
+      "version": "supplemented",
+      "source": "A2/补齐版/49079984_A2.docx",
+      "bytes": 12099830,
+      "sha256": "c35825131f3826822b0284b345e3a4860a126cde42108983f98052f789ed5e15",
+      "embedded_images": 61,
+      "text_sha256": "6b987ec973d567d7992992c756dd256f2a2bccadf000ede0876d8551e391ab66",
+      "image_sha256": {
+        "word/media/image3.png": "1eb6c8a880671b67d839798f7db8072d93dbcddc9b57e25d572902cb050121ea",
+        "word/media/image4.png": "f1ba5337248ead0f18585519573ba54284914cfb933176194b36ebe5f24e8bfc",
+        "word/media/image5.png": "dca875e06849e208ddf5b88931bb71c8d343ebef9c0f88d22dd18514bea1ca0b",
+        "word/media/image6.png": "34bdf04f10682d11d280cc7deb8af31d728601393a7899443ad71258217e3ed4",
+        "word/media/image7.png": "671366043604d34123cf4d8623fb9e292e368fdac4dc76b3c0dfd0c913efcbac",
+        "word/media/image8.png": "9ae46f9bc4da4c78f631970e60e4621305e3a10b29363985e0d515ec0b76f50e",
+        "word/media/image9.png": "4dc109abc4ab2c284d89c6619d9d3593a165e42f5a5c10390482cd6fbe2262d1",
+        "word/media/image10.png": "f5e55c11d6ab8364503b070d60983d43f8a4ecd832dd4a4e0ca251c1bcaea335",
+        "word/media/image11.png": "0d82b4fb04f7be6986da16c38f4b946ccbbac29453af38c380350a25e3375b22",
+        "word/media/image12.png": "4a4cddc3196e19702be7eec7956b381df6beee7ff2b2a72bb4afc54c21bdc1eb",
+        "word/media/image13.png": "2e570977847a6e69c2a36b06bb0b70df0f2e6d0249173194d7623f71bec4acca",
+        "word/media/image14.png": "29a27062afbc58e6203650f182d661fd5dd1ef9bed6b20739e6b5afcdc9e9271",
+        "word/media/image15.png": "a46e9d7811a1fd737cd28734db1c6bb0972e4c0191861731c747e443ad12b7bc",
+        "word/media/image16.png": "b6f3786753a0c7cfd31d5d9c861bcca44312b41aef5a5eb6e0825cd85ce52e52",
+        "word/media/image17.png": "4bc56824d748448fedc8c00dbae1bae5a2a77277927b5b56b3f2d898da6786a7",
+        "word/media/image18.png": "a5dd6f99705b399a65e6296ebf3e5394dd9461c371364394110137512d4b9269",
+        "word/media/image19.png": "6ae0d3c4c272c8767cb944aeeba8301d4aeebb669ba82e91fbdc818ada9f85c7",
+        "word/media/image20.png": "e8fb41b045d3f0652ac5fb1ca56bd19c0411d0eca27b5a61c7391dc391f768a2",
+        "word/media/image21.png": "5c388cce46820d22748fe05a2de119bdabd3b5aafa0d00aa844fc2d7fb1e73fc",
+        "word/media/image22.png": "13bcd21f7b164409a02f7b7007894a6e9342a16210dff0744ea4c7f267af82a3",
+        "word/media/image23.png": "1c9fbc60b04f57851be6f1b2ffd0561a9eb078adbb1a5d9a0dbbf763a4b23fee",
+        "word/media/image24.png": "112eb5dbaa389faf1b1b0eba01cb3107c0d8248c3487e60e4f9daa997074c08f",
+        "word/media/image25.png": "0aa7dc17055215532526989d2ac27dad05cfe88c52f05aed3820b128b01d1b4a",
+        "word/media/image26.png": "b183c2ab14db8b5207884653c4cde91e80d587e959e22d77d4ec44b82ec5cd61",
+        "word/media/image27.png": "30f8d5cfbc9100d621e61a88bdd6a5450ba95d0646259a2501130be86a881788",
+        "word/media/image28.png": "22badc17edade22e383da2476ce1c634c39f9e9f2c7bd19479a61fb9638c7b8d",
+        "word/media/image29.png": "bf7b5ab2aa1ac8b44c31c05038fd6e54d21e800f6fff8d76b9d98c91abd7b069",
+        "word/media/image30.png": "30ced6038e5d4ec95dd12b934ca50e552bd6b230de2087cef41db0a01dc84b04",
+        "word/media/image31.png": "716d78ad1fe07dad827fe0829dc4b6b48a45f5df0aa8d20c68b7f30e5da2757a",
+        "word/media/image32.png": "6ca5c447f8be250f2ced14fdbd841cef8cf3adb1b8573144112cbc22d6dfae47",
+        "word/media/image33.png": "5a387c5afcd21100ed2e0a2a611f3ab1df7c55bd62f75151bbf3ae4379b6051a",
+        "word/media/image34.png": "cc576c80cfeed1ec6768a9b4cf45b66f24f398ad9186ec5afb268618655617e5",
+        "word/media/image35.png": "58bb31212a1f0d78a01a8f532de2bb1960291405088a230a69fa73afb06dd761",
+        "word/media/image36.png": "d8ac26f0b62dd3e778b58628c1687ecdb6338520a0172ec884eaeb5b59e48d93",
+        "word/media/image37.png": "b49f10a63d35de1da7173a05d9be4293480e16688840e97ff5149a4ccb134719",
+        "word/media/image38.png": "a7dceb4d4144ee6f563375eca0f514c35afb118273fb108ab55ca382fd678f55",
+        "word/media/image39.png": "c02a9d98d05ed37cc49e358b31530cc1aa218e9812153bbbc3046129c1b07e5f",
+        "word/media/image41.png": "915af32c40a2d34adc211ad8f244e9400a4b870038188b44efcc140a80d19a2a",
+        "word/media/image42.png": "29fd6968f252056b8f9c2864de45ed9c69d7e00689da1a2acc1130adea901f13",
+        "word/media/image43.png": "1edbb9bbcb4b691672f2657ab8622bb4aabdbc1c1ec161ea8671dbe1b4c64a22",
+        "word/media/image44.jpeg": "d233aefe77430e6037d33f9a45394c3bf4d5e3a4263625b3369a47aeadd55cdf",
+        "word/media/image40.png": "81feaa31e359855a28b00e5c9877fbc1138094c49add6df4b44010ed6e998950",
+        "word/media/image1.png": "de99873438e00e4cf6d185a31da2e153fe025a60819698de2b22f5b4be82e3f3",
+        "word/media/image2.png": "0d98fcabf4be18aabe9e412206480947f1511650942de215897bd42a8682d3da",
+        "word/media/completion_1.1.2_2-1.png": "b29642abe0d3a8545025b055de57a79b11ccd2134beb8215bfe291ba0ef4842b",
+        "word/media/completion_1.1.2_2-2.png": "902d5583ab2addb103074f82b41f0c1385eeb60ac306b98362255a789cb0d358",
+        "word/media/completion_1.1.2_2-3.png": "d64f60c3643e41ddb9dd68f911b9314ef39d1256d71b479501f7e32f620cfcd1",
+        "word/media/completion_1.3.2_2-1.png": "5ac12e607817746d28c0b729c56b92584754e312e807a212ff1e316c6e2cec4f",
+        "word/media/completion_1.3.2_2-2.png": "903cdbaace41984b9cddfcc39c69195cdfc532dd7abe1eb23a1c954c6f189455",
+        "word/media/completion_1.3.2_4-1.png": "5679d2ba0b29cfd85e15adb6f779175389163c31f366180cd0d673bcd33cb7a2",
+        "word/media/completion_2.1.2_2-1.png": "01dff11d7f62b244366479b51b734a2fc36e4b52b249872c6c71e970e5867f15",
+        "word/media/completion_2.1.2_2-2.png": "d1558dfafae63550f8b2c3be6a3da513d03c98b2f2190f71d8a39099c4b0c625",
+        "word/media/completion_2.1.2_2-3.png": "6a8ab7599044e5af4c3c7f4b3c21c0f57d80da4343f2714ae08f0f87d429c5f0",
+        "word/media/completion_2.1.3_2-1.png": "c27e781c2cb7ee2d815b8176c807c83560fedfe17f8f97e2aa17b9132ec3b87d",
+        "word/media/completion_2.2.2_1-1.png": "c05f293c451cc20ab8bd9a2811dd852d61359c53354b0151a220c1c8b966e8ff",
+        "word/media/completion_2.2.5_1-1.png": "2c846f9ce23795c2c0c96ebb79c671dbd801cdaf38e4a323f8288d6063285042",
+        "word/media/completion_2.2.5_2-1.png": "fab6f21d16249c0837c447489c32a68fc5d14e057b3c1e3fe7c2e5a99684487a",
+        "word/media/completion_3.1.1_1-1.png": "ecfe99f36a870185b635c3e4ee9acc5ec13b841a1a7f1019f4d3a9e120885f59",
+        "word/media/completion_3.1.1_2-1.png": "64035496f3b65c3155dd087384ff2ae448308cac6b91cc5b7d889562cd4b8c12",
+        "word/media/completion_3.1.2_1-1.png": "8c25856ec8964cfc10945533a595bb84b2cad6d4df89e25299ffac91ba248892",
+        "word/media/completion_3.1.2_2-1.png": "d7f8f2353a30aa7960f5f2e9785a429309df9a7958991527d39e6b034d60d25b"
+      }
+    },
+    {
+      "version": "native",
+      "source": "A2/原生截图更新版/49079984_A2.pdf",
+      "bytes": 5359266,
+      "sha256": "7aff8083e9ffc06769c5eb8fa58e83be45d783d4f58fd6b96a2f23eb363e8ec5",
+      "pages": 45,
+      "images": 53,
+      "text_sha256": "aa89bbd49296d6d396796df5fab5968b8ee1634edc3c9006ccf1337fd83fb7a1"
+    },
+    {
+      "version": "native",
+      "source": "A2/原生截图更新版/49079984_A2.docx",
+      "bytes": 14460118,
+      "sha256": "72328cc47f4be8dddab5090bc4e9b60099145335f96f2bb8561ffb1e10b27200",
+      "embedded_images": 70,
+      "text_sha256": "688c4dc816cec4d19a95799785228c8218c2e174d3aeef00ca9c303494015ed1",
+      "image_sha256": {
+        "word/media/image3.png": "1eb6c8a880671b67d839798f7db8072d93dbcddc9b57e25d572902cb050121ea",
+        "word/media/image4.png": "f1ba5337248ead0f18585519573ba54284914cfb933176194b36ebe5f24e8bfc",
+        "word/media/image5.png": "dca875e06849e208ddf5b88931bb71c8d343ebef9c0f88d22dd18514bea1ca0b",
+        "word/media/image6.png": "34bdf04f10682d11d280cc7deb8af31d728601393a7899443ad71258217e3ed4",
+        "word/media/image7.png": "671366043604d34123cf4d8623fb9e292e368fdac4dc76b3c0dfd0c913efcbac",
+        "word/media/image8.png": "9ae46f9bc4da4c78f631970e60e4621305e3a10b29363985e0d515ec0b76f50e",
+        "word/media/image9.png": "4dc109abc4ab2c284d89c6619d9d3593a165e42f5a5c10390482cd6fbe2262d1",
+        "word/media/image10.png": "f5e55c11d6ab8364503b070d60983d43f8a4ecd832dd4a4e0ca251c1bcaea335",
+        "word/media/image11.png": "0d82b4fb04f7be6986da16c38f4b946ccbbac29453af38c380350a25e3375b22",
+        "word/media/image12.png": "4a4cddc3196e19702be7eec7956b381df6beee7ff2b2a72bb4afc54c21bdc1eb",
+        "word/media/image13.png": "2e570977847a6e69c2a36b06bb0b70df0f2e6d0249173194d7623f71bec4acca",
+        "word/media/image14.png": "29a27062afbc58e6203650f182d661fd5dd1ef9bed6b20739e6b5afcdc9e9271",
+        "word/media/image15.png": "a46e9d7811a1fd737cd28734db1c6bb0972e4c0191861731c747e443ad12b7bc",
+        "word/media/image16.png": "b6f3786753a0c7cfd31d5d9c861bcca44312b41aef5a5eb6e0825cd85ce52e52",
+        "word/media/image17.png": "4bc56824d748448fedc8c00dbae1bae5a2a77277927b5b56b3f2d898da6786a7",
+        "word/media/image18.png": "a5dd6f99705b399a65e6296ebf3e5394dd9461c371364394110137512d4b9269",
+        "word/media/image19.png": "6ae0d3c4c272c8767cb944aeeba8301d4aeebb669ba82e91fbdc818ada9f85c7",
+        "word/media/image20.png": "e8fb41b045d3f0652ac5fb1ca56bd19c0411d0eca27b5a61c7391dc391f768a2",
+        "word/media/image21.png": "5c388cce46820d22748fe05a2de119bdabd3b5aafa0d00aa844fc2d7fb1e73fc",
+        "word/media/image22.png": "13bcd21f7b164409a02f7b7007894a6e9342a16210dff0744ea4c7f267af82a3",
+        "word/media/image23.png": "1c9fbc60b04f57851be6f1b2ffd0561a9eb078adbb1a5d9a0dbbf763a4b23fee",
+        "word/media/image24.png": "112eb5dbaa389faf1b1b0eba01cb3107c0d8248c3487e60e4f9daa997074c08f",
+        "word/media/image25.png": "0aa7dc17055215532526989d2ac27dad05cfe88c52f05aed3820b128b01d1b4a",
+        "word/media/image26.png": "b183c2ab14db8b5207884653c4cde91e80d587e959e22d77d4ec44b82ec5cd61",
+        "word/media/image27.png": "30f8d5cfbc9100d621e61a88bdd6a5450ba95d0646259a2501130be86a881788",
+        "word/media/image28.png": "22badc17edade22e383da2476ce1c634c39f9e9f2c7bd19479a61fb9638c7b8d",
+        "word/media/image29.png": "bf7b5ab2aa1ac8b44c31c05038fd6e54d21e800f6fff8d76b9d98c91abd7b069",
+        "word/media/image30.png": "30ced6038e5d4ec95dd12b934ca50e552bd6b230de2087cef41db0a01dc84b04",
+        "word/media/image31.png": "716d78ad1fe07dad827fe0829dc4b6b48a45f5df0aa8d20c68b7f30e5da2757a",
+        "word/media/image32.png": "6ca5c447f8be250f2ced14fdbd841cef8cf3adb1b8573144112cbc22d6dfae47",
+        "word/media/image33.png": "5a387c5afcd21100ed2e0a2a611f3ab1df7c55bd62f75151bbf3ae4379b6051a",
+        "word/media/image34.png": "cc576c80cfeed1ec6768a9b4cf45b66f24f398ad9186ec5afb268618655617e5",
+        "word/media/image35.png": "58bb31212a1f0d78a01a8f532de2bb1960291405088a230a69fa73afb06dd761",
+        "word/media/image36.png": "d8ac26f0b62dd3e778b58628c1687ecdb6338520a0172ec884eaeb5b59e48d93",
+        "word/media/image37.png": "b49f10a63d35de1da7173a05d9be4293480e16688840e97ff5149a4ccb134719",
+        "word/media/image38.png": "a7dceb4d4144ee6f563375eca0f514c35afb118273fb108ab55ca382fd678f55",
+        "word/media/image39.png": "c02a9d98d05ed37cc49e358b31530cc1aa218e9812153bbbc3046129c1b07e5f",
+        "word/media/image41.png": "915af32c40a2d34adc211ad8f244e9400a4b870038188b44efcc140a80d19a2a",
+        "word/media/image42.png": "29fd6968f252056b8f9c2864de45ed9c69d7e00689da1a2acc1130adea901f13",
+        "word/media/image43.png": "1edbb9bbcb4b691672f2657ab8622bb4aabdbc1c1ec161ea8671dbe1b4c64a22",
+        "word/media/image44.jpeg": "d233aefe77430e6037d33f9a45394c3bf4d5e3a4263625b3369a47aeadd55cdf",
+        "word/media/image40.png": "81feaa31e359855a28b00e5c9877fbc1138094c49add6df4b44010ed6e998950",
+        "word/media/image1.png": "de99873438e00e4cf6d185a31da2e153fe025a60819698de2b22f5b4be82e3f3",
+        "word/media/image2.png": "0d98fcabf4be18aabe9e412206480947f1511650942de215897bd42a8682d3da",
+        "word/media/completion_1.1.2_2-1.png": "b29642abe0d3a8545025b055de57a79b11ccd2134beb8215bfe291ba0ef4842b",
+        "word/media/completion_1.1.2_2-2.png": "902d5583ab2addb103074f82b41f0c1385eeb60ac306b98362255a789cb0d358",
+        "word/media/completion_1.1.2_2-3.png": "d64f60c3643e41ddb9dd68f911b9314ef39d1256d71b479501f7e32f620cfcd1",
+        "word/media/completion_1.3.2_2-1.png": "5ac12e607817746d28c0b729c56b92584754e312e807a212ff1e316c6e2cec4f",
+        "word/media/completion_1.3.2_2-2.png": "903cdbaace41984b9cddfcc39c69195cdfc532dd7abe1eb23a1c954c6f189455",
+        "word/media/completion_1.3.2_4-1.png": "5679d2ba0b29cfd85e15adb6f779175389163c31f366180cd0d673bcd33cb7a2",
+        "word/media/completion_2.1.2_2-1.png": "01dff11d7f62b244366479b51b734a2fc36e4b52b249872c6c71e970e5867f15",
+        "word/media/completion_2.1.2_2-2.png": "d1558dfafae63550f8b2c3be6a3da513d03c98b2f2190f71d8a39099c4b0c625",
+        "word/media/completion_2.1.2_2-3.png": "6a8ab7599044e5af4c3c7f4b3c21c0f57d80da4343f2714ae08f0f87d429c5f0",
+        "word/media/completion_2.1.3_2-1.png": "c27e781c2cb7ee2d815b8176c807c83560fedfe17f8f97e2aa17b9132ec3b87d",
+        "word/media/completion_2.2.2_1-1.png": "c05f293c451cc20ab8bd9a2811dd852d61359c53354b0151a220c1c8b966e8ff",
+        "word/media/completion_2.2.5_1-1.png": "2c846f9ce23795c2c0c96ebb79c671dbd801cdaf38e4a323f8288d6063285042",
+        "word/media/completion_2.2.5_2-1.png": "fab6f21d16249c0837c447489c32a68fc5d14e057b3c1e3fe7c2e5a99684487a",
+        "word/media/completion_3.1.1_1-1.png": "ecfe99f36a870185b635c3e4ee9acc5ec13b841a1a7f1019f4d3a9e120885f59",
+        "word/media/completion_3.1.1_2-1.png": "64035496f3b65c3155dd087384ff2ae448308cac6b91cc5b7d889562cd4b8c12",
+        "word/media/completion_3.1.2_1-1.png": "8c25856ec8964cfc10945533a595bb84b2cad6d4df89e25299ffac91ba248892",
+        "word/media/completion_3.1.2_2-1.png": "d7f8f2353a30aa7960f5f2e9785a429309df9a7958991527d39e6b034d60d25b",
+        "word/media/native_Q1.3.2_A_native_top.png": "b6fc47abb098ad63b8ba82bfb6ceaf3b0fef7e09a80dcfc34f177462cf51a7f2",
+        "word/media/native_Q1.3.2_A_native_bottom.png": "1b0412378882bc76c748873095a7e228c1c9dda3d16c66e6520f7793cae0d1a8",
+        "word/media/native_Q1.1.2_native_top.png": "b990d92466bec5d8ba5bb04e60ecfc8e9fc858a5fd51ba857c47dfa7e83d5c77",
+        "word/media/native_Q1.1.2_native_bottom.png": "08fbfd1db8fd4577a2280daf7ddc616ae45dbc2e77a809c29108182b722303b5",
+        "word/media/native_Q2.1.2_native_top.png": "d5faa852b30a71785bdfabe83528ee75dda03fbad80dd56d92ae103d4abda5c9",
+        "word/media/native_Q2.1.2_native_bottom.png": "7287584d80f9761a55945edba0a85ddfd7ebaa4fc41e0fd530cc07a05e6faf84",
+        "word/media/native_Q3.1.1_A_native.png": "f432489dc3f910e61f4df8ce80bc5e7385f54f1a62259753a184984360dcb686",
+        "word/media/native_Q3.1.1_B_native.png": "e2f9b5ffa5077631db15540bae98316034568f7f2df7788bc01984a26713ea1f",
+        "word/media/native_Q1.3.2_MV_native_plan.png": "5347851125b468ea0c3b9b705eb041c2a40fe33ebe2eda0caa3ccdc5c97ddb7b"
+      }
+    }
+  ],
+  "sql_comparisons": [
+    {
+      "question": "1.1.1",
+      "selected_source": "A2/49079984_A2_1.1.1.sql",
+      "sha256": "03c1478ce43388777cda51e1c8e8d8d4f135cd7cf5fae670a5fcbfc9f4ede8bc",
+      "lines": 32,
+      "comparison_source": "A2/completed/sql/49079984_A2_1.1.1.sql",
+      "comparison_sha256": "4eca5882bbdfde3e8f1e4be1e02c236b862122bae26c70f67e93b61e43b9c387",
+      "byte_equal": false,
+      "normalized_equal": true,
+      "selection_reason": "根目录SQL对应原生截图轮次；保留其原始字节；与completed实质差异另列。"
+    },
+    {
+      "question": "1.1.2",
+      "selected_source": "A2/49079984_A2_1.1.2.sql",
+      "sha256": "e43308b614b185fa5db115f40df18762092304067ceb6d77d21b57f21df93720",
+      "lines": 4,
+      "comparison_source": "A2/completed/sql/49079984_A2_1.1.2.sql",
+      "comparison_sha256": "eec13f3964694a754fb00841757f6b6fd6275c590e8550ef70b81d0b4b5351e1",
+      "byte_equal": false,
+      "normalized_equal": true,
+      "selection_reason": "根目录SQL对应原生截图轮次；保留其原始字节；与completed实质差异另列。"
+    },
+    {
+      "question": "1.2",
+      "selected_source": "A2/49079984_A2_1.2.sql",
+      "sha256": "c85b47e3a96f8ac8f570b889b96878d429ff6803da2201a4fb5e4876bf9389a6",
+      "lines": 29,
+      "comparison_source": "A2/completed/sql/49079984_A2_1.2.sql",
+      "comparison_sha256": "c0e5acde752b3bb59b432051357e234e3929587b41b30b2bb4372af31d3398d5",
+      "byte_equal": false,
+      "normalized_equal": true,
+      "selection_reason": "根目录SQL对应原生截图轮次；保留其原始字节；与completed实质差异另列。"
+    },
+    {
+      "question": "1.3.1",
+      "selected_source": "A2/49079984_A2_1.3.1.sql",
+      "sha256": "a9799ebc46bf110b53ae122ea35d50a80fc90e0fb7ffdb6a59b55148faebf623",
+      "lines": 28,
+      "comparison_source": "A2/completed/sql/49079984_A2_1.3.1.sql",
+      "comparison_sha256": "e8976c2cfa96355e61b823fc9ed60d22c2d0be53129cede147ccad0acf9d9e84",
+      "byte_equal": false,
+      "normalized_equal": true,
+      "selection_reason": "根目录SQL对应原生截图轮次；保留其原始字节；与completed实质差异另列。"
+    },
+    {
+      "question": "1.3.2",
+      "selected_source": "A2/49079984_A2_1.3.2.sql",
+      "sha256": "0c9e1e0d3bb047f80c66d3ff271fe0c866e62784c86e6f2a1aafb7304a7f2f40",
+      "lines": 13,
+      "comparison_source": "A2/completed/sql/49079984_A2_1.3.2.sql",
+      "comparison_sha256": "143778048ad317aba85433b808c42668b208fc50ae60931dbfe2a40dad77fe81",
+      "byte_equal": false,
+      "normalized_equal": true,
+      "selection_reason": "根目录SQL对应原生截图轮次；保留其原始字节；与completed实质差异另列。"
+    },
+    {
+      "question": "1.3.3",
+      "selected_source": "A2/49079984_A2_1.3.3.sql",
+      "sha256": "11d40b1e18ab8b57878e3774fbfb62c7b0e9c3cf7de9030fc547331797c0cf2b",
+      "lines": 19,
+      "comparison_source": "A2/completed/sql/49079984_A2_1.3.3.sql",
+      "comparison_sha256": "e0561898cb92e8ff4813e12756cbe21e8a11a55573aa81b43bb9e016aca2e5ea",
+      "byte_equal": false,
+      "normalized_equal": true,
+      "selection_reason": "根目录SQL对应原生截图轮次；保留其原始字节；与completed实质差异另列。"
+    },
+    {
+      "question": "2.1.1",
+      "selected_source": "A2/49079984_A2_2.1.1.sql",
+      "sha256": "292682789bf704637e28459042e76f8dd8c6cbe6258600c07e3445d0a821dd5b",
+      "lines": 3,
+      "comparison_source": "A2/completed/sql/49079984_A2_2.1.1.sql",
+      "comparison_sha256": "9878fad6850e4a58a51b2e769463e5d9235261588c0e55d3cc92487924ee3bfb",
+      "byte_equal": false,
+      "normalized_equal": true,
+      "selection_reason": "根目录SQL对应原生截图轮次；保留其原始字节；与completed实质差异另列。"
+    },
+    {
+      "question": "2.1.2",
+      "selected_source": "A2/49079984_A2_2.1.2.sql",
+      "sha256": "ed1ecb953436312129b6b2ada41e6696b8d15f5541fd91c382e34ca2d1ecf75c",
+      "lines": 6,
+      "comparison_source": "A2/completed/sql/49079984_A2_2.1.2.sql",
+      "comparison_sha256": "eec13f3964694a754fb00841757f6b6fd6275c590e8550ef70b81d0b4b5351e1",
+      "byte_equal": false,
+      "normalized_equal": true,
+      "selection_reason": "根目录SQL对应原生截图轮次；保留其原始字节；与completed实质差异另列。"
+    },
+    {
+      "question": "2.1.3",
+      "selected_source": "A2/49079984_A2_2.1.3.sql",
+      "sha256": "ecffd1361c4d0ee14a69c51848d79abca7e2495b77a54f326648ea868c9a29c2",
+      "lines": 14,
+      "comparison_source": "A2/completed/sql/49079984_A2_2.1.3.sql",
+      "comparison_sha256": "d105667faec38dfc58d71165cc261d30fc28b92fa7e68315f5d02c60e94b666a",
+      "byte_equal": false,
+      "normalized_equal": true,
+      "selection_reason": "根目录SQL对应原生截图轮次；保留其原始字节；与completed实质差异另列。"
+    },
+    {
+      "question": "2.2.1",
+      "selected_source": "A2/49079984_A2_2.2.1.sql",
+      "sha256": "3e0b831f63f2f7289bb28919eb56e547c45889b37c86abbf8a8a17fc53647ca4",
+      "lines": 6,
+      "comparison_source": "A2/completed/sql/49079984_A2_2.2.1.sql",
+      "comparison_sha256": "a4074dabad068c7b3e6e935ed473f0270b74526b05f7e5a54f7cf6a68292d169",
+      "byte_equal": false,
+      "normalized_equal": true,
+      "selection_reason": "根目录SQL对应原生截图轮次；保留其原始字节；与completed实质差异另列。"
+    },
+    {
+      "question": "2.2.2",
+      "selected_source": "A2/49079984_A2_2.2.2.sql",
+      "sha256": "78bb69301e8aef06b936c2fd284207fba624ec90c396b5ce2ec2de94a3bcdfda",
+      "lines": 7,
+      "comparison_source": "A2/completed/sql/49079984_A2_2.2.2.sql",
+      "comparison_sha256": "3b24966796ddbbb4c4857a267f201fde262fcae2a02ca4cc64f294c0798144d1",
+      "byte_equal": false,
+      "normalized_equal": true,
+      "selection_reason": "根目录SQL对应原生截图轮次；保留其原始字节；与completed实质差异另列。"
+    },
+    {
+      "question": "2.2.4",
+      "selected_source": "A2/49079984_A2_2.2.4.sql",
+      "sha256": "84be1902b73046186abf35f8eba2c58368748a1a44b08b1e90d639ec5ad92049",
+      "lines": 3,
+      "comparison_source": "A2/completed/sql/49079984_A2_2.2.4.sql",
+      "comparison_sha256": "2b434e24e20326abc390ef2ac8191cbe93c81fa4a1b275a19b1f492e2d756e75",
+      "byte_equal": false,
+      "normalized_equal": true,
+      "selection_reason": "根目录SQL对应原生截图轮次；保留其原始字节；与completed实质差异另列。"
+    },
+    {
+      "question": "2.2.5",
+      "selected_source": "A2/49079984_A2_2.2.5.sql",
+      "sha256": "c5a9f7722acc17876277ab340e641a68b43302b3c242b20e7e019da4fba533ba",
+      "lines": 13,
+      "comparison_source": "A2/completed/sql/49079984_A2_2.2.5.sql",
+      "comparison_sha256": "3e8e8c0c67108d07f082669501627d020fc0d88063cebfe0bdd2c69f7bc81598",
+      "byte_equal": false,
+      "normalized_equal": false,
+      "selection_reason": "根目录SQL对应原生截图轮次；保留其原始字节；与completed实质差异另列。"
+    },
+    {
+      "question": "3.1.1",
+      "selected_source": "A2/49079984_A2_3.1.1.sql",
+      "sha256": "fd083a7635074d4523b4c2a29c0606e49e2a6230ff97324d3773494d7785c784",
+      "lines": 19,
+      "comparison_source": "A2/completed/sql/49079984_A2_3.1.1.sql",
+      "comparison_sha256": "225449428a41f2a719d45cb6a8aac57cc2fc975c42338ecc28a5f05c93302579",
+      "byte_equal": false,
+      "normalized_equal": true,
+      "selection_reason": "根目录SQL对应原生截图轮次；保留其原始字节；与completed实质差异另列。"
+    },
+    {
+      "question": "3.1.2",
+      "selected_source": "A2/49079984_A2_3.1.2.sql",
+      "sha256": "e5139192f9e582d11e3ebdf35b2099c4b5b9fbd1df4b86bcf54e5db0294ddc2e",
+      "lines": 21,
+      "comparison_source": "A2/completed/sql/49079984_A2_3.1.2.sql",
+      "comparison_sha256": "0caf41a9a506dead2e62db84735aba8079f7451b32afe57921ba487e9b4e4c4f",
+      "byte_equal": false,
+      "normalized_equal": true,
+      "selection_reason": "根目录SQL对应原生截图轮次；保留其原始字节；与completed实质差异另列。"
+    },
+    {
+      "question": "3.2",
+      "selected_source": "A2/49079984_A2_3.2.sql",
+      "sha256": "06f0023163232b488992c234ba73bd5c42b63136b11be6b71059f2e30233fc1e",
+      "lines": 50,
+      "comparison_source": "A2/completed/sql/49079984_A2_3.2.sql",
+      "comparison_sha256": "b366225a48bc59af5757a162dc39d673f29e857003489343366cfff481fc489c",
+      "byte_equal": false,
+      "normalized_equal": true,
+      "selection_reason": "根目录SQL对应原生截图轮次；保留其原始字节；与completed实质差异另列。"
+    },
+    {
+      "question": "4.1.1",
+      "selected_source": "A2/49079984_A2_4.1.1.sql",
+      "sha256": "9ba09a7726e2d0b5f8db061533bbefde39d517b8a159bedaccf95c75f421248b",
+      "lines": 30,
+      "comparison_source": "A2/completed/sql/49079984_A2_4.1.1.sql",
+      "comparison_sha256": "d98946391862090435b78285176fa7d2e7862c1cbd5164d23c881d790e091e6c",
+      "byte_equal": false,
+      "normalized_equal": false,
+      "selection_reason": "根目录SQL对应原生截图轮次；保留其原始字节；与completed实质差异另列。"
+    },
+    {
+      "question": "4.1.2",
+      "selected_source": "A2/49079984_A2_4.1.2.sql",
+      "sha256": "5ff481b2e7e00af42ca5e9370c862ab1710739370965da3a805a6bcf5adcb207",
+      "lines": 34,
+      "comparison_source": "A2/completed/sql/49079984_A2_4.1.2.sql",
+      "comparison_sha256": "2ddc2580b1c428c43e0f5b37238d642cd7af47d07f01403b2f79aaddb9057c44",
+      "byte_equal": false,
+      "normalized_equal": false,
+      "selection_reason": "根目录SQL对应原生截图轮次；保留其原始字节；与completed实质差异另列。"
+    },
+    {
+      "question": "4.1.3",
+      "selected_source": "A2/49079984_A2_4.1.3.sql",
+      "sha256": "dbb5e11cedf089e9c03d56d4efd7f29dbca32c786867b31d1df9ff7ea34ddf92",
+      "lines": 19,
+      "comparison_source": "A2/completed/sql/49079984_A2_4.1.3.sql",
+      "comparison_sha256": "053bd3d2f079ded6578692546e605ce5836545f745471a41c7d54b41e4955605",
+      "byte_equal": false,
+      "normalized_equal": false,
+      "selection_reason": "根目录SQL对应原生截图轮次；保留其原始字节；与completed实质差异另列。"
+    },
+    {
+      "question": "4.2.1",
+      "selected_source": "A2/49079984_A2_4.2.1.sql",
+      "sha256": "977517eb85ad676f95bc751f9cd429b9174b8cd1895389817b66b4060adfcce5",
+      "lines": 45,
+      "comparison_source": "A2/completed/sql/49079984_A2_4.2.1.sql",
+      "comparison_sha256": "7d7458efaf0084db3e782a53b1cec6bf0ebca130d9057a0576cb453ecdf1caae",
+      "byte_equal": false,
+      "normalized_equal": false,
+      "selection_reason": "根目录SQL对应原生截图轮次；保留其原始字节；与completed实质差异另列。"
+    }
+  ],
+  "zip_comparisons": [
+    {
+      "source": "A2/49079984_A2_SQL.zip",
+      "sha256": "24cf9104389f191428145c7975cace4ee6bf5977d2a65ddfb1ae47f2b9fac2a5",
+      "members": [
+        {
+          "name": "49079984_A2_1.1.1.sql",
+          "sha256": "03c1478ce43388777cda51e1c8e8d8d4f135cd7cf5fae670a5fcbfc9f4ede8bc",
+          "matches_selected": true
+        },
+        {
+          "name": "49079984_A2_1.1.2.sql",
+          "sha256": "e43308b614b185fa5db115f40df18762092304067ceb6d77d21b57f21df93720",
+          "matches_selected": true
+        },
+        {
+          "name": "49079984_A2_1.2.sql",
+          "sha256": "c85b47e3a96f8ac8f570b889b96878d429ff6803da2201a4fb5e4876bf9389a6",
+          "matches_selected": true
+        },
+        {
+          "name": "49079984_A2_1.3.1.sql",
+          "sha256": "a9799ebc46bf110b53ae122ea35d50a80fc90e0fb7ffdb6a59b55148faebf623",
+          "matches_selected": true
+        },
+        {
+          "name": "49079984_A2_1.3.2.sql",
+          "sha256": "0c9e1e0d3bb047f80c66d3ff271fe0c866e62784c86e6f2a1aafb7304a7f2f40",
+          "matches_selected": true
+        },
+        {
+          "name": "49079984_A2_1.3.3.sql",
+          "sha256": "11d40b1e18ab8b57878e3774fbfb62c7b0e9c3cf7de9030fc547331797c0cf2b",
+          "matches_selected": true
+        },
+        {
+          "name": "49079984_A2_2.1.1.sql",
+          "sha256": "292682789bf704637e28459042e76f8dd8c6cbe6258600c07e3445d0a821dd5b",
+          "matches_selected": true
+        },
+        {
+          "name": "49079984_A2_2.1.2.sql",
+          "sha256": "ed1ecb953436312129b6b2ada41e6696b8d15f5541fd91c382e34ca2d1ecf75c",
+          "matches_selected": true
+        },
+        {
+          "name": "49079984_A2_2.1.3.sql",
+          "sha256": "ecffd1361c4d0ee14a69c51848d79abca7e2495b77a54f326648ea868c9a29c2",
+          "matches_selected": true
+        },
+        {
+          "name": "49079984_A2_2.2.1.sql",
+          "sha256": "3e0b831f63f2f7289bb28919eb56e547c45889b37c86abbf8a8a17fc53647ca4",
+          "matches_selected": true
+        },
+        {
+          "name": "49079984_A2_2.2.2.sql",
+          "sha256": "78bb69301e8aef06b936c2fd284207fba624ec90c396b5ce2ec2de94a3bcdfda",
+          "matches_selected": true
+        },
+        {
+          "name": "49079984_A2_2.2.4.sql",
+          "sha256": "84be1902b73046186abf35f8eba2c58368748a1a44b08b1e90d639ec5ad92049",
+          "matches_selected": true
+        },
+        {
+          "name": "49079984_A2_2.2.5.sql",
+          "sha256": "c5a9f7722acc17876277ab340e641a68b43302b3c242b20e7e019da4fba533ba",
+          "matches_selected": true
+        },
+        {
+          "name": "49079984_A2_3.1.1.sql",
+          "sha256": "fd083a7635074d4523b4c2a29c0606e49e2a6230ff97324d3773494d7785c784",
+          "matches_selected": true
+        },
+        {
+          "name": "49079984_A2_3.1.2.sql",
+          "sha256": "e5139192f9e582d11e3ebdf35b2099c4b5b9fbd1df4b86bcf54e5db0294ddc2e",
+          "matches_selected": true
+        },
+        {
+          "name": "49079984_A2_3.2.sql",
+          "sha256": "06f0023163232b488992c234ba73bd5c42b63136b11be6b71059f2e30233fc1e",
+          "matches_selected": true
+        },
+        {
+          "name": "49079984_A2_4.1.1.sql",
+          "sha256": "9ba09a7726e2d0b5f8db061533bbefde39d517b8a159bedaccf95c75f421248b",
+          "matches_selected": true
+        },
+        {
+          "name": "49079984_A2_4.1.2.sql",
+          "sha256": "5ff481b2e7e00af42ca5e9370c862ab1710739370965da3a805a6bcf5adcb207",
+          "matches_selected": true
+        },
+        {
+          "name": "49079984_A2_4.1.3.sql",
+          "sha256": "dbb5e11cedf089e9c03d56d4efd7f29dbca32c786867b31d1df9ff7ea34ddf92",
+          "matches_selected": true
+        },
+        {
+          "name": "49079984_A2_4.2.1.sql",
+          "sha256": "977517eb85ad676f95bc751f9cd429b9174b8cd1895389817b66b4060adfcce5",
+          "matches_selected": true
+        }
+      ]
+    },
+    {
+      "source": "A2/completed/49079984_A2_SQL.zip",
+      "sha256": "b0c53ff324d89b39a0ff5e6c63134da11e3c98fe958912b272a3caa12a401c7e",
+      "members": [
+        {
+          "name": "49079984_A2_1.1.1.sql",
+          "sha256": "4eca5882bbdfde3e8f1e4be1e02c236b862122bae26c70f67e93b61e43b9c387",
+          "matches_selected": false
+        },
+        {
+          "name": "49079984_A2_1.1.2.sql",
+          "sha256": "eec13f3964694a754fb00841757f6b6fd6275c590e8550ef70b81d0b4b5351e1",
+          "matches_selected": false
+        },
+        {
+          "name": "49079984_A2_1.2.sql",
+          "sha256": "c0e5acde752b3bb59b432051357e234e3929587b41b30b2bb4372af31d3398d5",
+          "matches_selected": false
+        },
+        {
+          "name": "49079984_A2_1.3.1.sql",
+          "sha256": "e8976c2cfa96355e61b823fc9ed60d22c2d0be53129cede147ccad0acf9d9e84",
+          "matches_selected": false
+        },
+        {
+          "name": "49079984_A2_1.3.2.sql",
+          "sha256": "143778048ad317aba85433b808c42668b208fc50ae60931dbfe2a40dad77fe81",
+          "matches_selected": false
+        },
+        {
+          "name": "49079984_A2_1.3.3.sql",
+          "sha256": "e0561898cb92e8ff4813e12756cbe21e8a11a55573aa81b43bb9e016aca2e5ea",
+          "matches_selected": false
+        },
+        {
+          "name": "49079984_A2_2.1.1.sql",
+          "sha256": "9878fad6850e4a58a51b2e769463e5d9235261588c0e55d3cc92487924ee3bfb",
+          "matches_selected": false
+        },
+        {
+          "name": "49079984_A2_2.1.2.sql",
+          "sha256": "eec13f3964694a754fb00841757f6b6fd6275c590e8550ef70b81d0b4b5351e1",
+          "matches_selected": false
+        },
+        {
+          "name": "49079984_A2_2.1.3.sql",
+          "sha256": "d105667faec38dfc58d71165cc261d30fc28b92fa7e68315f5d02c60e94b666a",
+          "matches_selected": false
+        },
+        {
+          "name": "49079984_A2_2.2.1.sql",
+          "sha256": "a4074dabad068c7b3e6e935ed473f0270b74526b05f7e5a54f7cf6a68292d169",
+          "matches_selected": false
+        },
+        {
+          "name": "49079984_A2_2.2.2.sql",
+          "sha256": "3b24966796ddbbb4c4857a267f201fde262fcae2a02ca4cc64f294c0798144d1",
+          "matches_selected": false
+        },
+        {
+          "name": "49079984_A2_2.2.4.sql",
+          "sha256": "2b434e24e20326abc390ef2ac8191cbe93c81fa4a1b275a19b1f492e2d756e75",
+          "matches_selected": false
+        },
+        {
+          "name": "49079984_A2_2.2.5.sql",
+          "sha256": "3e8e8c0c67108d07f082669501627d020fc0d88063cebfe0bdd2c69f7bc81598",
+          "matches_selected": false
+        },
+        {
+          "name": "49079984_A2_3.1.1.sql",
+          "sha256": "225449428a41f2a719d45cb6a8aac57cc2fc975c42338ecc28a5f05c93302579",
+          "matches_selected": false
+        },
+        {
+          "name": "49079984_A2_3.1.2.sql",
+          "sha256": "0caf41a9a506dead2e62db84735aba8079f7451b32afe57921ba487e9b4e4c4f",
+          "matches_selected": false
+        },
+        {
+          "name": "49079984_A2_3.2.sql",
+          "sha256": "b366225a48bc59af5757a162dc39d673f29e857003489343366cfff481fc489c",
+          "matches_selected": false
+        },
+        {
+          "name": "49079984_A2_4.1.1.sql",
+          "sha256": "d98946391862090435b78285176fa7d2e7862c1cbd5164d23c881d790e091e6c",
+          "matches_selected": false
+        },
+        {
+          "name": "49079984_A2_4.1.2.sql",
+          "sha256": "2ddc2580b1c428c43e0f5b37238d642cd7af47d07f01403b2f79aaddb9057c44",
+          "matches_selected": false
+        },
+        {
+          "name": "49079984_A2_4.1.3.sql",
+          "sha256": "053bd3d2f079ded6578692546e605ce5836545f745471a41c7d54b41e4955605",
+          "matches_selected": false
+        },
+        {
+          "name": "49079984_A2_4.2.1.sql",
+          "sha256": "7d7458efaf0084db3e782a53b1cec6bf0ebca130d9057a0576cb453ecdf1caae",
+          "matches_selected": false
+        }
+      ]
+    }
+  ],
+  "screenshots": [
+    {
+      "source": "A2/screenshots/00_assignment2_connection.png",
+      "question": "setup",
+      "sha256": "8dbd190f6a4e385a7720028e438a5c1a8279afe493ad720f239c59d91b98fd8c",
+      "bytes": 158378
+    },
+    {
+      "source": "A2/screenshots/00_setup_complete.png",
+      "question": "setup",
+      "sha256": "b071de60949bd90a4b44aec6eee4f001593560bf0af0d5d059bddaf01463e131",
+      "bytes": 75574
+    },
+    {
+      "source": "A2/screenshots/Q1.1.1_create_view.png",
+      "question": "1.1.1",
+      "sha256": "94d97e545c6d0166064ad8c1a94bee2b972a0650e2d99e3ac1d5fdad14cbc2e4",
+      "bytes": 215513
+    },
+    {
+      "source": "A2/screenshots/Q1.1.2_native_bottom.png",
+      "question": "1.1.2",
+      "sha256": "08fbfd1db8fd4577a2280daf7ddc616ae45dbc2e77a809c29108182b722303b5",
+      "bytes": 304604
+    },
+    {
+      "source": "A2/screenshots/Q1.1.2_native_top.png",
+      "question": "1.1.2",
+      "sha256": "b990d92466bec5d8ba5bb04e60ecfc8e9fc858a5fd51ba857c47dfa7e83d5c77",
+      "bytes": 331813
+    },
+    {
+      "source": "A2/screenshots/Q1.1.2_plan_partial.png",
+      "question": "1.1.2",
+      "sha256": "041df15971c4b8262e5a2c198a22d5644e65c618d112b6a686277f04d74acc23",
+      "bytes": 193475
+    },
+    {
+      "source": "A2/screenshots/Q1.1.2_result_partial.png",
+      "question": "1.1.2",
+      "sha256": "b01e3d50121a0a2b00a82d420e3a037cb93ca07e6fae5f33dc8b388f8cc6122e",
+      "bytes": 180356
+    },
+    {
+      "source": "A2/screenshots/Q1.2_create_view.png",
+      "question": "1.2",
+      "sha256": "21682e5424ff5bf8c6c9923e0fbb80d965ea37490d4889a8114e1f5133c25bcd",
+      "bytes": 209860
+    },
+    {
+      "source": "A2/screenshots/Q1.2_result.png",
+      "question": "1.2",
+      "sha256": "af789c2a0015a0527f3fe029ff21d6c37608c55a5a1a10772d0658d4428ef712",
+      "bytes": 246657
+    },
+    {
+      "source": "A2/screenshots/Q1.3.2_A_native_bottom.png",
+      "question": "1.3.2",
+      "sha256": "1b0412378882bc76c748873095a7e228c1c9dda3d16c66e6520f7793cae0d1a8",
+      "bytes": 315527
+    },
+    {
+      "source": "A2/screenshots/Q1.3.2_A_native_top.png",
+      "question": "1.3.2",
+      "sha256": "b6fc47abb098ad63b8ba82bfb6ceaf3b0fef7e09a80dcfc34f177462cf51a7f2",
+      "bytes": 315735
+    },
+    {
+      "source": "A2/screenshots/Q1.3.2_MV_native_plan.png",
+      "question": "1.3.2",
+      "sha256": "5347851125b468ea0c3b9b705eb041c2a40fe33ebe2eda0caa3ccdc5c97ddb7b",
+      "bytes": 172724
+    },
+    {
+      "source": "A2/screenshots/Q2.1.2_native_bottom.png",
+      "question": "2.1.2",
+      "sha256": "7287584d80f9761a55945edba0a85ddfd7ebaa4fc41e0fd530cc07a05e6faf84",
+      "bytes": 297766
+    },
+    {
+      "source": "A2/screenshots/Q2.1.2_native_top.png",
+      "question": "2.1.2",
+      "sha256": "d5faa852b30a71785bdfabe83528ee75dda03fbad80dd56d92ae103d4abda5c9",
+      "bytes": 316884
+    },
+    {
+      "source": "A2/screenshots/Q2.2.1_domain_counts.png",
+      "question": "2.2.1",
+      "sha256": "e8fb41b045d3f0652ac5fb1ca56bd19c0411d0eca27b5a61c7391dc391f768a2",
+      "bytes": 201236
+    },
+    {
+      "source": "A2/screenshots/Q3.1.1_A_native.png",
+      "question": "3.1.1",
+      "sha256": "f432489dc3f910e61f4df8ce80bc5e7385f54f1a62259753a184984360dcb686",
+      "bytes": 314542
+    },
+    {
+      "source": "A2/screenshots/Q3.1.1_B_native.png",
+      "question": "3.1.1",
+      "sha256": "e2f9b5ffa5077631db15540bae98316034568f7f2df7788bc01984a26713ea1f",
+      "bytes": 314449
+    },
+    {
+      "source": "A2/screenshots/Q3.2_C1_from_word.png",
+      "question": "3.2",
+      "sha256": "bf7b5ab2aa1ac8b44c31c05038fd6e54d21e800f6fff8d76b9d98c91abd7b069",
+      "bytes": 276928
+    },
+    {
+      "source": "A2/screenshots/Q3.2_C1_partial_width.png",
+      "question": "3.2",
+      "sha256": "0a4905ab423264ca80a5e80e417b1018de3ef8499643abbbcc4f2194e96da805",
+      "bytes": 277418
+    },
+    {
+      "source": "A2/screenshots/Q3.2_C2_from_word.png",
+      "question": "3.2",
+      "sha256": "716d78ad1fe07dad827fe0829dc4b6b48a45f5df0aa8d20c68b7f30e5da2757a",
+      "bytes": 278555
+    },
+    {
+      "source": "A2/screenshots/Q3.2_C3_from_word.png",
+      "question": "3.2",
+      "sha256": "5a387c5afcd21100ed2e0a2a611f3ab1df7c55bd62f75151bbf3ae4379b6051a",
+      "bytes": 262748
+    },
+    {
+      "source": "A2/screenshots/Q3.2_D1.png",
+      "question": "3.2",
+      "sha256": "30ced6038e5d4ec95dd12b934ca50e552bd6b230de2087cef41db0a01dc84b04",
+      "bytes": 264096
+    },
+    {
+      "source": "A2/screenshots/Q3.2_D1_from_word.png",
+      "question": "3.2",
+      "sha256": "30ced6038e5d4ec95dd12b934ca50e552bd6b230de2087cef41db0a01dc84b04",
+      "bytes": 264096
+    },
+    {
+      "source": "A2/screenshots/Q3.2_D2_from_word.png",
+      "question": "3.2",
+      "sha256": "6ca5c447f8be250f2ced14fdbd841cef8cf3adb1b8573144112cbc22d6dfae47",
+      "bytes": 280837
+    },
+    {
+      "source": "A2/screenshots/Q3.2_D3_from_word.png",
+      "question": "3.2",
+      "sha256": "cc576c80cfeed1ec6768a9b4cf45b66f24f398ad9186ec5afb268618655617e5",
+      "bytes": 263037
+    },
+    {
+      "source": "A2/screenshots/Q4.1.1_connection1.png",
+      "question": "4.1.1",
+      "sha256": "529c6a72a4dd9f32efd7d5e1bf500b30b35af1ef67572507ff1691514fee2ee4",
+      "bytes": 119037
+    },
+    {
+      "source": "A2/screenshots/Q4.1.2_two_connections.png",
+      "question": "4.1.2",
+      "sha256": "b5bccb697a82f1ac3af3d5489218e009ccb1f3a9d231720904af59653b046bb9",
+      "bytes": 198358
+    },
+    {
+      "source": "A2/screenshots/Q4.1_retry_connection1.png",
+      "question": "4.1",
+      "sha256": "1bbead2bea16b2104303c545d0c9929c9b352439b1a5082124f5f2a2e4f7ac38",
+      "bytes": 303422
+    },
+    {
+      "source": "A2/screenshots/Q4.1_retry_reserve_two_connections.png",
+      "question": "4.1",
+      "sha256": "170efb0ff52a83e02d73bb71060efab748c85d1e6fa739abae772e6523647a6e",
+      "bytes": 288046
+    },
+    {
+      "source": "A2/screenshots/Q4.1_VEH0004_collect_result.png",
+      "question": "4.1",
+      "sha256": "a7dceb4d4144ee6f563375eca0f514c35afb118273fb108ab55ca382fd678f55",
+      "bytes": 165417
+    },
+    {
+      "source": "A2/screenshots/Q4.1_VEH0004_connection1.png",
+      "question": "4.1",
+      "sha256": "d8ac26f0b62dd3e778b58628c1687ecdb6338520a0172ec884eaeb5b59e48d93",
+      "bytes": 122639
+    },
+    {
+      "source": "A2/screenshots/Q4.1_VEH0004_connection2.png",
+      "question": "4.1",
+      "sha256": "b49f10a63d35de1da7173a05d9be4293480e16688840e97ff5149a4ccb134719",
+      "bytes": 136873
+    },
+    {
+      "source": "A2/screenshots/Q4.1_wrong_window_reserve3.png",
+      "question": "4.1",
+      "sha256": "1e70d67b95c5a26a04ad17cbff78ea1e99d55e634c7974083d562ea064689ada",
+      "bytes": 268397
+    },
+    {
+      "source": "A2/screenshots/Q4.2_01_LEFT_first_update.png",
+      "question": "4.2",
+      "sha256": "c02a9d98d05ed37cc49e358b31530cc1aa218e9812153bbbc3046129c1b07e5f",
+      "bytes": 307630
+    },
+    {
+      "source": "A2/screenshots/Q4.2_02_RIGHT_first_update.png",
+      "question": "4.2",
+      "sha256": "81feaa31e359855a28b00e5c9877fbc1138094c49add6df4b44010ed6e998950",
+      "bytes": 87990
+    },
+    {
+      "source": "A2/screenshots/Q4.2_03_LEFT_waiting.png",
+      "question": "4.2",
+      "sha256": "c4249c470d9b1313bcd49aa0efff0e98a238e230af51e31e659a8bcdd32d5442",
+      "bytes": 98698
+    },
+    {
+      "source": "A2/screenshots/Q4.2_04_deadlock_detected.png",
+      "question": "4.2",
+      "sha256": "29fd6968f252056b8f9c2864de45ed9c69d7e00689da1a2acc1130adea901f13",
+      "bytes": 292942
+    },
+    {
+      "source": "A2/screenshots/Q4.2_05_final_values.png",
+      "question": "4.2",
+      "sha256": "1edbb9bbcb4b691672f2657ab8622bb4aabdbc1c1ec161ea8671dbe1b4c64a22",
+      "bytes": 315498
+    },
+    {
+      "source": "A2/screenshots/Q4.2_wait_for_graph.png",
+      "question": "4.2",
+      "sha256": "f34ba397fdc389e415b01add7826116368ef38c8191502f706f5f3d32966930a",
+      "bytes": 62107
+    }
+  ],
+  "issues": [
+    {
+      "id": "separate-runs",
+      "severity": "evidence",
+      "questions": [
+        "1.1.2",
+        "1.3.2",
+        "2.1.2",
+        "3.2",
+        "4.2"
+      ],
+      "finding": "completed是先前干净测试实例；原生更新版包含另一轮用户实验，不能拼接毫秒、行数或事务受害者当同一次执行。",
+      "action": "网页标注原生截图、报告转录、补充重放、教学示例。"
+    },
+    {
+      "id": "deadlock-victim",
+      "severity": "conflict",
+      "questions": [
+        "4.2.1",
+        "4.2.2"
+      ],
+      "finding": "completed旧轮次T1受害，T2提交，两车149120/122170。原生轮次RIGHT/T2受害，LEFT/T1提交，两车149110/122160。",
+      "action": "主线采用原生Q4.2_notes.md与Q4.2_01至05截图；旧轮次单列。"
+    },
+    {
+      "id": "D2-timing",
+      "severity": "correction",
+      "questions": [
+        "3.2"
+      ],
+      "finding": "completed中文说明的“D强制bitmap实测更慢”只适用于旧测试；原生D2=22.959ms，D1=24.116ms，方向相反。",
+      "action": "保留原生测量；解释估计成本8357.69>4091.51不代表这次必然更慢，缓存与波动影响时间。"
+    },
+    {
+      "id": "Q4-practice",
+      "severity": "evidence",
+      "questions": [
+        "4.1"
+      ],
+      "finding": "VEH0001/2轮次粘贴语法错误，VEH0003错窗口提交，不能视作完整双连接成功轮次。",
+      "action": "主线采用VEH0004：RIGHT提交Reserve196446，LEFT触发器拒绝后COMMIT显示ROLLBACK。"
+    },
+    {
+      "id": "clipped-native-plan",
+      "severity": "limitation",
+      "questions": [
+        "1.3.2"
+      ],
+      "finding": "原生普通视图计划两条长过滤条件末端被截；完整重放计划为另一轮（61.402ms），不能补猜原生未显示文本。",
+      "action": "展示原图并明确截断；完整重放作为独立补充。"
+    },
+    {
+      "id": "stage-and-charge",
+      "severity": "limitation",
+      "questions": [
+        "1.3.2",
+        "1.3.3"
+      ],
+      "finding": "原生普通视图计划统计30276条合格事件；初始/重放计划30275；说明数据阶段不同。",
+      "action": "不把45.543ms与0.236ms当严格同期速度比；保留原报告阶段说明。"
+    },
+    {
+      "id": "Q3-result-context",
+      "severity": "limitation",
+      "questions": [
+        "3.1.1"
+      ],
+      "finding": "原生A/B结果窗截图显示首尾和总75行，但截屏自身没有SQL文字。",
+      "action": "说明A/B归属依靠报告给定顺序及邻近SQL，独立验证日志只属于旧轮次。"
+    },
+    {
+      "id": "view-order",
+      "severity": "precision",
+      "questions": [
+        "1.1",
+        "1.2",
+        "1.3"
+      ],
+      "finding": "视图定义有ORDER BY，不应把任意外层查询或物化表读取次序当永久保证。",
+      "action": "建议需要稳定次序时外层显式ORDER BY；原代码不更改。"
+    },
+    {
+      "id": "collect-snapshot",
+      "severity": "precision",
+      "questions": [
+        "4.1"
+      ],
+      "finding": "题目“读取不获取锁”是普通数据读取的简化说法；普通SELECT仍取得兼容的表级ACCESS SHARE锁。",
+      "action": "解释其不会保留车辆，也不阻止本次Reserve插入；不把它称为完全无任何锁。"
+    },
+    {
+      "id": "psql-meta",
+      "severity": "platform",
+      "questions": [
+        "4.1",
+        "4.2"
+      ],
+      "finding": "根目录Q4脚本含反斜线psql元命令，不能整体直接贴入pgAdmin Query Tool。",
+      "action": "区分客户端命令和SQL；按会话运行且4.2逐段操作。"
+    },
+    {
+      "id": "recursive-cycle",
+      "severity": "boundary",
+      "questions": [
+        "1.2"
+      ],
+      "finding": "外键不禁止sponsor环；以根为起点的递归仅覆盖能到达根的成员；当前数据有效性不能推广到所有输入。",
+      "action": "教学说明环/孤立无根链边界；示例不可冒充实际数据。"
+    },
+    {
+      "id": "domain-format",
+      "severity": "boundary",
+      "questions": [
+        "2.2"
+      ],
+      "finding": "LOWER(SPLIT_PART(email,@,2))在题目规范数据上可用；NOT NULL UNIQUE不验证邮件格式，异常缺@或多个@时含义不同。",
+      "action": "教学列出输入假设、大小写统一及异常边界。"
+    }
+  ],
+  "excluded": "数据库内部数据、运行时、缓存、批量重复render页；_work只作来源追踪，不全量复制。"
+}

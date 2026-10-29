@@ -1,0 +1,21 @@
+SELECT LOWER(SPLIT_PART(email, '@', 2)) AS provider_domain,
+       COUNT(*) AS member_count
+FROM MEMBERS
+GROUP BY LOWER(SPLIT_PART(email, '@', 2))
+ORDER BY member_count DESC, provider_domain;
+ provider_domain  | member_count 
+------------------+--------------
+ gmail.com        |         8164
+ outlook.com      |         3388
+ hotmail.com      |         2200
+ yahoo.com.au     |         1937
+ bigpond.com      |         1686
+ icloud.com       |         1652
+ uqconnect.edu.au |         1486
+ protonmail.com   |         1165
+ optusnet.com.au  |          901
+ iinet.net.au     |          733
+ tpg.com.au       |          440
+ exemail.com.au   |          248
+(12 rows)
+

@@ -1,0 +1,16 @@
+-- Query A
+SELECT * FROM V_ACCOUNT_LIABILITY;
+ member_id |  member_name   | total_amount 
+-----------+----------------+--------------
+     14881 | Ana Lopez      |      6214.77
+     13572 | Samuel Choi    |      5629.17
+       414 | Nikau Anderson |      4903.24
+     12727 | Rohan Wilson   |      4745.38
+      6147 | Lily Kim       |      4459.37
+      6558 | Tomas Ali      |      4387.82
+      5543 | Aisha Robinson |      4025.80
+     10682 | Rohan Novak    |      3965.63
+     11445 | Minh Bianchi   |      3864.68
+       397 | Nikau White    |      3834.32
+(10 rows)
+

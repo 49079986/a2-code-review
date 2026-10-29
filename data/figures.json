@@ -1,0 +1,479 @@
+[
+  {
+    "id": "r02-1",
+    "page": 2,
+    "index": 1,
+    "image": "assets/images/report/embedded-623186ee7605fdd5.png",
+    "width": 1380,
+    "height": 751,
+    "caption": "Screenshot Q1.1 (1) \nMarks:    /1"
+  },
+  {
+    "id": "r03-1",
+    "page": 3,
+    "index": 1,
+    "image": "assets/images/report/embedded-a0ee25fc05b769fd.png",
+    "width": 1452,
+    "height": 789,
+    "caption": "SELECT * FROM V_BUSIEST_BAYS; \n \nEXPLAIN (ANALYZE, BUFFERS) \nSELECT * FROM V_BUSIEST_BAYS;"
+  },
+  {
+    "id": "r04-1",
+    "page": 4,
+    "index": 1,
+    "image": "assets/images/report/embedded-2bbc8b7c856557f4.png",
+    "width": 1345,
+    "height": 890,
+    "caption": "Screenshot Q1.1(2) \nMarks:    /0.5 \nExecution plan without IDX_EVENT_TYPE_TIME, native pgAdmin, lines 1 to 34"
+  },
+  {
+    "id": "r04-2",
+    "page": 4,
+    "index": 2,
+    "image": "assets/images/report/embedded-28495ca08423c62d.png",
+    "width": 1345,
+    "height": 890,
+    "caption": "Execution plan without IDX_EVENT_TYPE_TIME, native pgAdmin, lines 35 to 68"
+  },
+  {
+    "id": "r05-1",
+    "page": 5,
+    "index": 1,
+    "image": "assets/images/report/embedded-3f2c09f45b1d585e.png",
+    "width": 1380,
+    "height": 751,
+    "caption": "Comments: \n    \nScreenshot Q1.2 \nMarks:    /1.5"
+  },
+  {
+    "id": "r06-1",
+    "page": 6,
+    "index": 1,
+    "image": "assets/images/report/embedded-1c3843396947e2eb.png",
+    "width": 1380,
+    "height": 751,
+    "caption": "Screenshot Q1.2 \nMarks:    /1.5"
+  },
+  {
+    "id": "r08-1",
+    "page": 8,
+    "index": 1,
+    "image": "assets/images/report/embedded-ecf536617921b4c8.jpeg",
+    "width": 1153,
+    "height": 627,
+    "caption": "Screenshot Q1.3 (2) \nMarks:    /0.5 \nQuery A original result"
+  },
+  {
+    "id": "r08-2",
+    "page": 8,
+    "index": 2,
+    "image": "assets/images/report/embedded-bc0a42864c26b69e.png",
+    "width": 1345,
+    "height": 890,
+    "caption": "Query A ordinary view, native pgAdmin, lines 1 to 34"
+  },
+  {
+    "id": "r09-1",
+    "page": 9,
+    "index": 1,
+    "image": "assets/images/report/embedded-2f144b355b8c6d68.png",
+    "width": 1345,
+    "height": 890,
+    "caption": "Screenshot Q1.3 (2) \nMarks:    /0.5 \nQuery A ordinary view, native pgAdmin, lines 21 to 54; overlap retained"
+  },
+  {
+    "id": "r10-1",
+    "page": 10,
+    "index": 1,
+    "image": "assets/images/report/embedded-a372b74d104b3d97.png",
+    "width": 1500,
+    "height": 1715,
+    "caption": "Screenshot Q1.3 (2) \nMarks:    /0.5 \nSupplementary complete ordinary-view plan from the earlier replay, part 1 of 2"
+  },
+  {
+    "id": "r11-1",
+    "page": 11,
+    "index": 1,
+    "image": "assets/images/report/embedded-e9032a43eabd9869.png",
+    "width": 1500,
+    "height": 1797,
+    "caption": "Screenshot Q1.3 (2) \nMarks:    /0.5 \nSupplementary complete ordinary-view replay plan, part 2 of 2"
+  },
+  {
+    "id": "r12-1",
+    "page": 12,
+    "index": 1,
+    "image": "assets/images/report/embedded-996f3080eb67b6e2.png",
+    "width": 1153,
+    "height": 627,
+    "caption": "Screenshot Q1.3 (2) \nMarks:    /0.5 \nQuery B original result"
+  },
+  {
+    "id": "r12-2",
+    "page": 12,
+    "index": 2,
+    "image": "assets/images/report/embedded-39ec7c7f35a30b12.png",
+    "width": 1003,
+    "height": 209,
+    "caption": "Query B materialized view, native pgAdmin execution plan"
+  },
+  {
+    "id": "r13-1",
+    "page": 13,
+    "index": 1,
+    "image": "assets/images/report/embedded-97cd43291c7d2a5e.png",
+    "width": 1153,
+    "height": 627,
+    "caption": "Screenshot Q1.3 (3) \nMarks:    /0.5"
+  },
+  {
+    "id": "r13-2",
+    "page": 13,
+    "index": 2,
+    "image": "assets/images/report/embedded-d59f09d3099df8f5.png",
+    "width": 1153,
+    "height": 627,
+    "caption": "Screenshot Q1.3 (3) \nMarks:    /0.5"
+  },
+  {
+    "id": "r14-1",
+    "page": 14,
+    "index": 1,
+    "image": "assets/images/report/embedded-6ed728f9002525e6.png",
+    "width": 1153,
+    "height": 627,
+    "caption": "Screenshot Q1.3 (3) \nMarks:    /0.5"
+  },
+  {
+    "id": "r14-2",
+    "page": 14,
+    "index": 2,
+    "image": "assets/images/report/embedded-c82fc42e8e2e3872.png",
+    "width": 1153,
+    "height": 627,
+    "caption": "Screenshot Q1.3 (3) \nMarks:    /0.5"
+  },
+  {
+    "id": "r15-1",
+    "page": 15,
+    "index": 1,
+    "image": "assets/images/report/embedded-1fb6e752ab82ad73.png",
+    "width": 1153,
+    "height": 627,
+    "caption": "Screenshot Q1.3 (3) \nMarks:    /0.5"
+  },
+  {
+    "id": "r16-1",
+    "page": 16,
+    "index": 1,
+    "image": "assets/images/report/embedded-0c73eae6d08c4220.png",
+    "width": 1153,
+    "height": 627,
+    "caption": "Screenshot Q2.1 (1) \nMarks:    /0.5"
+  },
+  {
+    "id": "r16-2",
+    "page": 16,
+    "index": 2,
+    "image": "assets/images/report/embedded-0ad26632262f90b6.png",
+    "width": 1153,
+    "height": 627,
+    "caption": "-- Retrieve the busiest station for each body type after creating the index. \nSELECT * FROM V_BUSIEST_BAYS; \n \n-- Compare this plan with the plan recorded in Q1.1 before creating the index. \nEXPLAIN (ANALYZE, BUFFERS) \nSELECT * FROM V_BUSIEST_BAYS;"
+  },
+  {
+    "id": "r17-1",
+    "page": 17,
+    "index": 1,
+    "image": "assets/images/report/embedded-9e51f95e545d07bb.png",
+    "width": 1345,
+    "height": 890,
+    "caption": "Screenshot Q2.1 (2) \nMarks:    /1.5 \nExecution plan after the index-restoration step, native pgAdmin, lines 1 to 34"
+  },
+  {
+    "id": "r17-2",
+    "page": 17,
+    "index": 2,
+    "image": "assets/images/report/embedded-a230d3cc994672ab.png",
+    "width": 1345,
+    "height": 890,
+    "caption": "Execution plan after the index-restoration step, native pgAdmin, lines 35 to 68"
+  },
+  {
+    "id": "r18-1",
+    "page": 18,
+    "index": 1,
+    "image": "assets/images/report/embedded-42f0057ff3d90b1c.png",
+    "width": 1153,
+    "height": 627,
+    "caption": "-- Count incidents and sum their charges for March 2026. \nSELECT COUNT(*), SUM(amount) \nFROM BOOKING_EVENTS \nWHERE event_type = 'Incident' \n  AND event_time >= TIMESTAMP '2026-03-01' \n  AND event_time < TIMESTAMP '2026-04-01'; \n \n-- Report the execution plan for the March incidents query. \nEXPLAIN (ANALYZE, BUFFERS) \nSELECT COUNT(*), SUM(amount) \nFROM BOOKING_EVENTS \nWHERE event_type = 'Incident' \n  AND event_time >= TIMESTAMP '2026-03-01' \n  AND event_time < TIMESTAMP '2026-04-01';"
+  },
+  {
+    "id": "r19-1",
+    "page": 19,
+    "index": 1,
+    "image": "assets/images/report/embedded-9cb6c395a15ae1f6.png",
+    "width": 1500,
+    "height": 1220,
+    "caption": "Screenshot Q2.1 (3) \nMarks:    /1 \nQ2.1.3 March incidents plan — complete replay output"
+  },
+  {
+    "id": "r20-1",
+    "page": 20,
+    "index": 1,
+    "image": "assets/images/report/embedded-f5e53cb9b952eed5.png",
+    "width": 1153,
+    "height": 627,
+    "caption": "Screenshot Q2.2(1) \nMarks:    /1"
+  },
+  {
+    "id": "r21-1",
+    "page": 21,
+    "index": 1,
+    "image": "assets/images/report/embedded-0fc8cee8e9445cee.png",
+    "width": 1500,
+    "height": 1055,
+    "caption": "Q2.2.2 domain counts before indexing — complete replay output"
+  },
+  {
+    "id": "r22-1",
+    "page": 22,
+    "index": 1,
+    "image": "assets/images/report/embedded-a1cf6ebda5253937.png",
+    "width": 1153,
+    "height": 627,
+    "caption": "Screenshot Q2.2 (3) \nMarks:    /1 \nComments: \n   \nScreenshot Q2.2 (4) \nMarks:    /0.5"
+  },
+  {
+    "id": "r23-1",
+    "page": 23,
+    "index": 1,
+    "image": "assets/images/report/embedded-32469a44ba0e54ea.png",
+    "width": 1500,
+    "height": 1055,
+    "caption": "Q2.2.5 domain counts after indexing — complete replay output"
+  },
+  {
+    "id": "r24-1",
+    "page": 24,
+    "index": 1,
+    "image": "assets/images/report/embedded-421a8ee5d867212a.png",
+    "width": 1500,
+    "height": 1014,
+    "caption": "Screenshot Q2.2 (5) \nMarks:    /1.5 \nQ2.2.5 rare provider lookup — complete replay output"
+  },
+  {
+    "id": "r25-1",
+    "page": 25,
+    "index": 1,
+    "image": "assets/images/report/embedded-0ad92873eee0438c.png",
+    "width": 205,
+    "height": 288,
+    "caption": "Left: rows 1 to 10. Right: rows 66 to 75. The 55 intermediate rows are omitted."
+  },
+  {
+    "id": "r25-2",
+    "page": 25,
+    "index": 2,
+    "image": "assets/images/report/embedded-abca47eea3a106af.png",
+    "width": 205,
+    "height": 254,
+    "caption": "Left: rows 1 to 10. Right: rows 66 to 75. The 55 intermediate rows are omitted."
+  },
+  {
+    "id": "r25-3",
+    "page": 25,
+    "index": 3,
+    "image": "assets/images/report/embedded-c68b923de51a2def.png",
+    "width": 125,
+    "height": 29,
+    "caption": "Left: rows 1 to 10. Right: rows 66 to 75. The 55 intermediate rows are omitted."
+  },
+  {
+    "id": "r26-1",
+    "page": 26,
+    "index": 1,
+    "image": "assets/images/report/embedded-0ad92873eee0438c.png",
+    "width": 205,
+    "height": 288,
+    "caption": "Left: rows 1 to 10. Right: rows 66 to 75. The 55 intermediate rows are omitted."
+  },
+  {
+    "id": "r26-2",
+    "page": 26,
+    "index": 2,
+    "image": "assets/images/report/embedded-abca47eea3a106af.png",
+    "width": 205,
+    "height": 254,
+    "caption": "Left: rows 1 to 10. Right: rows 66 to 75. The 55 intermediate rows are omitted."
+  },
+  {
+    "id": "r26-3",
+    "page": 26,
+    "index": 3,
+    "image": "assets/images/report/embedded-c68b923de51a2def.png",
+    "width": 125,
+    "height": 29,
+    "caption": "Left: rows 1 to 10. Right: rows 66 to 75. The 55 intermediate rows are omitted."
+  },
+  {
+    "id": "r28-1",
+    "page": 28,
+    "index": 1,
+    "image": "assets/images/report/embedded-2cb2e6b9929ed712.png",
+    "width": 1500,
+    "height": 1592,
+    "caption": "Screenshot Q3.1 (2) \nMarks:    /1.5 \nStatement A execution plan — complete replay output"
+  },
+  {
+    "id": "r29-1",
+    "page": 29,
+    "index": 1,
+    "image": "assets/images/report/embedded-46302bd331409636.png",
+    "width": 1500,
+    "height": 1592,
+    "caption": "Screenshot Q3.1 (2) \nMarks:    /1.5 \nStatement B execution plan — complete replay output"
+  },
+  {
+    "id": "r30-1",
+    "page": 30,
+    "index": 1,
+    "image": "assets/images/report/embedded-696cb93413f4f77a.png",
+    "width": 1153,
+    "height": 627,
+    "caption": "Screenshot Q3.2 (1) \nMarks:    /2"
+  },
+  {
+    "id": "r30-2",
+    "page": 30,
+    "index": 2,
+    "image": "assets/images/report/embedded-c83496d94d22d866.png",
+    "width": 1153,
+    "height": 627,
+    "caption": "Screenshot Q3.2 (1) \nMarks:    /2"
+  },
+  {
+    "id": "r31-1",
+    "page": 31,
+    "index": 1,
+    "image": "assets/images/report/embedded-4f9a1bac82c3abb9.png",
+    "width": 1153,
+    "height": 627,
+    "caption": "Screenshot Q3.2 (1) \nMarks:    /2"
+  },
+  {
+    "id": "r31-2",
+    "page": 31,
+    "index": 2,
+    "image": "assets/images/report/embedded-827515b265030f59.png",
+    "width": 1153,
+    "height": 627,
+    "caption": "Screenshot Q3.2 (1) \nMarks:    /2"
+  },
+  {
+    "id": "r32-1",
+    "page": 32,
+    "index": 1,
+    "image": "assets/images/report/embedded-0f4960f449850f63.png",
+    "width": 1153,
+    "height": 627,
+    "caption": "Screenshot Q3.2 (1) \nMarks:    /2"
+  },
+  {
+    "id": "r32-2",
+    "page": 32,
+    "index": 2,
+    "image": "assets/images/report/embedded-f5e4fcd4e0545161.png",
+    "width": 1153,
+    "height": 627,
+    "caption": "Screenshot Q3.2 (1) \nMarks:    /2"
+  },
+  {
+    "id": "r33-1",
+    "page": 33,
+    "index": 1,
+    "image": "assets/images/report/embedded-7e7013d5082508bd.png",
+    "width": 1153,
+    "height": 627,
+    "caption": "Screenshot Q3.2 (1) \nMarks:    /2"
+  },
+  {
+    "id": "r37-1",
+    "page": 37,
+    "index": 1,
+    "image": "assets/images/report/embedded-b82e842e358f452d.png",
+    "width": 896,
+    "height": 1011,
+    "caption": "Screenshot Q4.1 (1) \nMarks:    /2"
+  },
+  {
+    "id": "r38-1",
+    "page": 38,
+    "index": 1,
+    "image": "assets/images/report/embedded-a97a874f43eb50d4.png",
+    "width": 1079,
+    "height": 1145,
+    "caption": "Screenshot Q4.1 (2) \nMarks:    /0.5"
+  },
+  {
+    "id": "r39-1",
+    "page": 39,
+    "index": 1,
+    "image": "assets/images/report/embedded-7459ed1b27f713f8.png",
+    "width": 1084,
+    "height": 1237,
+    "caption": "Screenshot Q4.1 (3) \nMarks:    /1"
+  },
+  {
+    "id": "r41-1",
+    "page": 41,
+    "index": 1,
+    "image": "assets/images/report/embedded-33942cea7b824e2c.png",
+    "width": 1153,
+    "height": 624,
+    "caption": "Screenshot Q4.2 \nMarks:    /3"
+  },
+  {
+    "id": "r41-2",
+    "page": 41,
+    "index": 2,
+    "image": "assets/images/report/embedded-71f0ac10a4afc6a8.png",
+    "width": 1134,
+    "height": 702,
+    "caption": "Screenshot Q4.2 \nMarks:    /3"
+  },
+  {
+    "id": "r42-1",
+    "page": 42,
+    "index": 1,
+    "image": "assets/images/report/embedded-ddbcf1a008b26715.png",
+    "width": 986,
+    "height": 869,
+    "caption": "Screenshot Q4.2 \nMarks:    /3"
+  },
+  {
+    "id": "r42-2",
+    "page": 42,
+    "index": 2,
+    "image": "assets/images/report/embedded-338a16a5245f0986.png",
+    "width": 1153,
+    "height": 621,
+    "caption": "Screenshot Q4.2 \nMarks:    /3"
+  },
+  {
+    "id": "r43-1",
+    "page": 43,
+    "index": 1,
+    "image": "assets/images/report/embedded-87c1d70bdf326c4e.png",
+    "width": 1153,
+    "height": 629,
+    "caption": "Screenshot Q4.2 \nMarks:    /3"
+  },
+  {
+    "id": "r43-2",
+    "page": 43,
+    "index": 2,
+    "image": "assets/images/report/embedded-9d8f6d135232cae6.jpeg",
+    "width": 1160,
+    "height": 870,
+    "caption": "Screenshot Q4.2 \nMarks:    /3"
+  }
+]

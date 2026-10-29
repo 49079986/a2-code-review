@@ -1,0 +1,18 @@
+{
+  "archive": "A2-code-review.zip",
+  "files": 339,
+  "bytes": 69970976,
+  "sha256": "0f2dcbd50c46beece50807fdbddc0d1e9ccf0b16be411737be78d9e52a460fa0",
+  "excluded": [
+    "reports/qa",
+    "data/extracted",
+    "__pycache__",
+    ".git",
+    ".venv",
+    "node_modules",
+    "*.zip",
+    "*.pyc",
+    ".env*"
+  ],
+  "crc_check": "passed"
+}

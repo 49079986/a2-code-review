@@ -1,0 +1,2 @@
+UPDATE VEHICLES SET odometer = odometer + 20 WHERE vehicle_id = 'VEH-0401';
+UPDATE 1

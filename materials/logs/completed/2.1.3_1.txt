@@ -1,0 +1,9 @@
+SELECT count(*), sum(amount) FROM BOOKING_EVENTS
+WHERE event_type = 'Incident'
+  AND event_time >= TIMESTAMP '2026-03-01'
+  AND event_time <  TIMESTAMP '2026-04-01';
+ count |   sum    
+-------+----------
+   116 | 86382.67
+(1 row)
+

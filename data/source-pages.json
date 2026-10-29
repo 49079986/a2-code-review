@@ -1,0 +1,348 @@
+{
+  "assignment": [
+    {
+      "page": 1,
+      "text": "1 \n \nINFS2200/INFS7903 Assignment 2 \nSemester 2, 2026 \nTotal Marks \n30 marks (15% of the course) \nDue Date \n4:00 pm, Friday 30th October 2026 \nWhat to submit \nReport file, and one SQL script file per \nquestion part \nWhere to submit \nReport via Blackboard Ultra Course Website; \nSQL scripts via Gradescope \nAssignment Version \n1.0 \n \nThe goal of the project assignments is to gain practical experience in applying several database \nmanagement concepts and techniques using the PostgreSQL DBMS. In particular, this \nassignment mainly focuses on improving database efficiency with views, indexing and query \nplanning, and on understanding what the DBMS does when transactions run concurrently. \nYour main task is to first populate your database with the supplied data, then design, implement, \nand test the appropriate queries to perform the tasks explained in the next sections. \nYou must work on this project individually. Academic integrity policies apply. Please refer to \n3.60.04 Student Integrity and Misconduct of the University Policy for more information. \nThis document is in three sections: This section describes the database schema for the \nassignment and provides instructions on downloading the script file needed to create and \npopulate the database. The middle section describes the tasks to be completed for this \nassignment. The final section describes the submission guidelines and marking scheme. \nEnjoy the project! \nSection 1 - The FleetDB Database \nYou are a developer working on FleetDB. \nCooee Car Share is a member-owned car-sharing co-operative. Members reserve a vehicle \nonline, collect it from a parking station, drive it, and return it to a station. FleetDB records the fleet, \nthe membership, and every booking event. It has five tables: \n• \nSTATIONS records each parking station where vehicles are picked up and dropped off; \n• \nMODELS records the specification shared by every vehicle of a given model, including its body \ntype and replacement value; \n• \nVEHICLES records each individual vehicle in the fleet, its model, and its home station; \n• \nMEMBERS records each member of the co-operative. Members may be sponsored by another \nmember — a business account sponsors a team account, which in turn sponsors the staff \nwho drive. sponsor_id points to the sponsoring member, and is NULL for an account that \npays its own way; \n• \nBOOKING_EVENTS is an append-only log of everything that happens to a vehicle: Reserve, \nCollect, Return, Cancel and Incident events, each stamped with the member responsible. \n",
+      "image": "assets/images/assignment/page-01.jpg",
+      "pdf": "materials/assignment.pdf"
+    },
+    {
+      "page": 2,
+      "text": "2 \namount holds the fare charged on a Return and the damage charge raised on an Incident; \nit is NULL for every other event type. \n \nEntity-Relationship diagram \nThe tables are created as follows. \nCREATE TABLE STATIONS ( \n    station_id    VARCHAR PRIMARY KEY, \n    station_name  VARCHAR NOT NULL, \n    suburb        VARCHAR NOT NULL, \n    bays          INTEGER NOT NULL); \n  \nCREATE TABLE MODELS ( \n    model_code        VARCHAR PRIMARY KEY, \n    make              VARCHAR NOT NULL, \n    model_name        VARCHAR NOT NULL, \n    body_type         VARCHAR NOT NULL, \n    seats             INTEGER NOT NULL, \n    replacement_value INTEGER NOT NULL); \n  \nCREATE TABLE VEHICLES ( \n    vehicle_id    VARCHAR PRIMARY KEY, \n    model_code    VARCHAR NOT NULL REFERENCES MODELS, \n    station_id    VARCHAR NOT NULL REFERENCES STATIONS, \n    in_service    DATE NOT NULL, \n    odometer      INTEGER NOT NULL); \n  \nCREATE TABLE MEMBERS ( \n    member_id     SERIAL PRIMARY KEY, \n    member_name   VARCHAR NOT NULL, \n    email         VARCHAR NOT NULL UNIQUE, \n    joined        DATE NOT NULL, \n    plan          VARCHAR NOT NULL, \n    sponsor_id    INTEGER REFERENCES MEMBERS); \n  \nCREATE TABLE BOOKING_EVENTS ( \n    event_id      SERIAL PRIMARY KEY, \n",
+      "image": "assets/images/assignment/page-02.jpg",
+      "pdf": "materials/assignment.pdf"
+    },
+    {
+      "page": 3,
+      "text": "3 \n    member_id     INTEGER NOT NULL REFERENCES MEMBERS, \n    vehicle_id    VARCHAR NOT NULL REFERENCES VEHICLES, \n    event_type    VARCHAR NOT NULL, \n    event_time    TIMESTAMP NOT NULL, \n    amount        NUMERIC(8,2)); \nNotes on the schema \nTwo details of the schema will matter later: \n1. MEMBERS.sponsor_id is a self-referencing foreign key, and sponsorship chains can be \nmore than one level deep. \n2. MEMBERS.email carries a UNIQUE constraint, so PostgreSQL has already built an index over \nit. \nFurther, the trigger BI_COLLECT and its associated user-defined function UDF_BI_COLLECT have \nbeen added to the BOOKING_EVENTS table. This trigger treats a vehicle's most recent event as its \ncurrent state, and refuses to record a Collect that would break the co-operative's rules: \nMost recent event for the vehicle \nMeaning \nA new Collect is … \nReturn or Cancel \navailable \nallowed \nReserve by the same member \nheld for you \nallowed \nReserve by a different member \nheld for someone else \nrejected \nCollect \nalready out on hire \nrejected \nIncident \noff the road pending repair \nrejected \n \nNo triggers implemented in Assignment 1 are present. \nSetup \nBefore starting work on this assignment, run the setup file a2-2026-fleetdb.sql from psql with \nthe \\i command (it may take a minute): \n\\i a2-2026-fleetdb.sql \nThe script drops and recreates a database called assignment2 and leaves you connected to it, \nso your work on this assignment is kept separate from your other work. Wait until you see the \nmessage DONE! All data has been inserted. \nThe setup file is available on Blackboard, and with mget as follows: \nmget -O /infs2200/stor/data/assignments/2/a2-2026-fleetdb.sql \nNote: as of this version of the assignment, the setup script version is 1.0 \n",
+      "image": "assets/images/assignment/page-03.jpg",
+      "pdf": "materials/assignment.pdf"
+    },
+    {
+      "page": 4,
+      "text": "4 \n \nSection 2 - Assignment 2 Tasks \nQ1 Views (4 marks total) \nQ1.1 View A (1.5 marks) \nThe co-operative's planners want to know where each kind of vehicle is actually being picked up, \nso they can decide where to add parking bays. \n(1) Create a view V_BUSIEST_BAYS that reports, for each body type, the single station at which \nvehicles of that body type have been collected the most times. The view should show the body \ntype, the station name, and the number of collections, ordered from most collections to fewest. (1 \nmark) \nHint: this is a \"top item within each group\" problem. Consider a window function such as \nRANK() or ROW_NUMBER() with a PARTITION BY clause, and use Common Table Expressions \nto build the query up in a semantically meaningful way. \n(2) Query the view (SELECT * FROM V_BUSIEST_BAYS;) and report the results. Report and \nexplain the query plan. You should refer to the reported times, costs, the number of rows fetched, \nyour knowledge of query planning (and anything else you feel is relevant). (0.5 marks) \nQ1.2 View B (1.5 marks) \nEvery charge a member incurs is ultimately billed to the account at the top of their sponsorship \nchain. A member with no sponsor pays their own charges. A sponsored member's charges pass \nto their sponsor — and if that sponsor is itself sponsored, the charges keep passing up the chain \nuntil they reach an account with no sponsor. \nCreate a view V_ACCOUNT_LIABILITY that identifies the ten accounts liable for the largest total \namount charged between 1 January 2026 and 30 June 2026 inclusive. The view should show the \naccount's member id, member name, and the total amount billed to it. \nHint: the chain can be more than one level deep, so an expression such as \nCOALESCE(sponsor_id, member_id) will give the wrong answer. Consider a WITH \nRECURSIVE Common Table Expression. \nQ1.3 Materialised view (1 mark) \n(1) Create a materialised view using the same query as V_ACCOUNT_LIABILITY, called \nMV_ACCOUNT_LIABILITY. (0 marks) \n(2) Report, compare and explain the following two queries, which select the contents of the view \nand the materialised view respectively. (0.5 marks) \nQuery A: \nSELECT * FROM V_ACCOUNT_LIABILITY; \nQuery B: \nSELECT * FROM MV_ACCOUNT_LIABILITY; \n",
+      "image": "assets/images/assignment/page-04.jpg",
+      "pdf": "materials/assignment.pdf"
+    },
+    {
+      "page": 5,
+      "text": "5 \nYou should refer to the reported times, costs, the number of rows fetched, your knowledge of \nquery planning (and anything else you feel is relevant). \n(3) A member logs a large damage charge. Run the following statement, then re-run Query A and \nQuery B and report what each returns. Explain the difference, then issue REFRESH MATERIALIZED \nVIEW MV_ACCOUNT_LIABILITY; and re-run Query B. In one or two sentences, state the trade-off \na designer accepts when choosing a materialised view over an ordinary view. (0.5 marks) \nINSERT INTO BOOKING_EVENTS (member_id, vehicle_id, event_type, event_time, amount) \nSELECT member_id, 'VEH-0001', 'Incident', TIMESTAMP '2026-05-04 09:15:00', 90000.00 \nFROM MEMBERS WHERE sponsor_id IS NOT NULL ORDER BY member_id DESC LIMIT 1; \nQ2 Indexes and performance (8 marks total) \nQ2.1 Composite index (3 marks) \n(1) Create an index IDX_EVENT_TYPE_TIME on the event_type and event_time fields (in that \norder) of the BOOKING_EVENTS table. (0.5 marks) \n(2) Re-run your query from Q1.1 (SELECT * FROM V_BUSIEST_BAYS;). Report the query plan. \nCompare this query plan to the one from Q1.1 and explain the differences, if any. (1.5 marks) \n(3) Now report and explain the query plan for the query below, which counts the incidents logged \nin March 2026. Explain why the planner makes different use of IDX_EVENT_TYPE_TIME here than \nit did in part (2). (1 mark) \nSELECT count(*), sum(amount) FROM BOOKING_EVENTS \nWHERE event_type = 'Incident' \n  AND event_time >= TIMESTAMP '2026-03-01' \n  AND event_time <  TIMESTAMP '2026-04-01'; \nQ2.2 Function-based index (5 marks) \nThe co-operative wants to know which e-mail providers its members use, so that it can \ninvestigate why its newsletter is being rejected by some of them. The provider domain is the \npart of the e-mail address after the @ character. Members have entered their addresses \ninconsistently, so domains must be compared case-insensitively — Bigpond.com and \nbigpond.com are the same provider. \n(1) Write an expression that identifies each member's e-mail provider domain, and use it to report \neach distinct domain together with the number of members who use it, most popular first. You \nmay use string processing functions, including the regex functions. (1 mark) \n(2) Report and explain the query plan for the query in part (1). You should refer to the reported \ntimes, costs, the number of rows fetched, your knowledge of query planning (and anything else \nyou feel is relevant). (1 mark) \n(3) MEMBERS.email already carries a UNIQUE constraint, and therefore already has an index on it. \nIn one or two sentences, explain why that existing index cannot answer a query about provider \ndomains. (1 mark) \n(4) Create a function-based index called IDX_MEMBER_DOMAIN to potentially speed up queries on \nthe expression from part (1). (0.5 marks) \n(5) Report the query plan, with the function-based index in place, for both of the following: \n• \nthe query you wrote in part (1); and \n• \na lookup of the members at one specific, rare provider: \n",
+      "image": "assets/images/assignment/page-05.jpg",
+      "pdf": "materials/assignment.pdf"
+    },
+    {
+      "page": 6,
+      "text": "6 \nSELECT member_id, member_name, email FROM MEMBERS \nWHERE <your expression> = 'exemail.com.au'; \nExplain the differences to the previous plans, if any, and why the index helps one of these queries \nmuch more than the other. You should refer to the reported times, costs, the number of rows \nfetched, your knowledge of query planning (and anything else you feel is relevant). (1.5 marks) \nBonus content: an index built over an expression only helps when a query contains that \nsame expression. This is why production systems often store a derived value (such as a \nnormalised domain) in its own column — it can then be indexed, constrained and queried \ndirectly. \nQ3 Query formulation and query planning (7 marks total) \nQ3.1 Two ways to ask the same question (3 marks) \nSome vehicles in the fleet have never actually been driven by a member — they may be new \nstock, or only ever reserved and then cancelled. \n(1) Write two different SQL statements that both report the vehicle_id of every vehicle that has \nnever been the subject of a Collect event: (A) using NOT EXISTS; (B) without using NOT EXISTS \nor NOT IN — for example with an outer join. Both statements must return the same rows. (1.5 \nmarks) \n(2) Report and compare the execution plans of statements (A) and (B). Are they the same plan? \nExplain what the planner has done and why. (1.5 marks) \nQ3.2 Suppressing scan types (4 marks) \nPostgreSQL allows you to influence the query planner with runtime configuration parameters in \npsql. \nhttps://www.postgresql.org/docs/17/runtime-config-query.html \nIn this section we will suppress the use of several different scan types in order to compare \nqueries. Suppressing plan types is not recommended for production, but is useful for \nunderstanding why one plan would be chosen over another. \nReport and explain the execution plan for the following two queries (C & D): \n3. with both index and sequential scans enabled; \n4. with index scans enabled and sequential scans suppressed; \n5. with index scans suppressed and sequential scans enabled. \nExplain why the query planner might choose one method over another. You should refer to the \nreported times and costs from the execution plan, the number of rows fetched, your knowledge of \nquery planning (and anything else you feel is relevant). \nNote: For this question, bitmap and index-only scans count as index scans too. The index \nIDX_EVENT_TYPE_TIME from Q2.1 should still be in place. \nQuery C: \nSELECT * FROM BOOKING_EVENTS WHERE event_type < 'Collect'; \nQuery D: \nSELECT * FROM BOOKING_EVENTS WHERE event_type >= 'Collect'; \n",
+      "image": "assets/images/assignment/page-06.jpg",
+      "pdf": "materials/assignment.pdf"
+    },
+    {
+      "page": 7,
+      "text": "7 \n(2 marks for explaining up to 6 possible query plans; 2 marks for explaining the query planner's \nchoices.) \nBetween them, Queries C and D return every row of BOOKING_EVENTS exactly once — they differ \nonly in which side of 'Collect' they take. Your explanation should account for why that is \nenough to change the plan. \nBe sure to reset index, bitmap, index-only and sequential scans back to on before proceeding to \nanother question. \nQ4 Transactions (9 marks total) \nIn PostgreSQL, a transaction is set up by surrounding the SQL commands of the transaction with \nBEGIN and COMMIT commands. For example, a banking transaction would look like: \nBEGIN; \nUPDATE accounts SET balance = balance - 100.00 \n  WHERE name = 'Alice'; \n-- some more statements etc etc \nCOMMIT; \nhttps://www.postgresql.org/docs/current/tutorial-transactions.html \nIn this question we will examine what happens when two transactions occur concurrently. \nBackground: how PostgreSQL reads \nYou have seen two ways of keeping a concurrent schedule serialisable: locking protocols such as \ntwo-phase locking, and timestamp ordering. PostgreSQL uses neither of these for ordinary \nreads, so what you are about to observe will not follow from either one directly. This section gives \nyou what you need; you are not expected to have met it before. \nInstead of taking read locks, a PostgreSQL query reads from a snapshot — a consistent picture \nof the database containing exactly those changes that were committed before the snapshot was \ntaken. Because reading acquires no locks, readers never block writers and writers never block \nreaders. \nAt PostgreSQL's default isolation level, READ COMMITTED, a new snapshot is taken at the start \nof every statement. Two statements in the same transaction may therefore see different data, if \nanother transaction committed in between them. \nTwo consequences are worth holding on to as you work through this question: \n• \nA trigger runs inside the transaction that fired it. Any query the trigger makes is answered \nfrom that transaction's current snapshot. It gets no special or privileged view of the database. \n• \nA snapshot is not a lock. Reading a row records nothing and reserves nothing; it does not \nprevent another transaction from changing what you just read. \nQ4.1 A race for the same car (6 marks) \nTwo members go after the same car at the same moment: \n• \nSession 1 is a member at the parking bay about to drive away. It checks that the vehicle is \navailable, and then records a Collect. \n• \nSession 2 is a member on the website. It checks that the same vehicle is available, and then \nrecords a Reserve for three days' time, and commits — all while session 1 is still open. \nYou will need two psql connections open side by side, both at the default isolation level. You can \nuse the now() function to provide a timestamp. Include screenshots of both connections. \n",
+      "image": "assets/images/assignment/page-07.jpg",
+      "pdf": "materials/assignment.pdf"
+    },
+    {
+      "page": 8,
+      "text": "8 \n(1) In your first psql connection, begin a transaction and then perform a query to identify a \nvehicle which is currently available — that is, a vehicle whose most recent event is a Return. \nDo not commit yet. (2 marks) \n(2) In your second connection, begin another transaction. Run the same availability check for the \nvehicle session 1 picked, then record a Reserve on it for some other member, 3 days in the \nfuture, and commit. (0.5 marks) \n(3) Back in your first connection, attempt to record a Collect on that vehicle for a different \nmember at the present time, then commit. Report what happened at each step, and which event \nor events ended up recorded against the vehicle. (1 mark) \n(4) Explain the outcome, both in database terms and in car-share terms. You may include a \nschedule or precedence graph of the transaction events if it aids your explanation. (2.5 marks) \nHint: was the answer to the query in step (1) still true by the time step (3) ran? Which \nsnapshot did the BI_COLLECT trigger use when it ran? And what, if anything, stopped session \n2 from changing the answer underneath session 1? \nQ4.2 Deadlock (3 marks) \nIn Q4.1 neither transaction could make progress on the other's terms, but only one of them was \never blocked. A deadlock is the symmetric case: two transactions each hold something the other \nis waiting for, so neither can move. Neither has done anything wrong on its own — it is the \ninterleaving that traps them. \nTwo staff are correcting odometer readings after a service run, and they work through the same \ntwo vehicles in opposite orders. \n(1) In two psql connections, begin a transaction in each. In your first connection, update the \nodometer of VEH-0401, and then the odometer of VEH-0501. In your second connection, update \nthose same two vehicles in the opposite order. Run the statements one at a time so you can see \nwhich one blocks. Report what happened at each step, quoting any error message in full. (1.5 \nmarks) \n(2) Draw the wait-for graph as it stood immediately before the DBMS intervened, and mark the \ncycle on it. State what the DBMS did about the deadlock, and what became of each of the two \ntransactions. (1 mark) \n(3) Name one strategy that would have prevented this deadlock rather than detecting it after the \nfact, and say what that strategy would cost the co-operative. (0.5 marks) \nHint: an UPDATE takes a lock on the row it changes and holds it until the transaction ends. \nWhich statement in each session was still waiting when the error appeared? \nSection 3 - Deliverables and Marking \nThere are 28 marks for functionality, understanding and explanations, and 2 marks for \npresentation. \nSubmission \nSubmit the following by the due date (4:00 pm, Friday 30th October 2026). \n",
+      "image": "assets/images/assignment/page-08.jpg",
+      "pdf": "materials/assignment.pdf"
+    },
+    {
+      "page": 9,
+      "text": "9 \nLate submissions will be penalised unless you are approved for an extension (refer to Section 5.3 \nof the ECP). \n6. A report file titled 4xxxxxxx_A2.pdf in PDF format, containing relevant code, screenshots \nand answers to all questions. Submit via the Turnitin link \"Report Submission\" on the \nBlackboard Ultra Course Website. \n7. A set of SQL script files, one per question part, submitted via the Gradescope link \"SQL \nScript Submission\". Each file must be plain text with a .sql extension, and must be named \n4xxxxxxx_A2_<question>.sql, where <question> is the number of the question part it \nanswers. Your answer to Q2.1 (3), for instance, goes in 4xxxxxxx_A2_2.1.3.sql. \nReplace 4xxxxxxx with your student number in every filename. Upload the script files individually, \nor as a single .zip archive containing them with no enclosing folder. \nWhich script files to submit \nSubmit the twenty files listed below. The remaining question parts — Q2.2 (3), Q4.1 (4), Q4.2 (2) \nand Q4.2 (3) — ask only for an explanation and have no script file; answer those in your report. \nFile \nWhat it should contain \n4xxxxxxx_A2_1.1.1.sql \nThe CREATE VIEW V_BUSIEST_BAYS statement \n4xxxxxxx_A2_1.1.2.sql \nSELECT * FROM V_BUSIEST_BAYS; \nand \nthe \nEXPLAIN you ran on it \n4xxxxxxx_A2_1.2.sql \nThe \nCREATE \nVIEW \nV_ACCOUNT_LIABILITY \nstatement \n4xxxxxxx_A2_1.3.1.sql \nThe \nCREATE \nMATERIALIZED \nVIEW \nMV_ACCOUNT_LIABILITY statement \n4xxxxxxx_A2_1.3.2.sql \nQueries A and B, with the EXPLAIN you ran on \neach \n4xxxxxxx_A2_1.3.3.sql \nThe supplied INSERT, your re-runs of Queries A \nand B, and the REFRESH \n4xxxxxxx_A2_2.1.1.sql \nThe \nCREATE \nINDEX \nIDX_EVENT_TYPE_TIME \nstatement \n4xxxxxxx_A2_2.1.2.sql \nThe re-run of your Q1.1 query, with its EXPLAIN \n4xxxxxxx_A2_2.1.3.sql \nThe EXPLAIN of the March incidents query \n4xxxxxxx_A2_2.2.1.sql \nYour statement reporting the count of members per \nprovider domain \n4xxxxxxx_A2_2.2.2.sql \nThe EXPLAIN of your Q2.2 (1) statement \n4xxxxxxx_A2_2.2.4.sql \nThe \nCREATE \nINDEX \nIDX_MEMBER_DOMAIN \nstatement \n4xxxxxxx_A2_2.2.5.sql \nBoth EXPLAINs, run with the function-based index \nin place \n4xxxxxxx_A2_3.1.1.sql \nStatements (A) and (B) \n4xxxxxxx_A2_3.1.2.sql \nThe EXPLAIN of statement (A) and of statement (B) \n4xxxxxxx_A2_3.2.sql \nQueries C and D under all three settings, including \nthe SET statements \n4xxxxxxx_A2_4.1.1.sql \nConnection 1: BEGIN and your availability query \n4xxxxxxx_A2_4.1.2.sql \nConnection 2: BEGIN, the availability query, the \nReserve, COMMIT \n4xxxxxxx_A2_4.1.3.sql \nConnection 1: the attempted Collect, and COMMIT \n4xxxxxxx_A2_4.2.1.sql \nEvery statement you ran in both connections, in the \norder you ran them \n \n",
+      "image": "assets/images/assignment/page-09.jpg",
+      "pdf": "materials/assignment.pdf"
+    },
+    {
+      "page": 10,
+      "text": "10 \nHow your script files will be run \nYou will be marked primarily on the contents of your report file. However, the teaching team must \nbe able to reproduce the screenshots in your report by loading a2-2026-fleetdb.sql into a \nfresh database and then running your files in question order, each with the \\i command in \npsql. Write your files on that assumption: a file may rely on objects created by an earlier file, but \nno file should repeat the dataset setup. \nA single script cannot show two connections running at the same time, so in the Q4 files mark \neach statement with the connection you ran it in, and keep the statements in the order you \nactually ran them: \n-- connection 1 \nBEGIN; \n... \n-- connection 2 \nBEGIN; \n... \nIf code is not provided for any question such that your screenshots cannot be reproduced, \nyour marks will be halved for that question. A file that is misnamed, empty, or does not run \ncounts as not provided. \nReport File & Presentation (2 marks) \nYour report file should include the following content: \n• \nAnswers to all the questions in the Assignment Tasks section. \n• \nIf you are asked to write SQL statements, you need to include those statements in your \nreport. \n• \nAfter you execute a SQL statement, if PostgreSQL produces any output (e.g. query result, \nquery execution time, query plan, etc), you should also include a screenshot of the output as \nwell. \n• \nWhere one sub-question asks you to write a query and a later sub-question asks you to \nreport on its timing, please simply refer back to the initial screenshot. \nThe presentation mark is given as follows: \n• \nOrdinary query results (not plans) do not exceed a page — any query returning more than 20 \nrows may show just the first 10 and the last 10 rows. You may find some helpful instructions \nfor formatting query output in Practical 1. (1 mark) \n• \nNo result tuples are broken across lines, and all query plans are shown in full (if a plan takes \nmore than one page, break it at an appropriate spot). (1 mark) \nMarking Scheme \nQuestion \nMarks \nSpecific Criteria \n1.1 (1) \n1 \nV_BUSIEST_BAYS \ncreated \nwith \nthe correct name and semantics: \none row per body type, naming \nthe \nstation \nwith \nthe \nmost \ncollections. Tested by SELECT * \nFROM V_BUSIEST_BAYS; \n1.1 (2) \n0.5 \nResult and query plan reported \nand explained with reference to \ncosts, times and row counts. \n",
+      "image": "assets/images/assignment/page-10.jpg",
+      "pdf": "materials/assignment.pdf"
+    },
+    {
+      "page": 11,
+      "text": "11 \n1.2 \n1.5 \nV_ACCOUNT_LIABILITY \ncreated \nwith \nthe \ncorrect \nname \nand \nsemantics. Full marks require the \ncharges to be rolled up the \nwhole sponsorship chain; a one-\nlevel rollup earns at most 0.5. \n1.3 (2) \n0.5 \nBoth \nplans \nreported \nand \ncompared; the cost of the view \nversus \nthe \nstored \nresult \nis \nexplained. \n1.3 (3) \n0.5 \nStaleness of the materialised \nview \ndemonstrated \nand \nthe \ntrade-off stated. \n2.1 (1) \n0.5 \nIndex created with the correct \nname and semantics. \n2.1 (2) \n1.5 \nPlan reported and compared with \nQ1.1; correctly explains why the \nindex is (or is not) used. \n2.1 (3) \n1 \nPlan \nreported; \nthe \nrole \nof \nselectivity and of the second \nindex column is explained. \n2.2 (1) \n1 \nOne SQL statement producing \nthe correct per-domain counts, \nfolding case. \n2.2 (2) \n1 \nPlan reported and explained. \n2.2 (3) \n1 \nCorrectly explains that an index \non \nemail \norders \nwhole \naddresses, not domains. \n2.2 (4) \n0.5 \nFunction-based \nindex \ncreated \nwith \nthe \ncorrect \nname \nand \nsemantics. \n2.2 (5) \n1.5 \nBoth \nplans \nreported; \nthe \ndifference \nbetween \nthe \naggregate \nand \nthe \nselective \nlookup is explained. \n3.1 (1) \n1.5 \nTwo correct statements returning \nthe \nsame \nrows, \nusing \nthe \nrequired formulations. \n3.1 (2) \n1.5 \nPlans reported and compared; \nanti-join behaviour explained. \n3.2 (1) \n2 \nEach \ndistinct \nquery \nplan \nexplained, for all combinations of \nquery and settings. \n3.2 (2) \n2 \nThe \nplanner's \ndecisions \nexplained by comparing plans; \nselectivity \nidentified \nas \nthe \ncause. \n4.1 (1) \n2 \nAvailability query correct — must \nfind a vehicle whose latest event \nis a Return, not merely one that \nhas a Return. \n4.1 (2) \n0.5 \nSecond transaction carried out \ncorrectly and screenshotted. \n4.1 (3) \n1 \nOutcome of each step reported, \nand \nthe \nresulting \nevents \n",
+      "image": "assets/images/assignment/page-11.jpg",
+      "pdf": "materials/assignment.pdf"
+    },
+    {
+      "page": 12,
+      "text": "12 \nidentified. \n4.1 (4) \n2.5 \nOutcome explained in database \nterms (the step (1) answer went \nstale; the trigger re-read on a \nlater snapshot) and in car-share \nterms. A schedule or precedence \ngraph earns credit but is not \nrequired. \n4.2 \n3 \nDeadlock produced and the error \nquoted \n(1.5); \nwait-for \ngraph \ndrawn with the cycle marked, \nand \nthe \nDBMS's \nresponse \ndescribed \n(1); \na \nprevention \nstrategy named with its cost \n(0.5). \nP \n2 \nPresentation marks as described \nabove. \nTotal \n30 \n \n \nEnjoy the project! Good luck! \nEND OF ASSIGNMENT 2 \n",
+      "image": "assets/images/assignment/page-12.jpg",
+      "pdf": "materials/assignment.pdf"
+    }
+  ],
+  "report": [
+    {
+      "page": 1,
+      "text": " \n1\nSubmission Template for \nINFS2200/INFS7903 Assignment 2 \nSemester 2, 2026 \n \nSubmission of Screenshot for Assignment 2  \n \nSubmitted by: \nStudent Name \nStudent ID \nPractical Session \nTutor Name \nYuyang Gong \n49079984 \nFriday 9:00–10:00 \nMr. Li, Jiayun \n \nAbout AI Usage: \nDid you use AI in this \nassignment?   \nYes \nThe purpose of AI used \nin this assignment? \nTo help draft and debug SQL, interpret PostgreSQL output, and \ncomplete and format the report. \nTo what extend that AI \nis used in this  \nsubmitted work? \nAI assisted with substantial SQL and explanatory text, checked \noutputs using an isolated local replay, and supplemented \nincomplete captures. The original interactive screenshots and \nhand-drawn graph were supplied by the student. \nDid you discuss your AI \nusage with the tutor \nduring the “Show to \nTutor” Lab sessions? \nNo. A2 has not yet been shown to the tutor, and this AI use \nhas not yet been discussed. \n \n \n \n \n \n \n \n \n \n",
+      "image": "assets/images/report/page-01.jpg",
+      "pdf": "materials/report-native.pdf"
+    },
+    {
+      "page": 2,
+      "text": " \n2\n \nScreenshot Q1.1 (1) \nMarks:    /1 \nExplanation \nThe first CTE counts Collect events for each body type and station. ROW_NUMBER \npartitions those counts by body type and picks the largest count; station_id resolves ties \ndeterministically so exactly one station is returned per represented body type. The final \nORDER BY puts the largest winner first. \nThe schema records a station on VEHICLES, rather than on BOOKING_EVENTS. The \nstation reported is therefore the vehicle's recorded station, which is the location available in \nthe supplied schema. \nComments: \n  \nScreenshot Q1.1(2) \nMarks:    /0.5 \nEvidence note: the newly supplied native pgAdmin captures are used in Q1.1.2, Q1.3.2, \nQ2.1.2 and Q3.1.1. Other plans labelled as replay output come from the previously validated \nclean PostgreSQL 18.6 replay. A separately labelled complete replay plan supplements \nQuery A in Q1.3.2 because its native capture clips two long conditions. Measurements \nbelong to their labelled runs; captures from different stages are not a controlled timing \nexperiment. Original Q3.2 and Q4 interactive evidence is retained. \n",
+      "image": "assets/images/report/page-02.jpg",
+      "pdf": "materials/report-native.pdf"
+    },
+    {
+      "page": 3,
+      "text": " \n3\nScreenshot Q1.1(2) \nMarks:    /0.5 \nSQL \nSELECT * FROM V_BUSIEST_BAYS; \n \nEXPLAIN (ANALYZE, BUFFERS) \nSELECT * FROM V_BUSIEST_BAYS; \n \n",
+      "image": "assets/images/report/page-03.jpg",
+      "pdf": "materials/report-native.pdf"
+    },
+    {
+      "page": 4,
+      "text": " \n4\nScreenshot Q1.1(2) \nMarks:    /0.5 \nExecution plan without IDX_EVENT_TYPE_TIME, native pgAdmin, lines 1 to 34 \n \nExecution plan without IDX_EVENT_TYPE_TIME, native pgAdmin, lines 35 to 68 \n \n",
+      "image": "assets/images/report/page-04.jpg",
+      "pdf": "materials/report-native.pdf"
+    },
+    {
+      "page": 5,
+      "text": " \n5\nScreenshot Q1.1(2) \nMarks:    /0.5 \nExplanation \nThe view returns six rows. Sedan at Carindale Park leads with 973 collections, followed by \nSUV 838, Hatchback 794, People Mover 510, Van 384 and Ute 333. In the native repeat \nmeasurement without IDX_EVENT_TYPE_TIME, the top node estimates 2 rows and returns \n6, with cost 4786.08..4786.08. Planning takes 7.797 ms and execution takes 52.686 ms. \nA Parallel Seq Scan filters BOOKING_EVENTS to Collect events. Its 29,769.5 actual rows \nper loop across two loops represent 59,539 collections. Hash joins attach vehicle, model and \nstation attributes. Partial aggregation and Finalize GroupAggregate produce 279 body-\ntype/station groups in this captured run; incremental sorting and WindowAgg select one \nwinner per body type, and the final sort orders the six winners. The small final result does \nnot avoid processing the underlying event log. \nComments: \n    \nScreenshot Q1.2 \nMarks:    /1.5 \n",
+      "image": "assets/images/report/page-05.jpg",
+      "pdf": "materials/report-native.pdf"
+    },
+    {
+      "page": 6,
+      "text": " \n6\nScreenshot Q1.2 \nMarks:    /1.5 \nExplanation \nThe recursive seed maps each unsponsored account to itself. Each recursive step maps a \nsponsored child to the same root account as its parent, so every member in the supplied \nsponsorship forest maps to exactly one ultimately liable account. Joining charges to this \nmapping bills personal charges and every level of sponsored charges to the root, without \ncounting an event at several intermediate accounts. \nOnly Return fares and Incident damage charges are included. The half-open timestamp \nrange from 2026-01-01 up to, but excluding, 2026-07-01 includes all of 30 June. Totals are \nsorted descending, with member_id as a deterministic tie-breaker, and limited to ten \naccounts. The result is shown in Q1.3 Query A. An independent upward traversal \nproduced the same ten rows. \nComments: \n  \n",
+      "image": "assets/images/report/page-06.jpg",
+      "pdf": "materials/report-native.pdf"
+    },
+    {
+      "page": 7,
+      "text": " \n7\nScreenshot Q1.3 (2) \nMarks:    /0.5 \nQ1.3 part 1 materialized view definition \nCREATE MATERIALIZED VIEW MV_ACCOUNT_LIABILITY AS \nWITH RECURSIVE account_tree AS ( \n    SELECT member_id, member_id AS account_id \n    FROM MEMBERS \n    WHERE sponsor_id IS NULL \n \n    UNION ALL \n \n    SELECT child.member_id, parent.account_id \n    FROM MEMBERS child \n    JOIN account_tree parent \n        ON child.sponsor_id = parent.member_id \n) \nSELECT \n    root.member_id, \n    root.member_name, \n    SUM(e.amount) AS total_amount \nFROM account_tree t \nJOIN MEMBERS root \n    ON root.member_id = t.account_id \nJOIN BOOKING_EVENTS e \n    ON e.member_id = t.member_id \nWHERE e.event_type IN ('Return', 'Incident') \n  AND e.event_time >= TIMESTAMP '2026-01-01' \n  AND e.event_time < TIMESTAMP '2026-07-01' \nGROUP BY root.member_id, root.member_name \nORDER BY total_amount DESC, root.member_id \nLIMIT 10; \nQ1.3 part 2 SQL \n-- Query A: retrieve the ordinary view results. \nSELECT * FROM V_ACCOUNT_LIABILITY; \n \n-- Query A: report the ordinary view execution plan. \nEXPLAIN (ANALYZE, BUFFERS) \nSELECT * FROM V_ACCOUNT_LIABILITY; \n \n-- Query B: retrieve the materialized view results. \nSELECT * FROM MV_ACCOUNT_LIABILITY; \n \n-- Query B: report the materialized view execution plan. \nEXPLAIN (ANALYZE, BUFFERS) \nSELECT * FROM MV_ACCOUNT_LIABILITY; \n",
+      "image": "assets/images/report/page-07.jpg",
+      "pdf": "materials/report-native.pdf"
+    },
+    {
+      "page": 8,
+      "text": " \n8\nScreenshot Q1.3 (2) \nMarks:    /0.5 \nQuery A original result \n \nQuery A ordinary view, native pgAdmin, lines 1 to 34 \n \n",
+      "image": "assets/images/report/page-08.jpg",
+      "pdf": "materials/report-native.pdf"
+    },
+    {
+      "page": 9,
+      "text": " \n9\nScreenshot Q1.3 (2) \nMarks:    /0.5 \nQuery A ordinary view, native pgAdmin, lines 21 to 54; overlap retained \n \nThe native screenshots above clip the ends of two long filter conditions. The following \ncomplete plan is retained as supplementary evidence from the earlier replay. It is a \nseparate run with its own estimates, access path and timing; it does not fill in unseen \nnative output. Its execution time is 61.402 ms. \n",
+      "image": "assets/images/report/page-09.jpg",
+      "pdf": "materials/report-native.pdf"
+    },
+    {
+      "page": 10,
+      "text": " \n10\nScreenshot Q1.3 (2) \nMarks:    /0.5 \nSupplementary complete ordinary-view plan from the earlier replay, part 1 of 2 \n \n",
+      "image": "assets/images/report/page-10.jpg",
+      "pdf": "materials/report-native.pdf"
+    },
+    {
+      "page": 11,
+      "text": " \n11\nScreenshot Q1.3 (2) \nMarks:    /0.5 \nSupplementary complete ordinary-view replay plan, part 2 of 2 \n \n",
+      "image": "assets/images/report/page-11.jpg",
+      "pdf": "materials/report-native.pdf"
+    },
+    {
+      "page": 12,
+      "text": " \n12\nScreenshot Q1.3 (2) \nMarks:    /0.5 \nQuery B original result \n \nQuery B materialized view, native pgAdmin execution plan \n \nNative plan transcription \nSeq Scan on mv_account_liability \n  (cost=0.00..18.50 rows=850 width=68) \n  (actual time=0.223..0.224 rows=10.00 loops=1) \n  Buffers: shared hit=1 \nPlanning: \n  Buffers: shared hit=16 \nPlanning Time: 1.373 ms \nExecution Time: 0.236 ms \nExplanation \nBoth original results initially show the same ten accounts, led by Ana Lopez (14881), \n6,214.77. The new Query A plan builds the 24,000-member account mapping, filters \n30,276 eligible events using Bitmap Index Scan and Bitmap Heap Scan, then performs \njoins, HashAggregate and a top-N sort. Its top cost is 370929.67..370929.69, planning \ntakes 0.384 ms and execution takes 45.543 ms. This later run is distinct from the initial \nresults and supplementary replay. \nQuery B scans the stored ten-row result: cost 0.00..18.50, planning 1.373 ms, execution \n0.236 ms and one shared-buffer hit. Its estimate of 850 rows differs from the actual 10; it \ndoes not mean 850 rows are stored. Materialization avoids repeating recursion, joins and \naggregation. Separate runs and database stages do not establish a controlled speed ratio. \nUse an explicit ORDER BY when output order matters. \nComments: \n   \n",
+      "image": "assets/images/report/page-12.jpg",
+      "pdf": "materials/report-native.pdf"
+    },
+    {
+      "page": 13,
+      "text": " \n13\nScreenshot Q1.3 (3) \nMarks:    /0.5 \n \n",
+      "image": "assets/images/report/page-13.jpg",
+      "pdf": "materials/report-native.pdf"
+    },
+    {
+      "page": 14,
+      "text": " \n14\nScreenshot Q1.3 (3) \nMarks:    /0.5 \n \n \n",
+      "image": "assets/images/report/page-14.jpg",
+      "pdf": "materials/report-native.pdf"
+    },
+    {
+      "page": 15,
+      "text": " \n15\nScreenshot Q1.3 (3) \nMarks:    /0.5 \n \nExplanation \nThe supplied INSERT chooses member 24000. Its sponsorship chain is 24000 -> 22086 -> \n18148 -> 13943, so the additional 90,000.00 is billed to Tuan Haddad (13943). Query A \nimmediately puts that account first at 90,673.75. Query B still shows the earlier top ten, led \nby Ana Lopez, and does not include Tuan Haddad. After REFRESH, Query B shows the \nsame updated ten rows as Query A; account 397 drops out of the top ten. \nA materialized view trades faster reads for extra storage, refresh work and potentially stale \nanswers between refreshes. An ordinary view computes an answer from the data visible to \neach query. \nComments: \n  \n",
+      "image": "assets/images/report/page-15.jpg",
+      "pdf": "materials/report-native.pdf"
+    },
+    {
+      "page": 16,
+      "text": " \n16\nScreenshot Q2.1 (1) \nMarks:    /0.5 \nExplanation \nThis B-tree index has event_type as its first key and event_time as its second key, in the \nrequired order. It orders timestamps within each event type. \nComments: \n   \nScreenshot Q2.1 (2) \nMarks:    /1.5 \nSQL \n-- Retrieve the busiest station for each body type after creating the index. \nSELECT * FROM V_BUSIEST_BAYS; \n \n-- Compare this plan with the plan recorded in Q1.1 before creating the index. \nEXPLAIN (ANALYZE, BUFFERS) \nSELECT * FROM V_BUSIEST_BAYS; \n \n",
+      "image": "assets/images/report/page-16.jpg",
+      "pdf": "materials/report-native.pdf"
+    },
+    {
+      "page": 17,
+      "text": " \n17\nScreenshot Q2.1 (2) \nMarks:    /1.5 \nExecution plan after the index-restoration step, native pgAdmin, lines 1 to 34 \n \nExecution plan after the index-restoration step, native pgAdmin, lines 35 to 68 \n \n",
+      "image": "assets/images/report/page-17.jpg",
+      "pdf": "materials/report-native.pdf"
+    },
+    {
+      "page": 18,
+      "text": " \n18\nScreenshot Q2.1 (2) \nMarks:    /1.5 \nExplanation \nThe six result rows are unchanged. The native plan remains a Parallel Seq Scan of the event \nlog followed by hash joins, aggregation, ranking and sorting; IDX_EVENT_TYPE_TIME is \nnot used by this query. Its top cost is 4786.08..4786.08, the same as the native plan without \nthe index. Planning takes 1.633 ms and execution takes 40.538 ms, compared with 7.797 \nms and 52.686 ms respectively in Q1.1.2. A faster single run with an unchanged access path \ncan reflect caching and run-to-run variation; it is not evidence of an index benefit. \nThe scan returns 59,539 Collect events distributed throughout the heap. The query also \nneeds vehicle_id, which this index does not contain. An index path would traverse many \nindex entries and fetch many heap pages, whereas a parallel sequential scan reads the table \nefficiently. There is no timestamp condition, so the second index column does not narrow this \nquery. Adding an index gives the planner another option; it does not require its use. \nComments: \n    \nScreenshot Q2.1 (3) \nMarks:    /1 \nSQL \n-- Count incidents and sum their charges for March 2026. \nSELECT COUNT(*), SUM(amount) \nFROM BOOKING_EVENTS \nWHERE event_type = 'Incident' \n  AND event_time >= TIMESTAMP '2026-03-01' \n  AND event_time < TIMESTAMP '2026-04-01'; \n \n-- Report the execution plan for the March incidents query. \nEXPLAIN (ANALYZE, BUFFERS) \nSELECT COUNT(*), SUM(amount) \nFROM BOOKING_EVENTS \nWHERE event_type = 'Incident' \n  AND event_time >= TIMESTAMP '2026-03-01' \n  AND event_time < TIMESTAMP '2026-04-01'; \n \n",
+      "image": "assets/images/report/page-18.jpg",
+      "pdf": "materials/report-native.pdf"
+    },
+    {
+      "page": 19,
+      "text": " \n19\nScreenshot Q2.1 (3) \nMarks:    /1 \nQ2.1.3 March incidents plan — complete replay output \n \nExplanation \nThe query returns count 116 and sum 86,382.67. The aggregate estimates and returns one \nresult row, with cost 388.48..388.49 and execution time 0.390 ms. Its child Bitmap Index \nScan finds 116 matching entries, versus 123 estimated, and Bitmap Heap Scan visits 79 \nexact heap blocks before computing the aggregate. \nIncident equality fixes the leading key, and the lower and upper March timestamp bounds \nrestrict the second key to a short contiguous range within Incident entries. These 116 events \nare about 0.059 percent of the table, so the bitmap index path avoids most rows and pages. \nThe plan needs heap access for amount, which is not stored in the index. This is much more \nselective than the all-time Collect query in Q2.1 part 2. \nComments: \n  \n",
+      "image": "assets/images/report/page-19.jpg",
+      "pdf": "materials/report-native.pdf"
+    },
+    {
+      "page": 20,
+      "text": " \n20\nScreenshot Q2.2(1) \nMarks:    /1 \nExplanation \nLOWER(SPLIT_PART(email, '@', 2)) extracts the part after @ and normalizes its case \nbefore grouping. The query reports 12 domains accounting for all 24,000 members, with \ngmail.com first at 8,164 members. exemail.com.au has 248 members. The secondary \nalphabetical ordering makes equal counts reproducible. \nComments: \n   \n",
+      "image": "assets/images/report/page-20.jpg",
+      "pdf": "materials/report-native.pdf"
+    },
+    {
+      "page": 21,
+      "text": " \n21\nScreenshot Q2.2 (2) \nMarks:    /1 \nSQL \n-- Report the domain-count query plan before creating the expression index. \nEXPLAIN (ANALYZE, BUFFERS) \nSELECT LOWER(SPLIT_PART(email, '@', 2)) AS provider_domain, \n       COUNT(*) AS member_count \nFROM MEMBERS \nGROUP BY LOWER(SPLIT_PART(email, '@', 2)) \nORDER BY member_count DESC, provider_domain; \nQ2.2.2 domain counts before indexing — complete replay output \n \nExplanation \nThe plan performs a Seq Scan of all 24,000 MEMBERS rows, computes the normalized \ndomain, uses HashAggregate for the counts, and sorts the resulting 12 groups by count \ndescending. The top cost is 2864.09..2924.09 and execution time is 6.997 ms. It estimates \n24,000 groups but actually returns only 12, reflecting the lack of statistics for this derived \nexpression at this point. \nEvery member contributes to the requested whole-population counts, so a complete scan is \nappropriate. Hash aggregation has a single batch and the final quicksort uses only 25 kB; \nneither step spills to disk in this run. \nComments: \n   \nScreenshot Q2.2 (3) \nMarks:    /1 \nThe UNIQUE index on email orders complete email addresses, so members with the \nsame provider domain are not necessarily adjacent. It does not index the normalized \ndomain expression, so it cannot directly locate a domain or avoid processing every \naddress for the domain-count query. \n",
+      "image": "assets/images/report/page-21.jpg",
+      "pdf": "materials/report-native.pdf"
+    },
+    {
+      "page": 22,
+      "text": " \n22\nScreenshot Q2.2 (3) \nMarks:    /1 \nComments: \n   \nScreenshot Q2.2 (4) \nMarks:    /0.5 \nExplanation \nThe expression in IDX_MEMBER_DOMAIN exactly matches LOWER(SPLIT_PART(email, \n'@', 2)) in the queries, including the case folding. PostgreSQL can therefore look up a \nnormalized domain directly in this index. \nComments: \n   \n",
+      "image": "assets/images/report/page-22.jpg",
+      "pdf": "materials/report-native.pdf"
+    },
+    {
+      "page": 23,
+      "text": " \n23\nScreenshot Q2.2 (5) \nMarks:    /1.5 \nSQL \n-- Report the domain-count query plan after creating the expression index. \nEXPLAIN (ANALYZE, BUFFERS) \nSELECT LOWER(SPLIT_PART(email, '@', 2)) AS provider_domain, \n       COUNT(*) AS member_count \nFROM MEMBERS \nGROUP BY LOWER(SPLIT_PART(email, '@', 2)) \nORDER BY member_count DESC, provider_domain; \n \n-- Report the selective lookup plan for a rare provider domain. \nEXPLAIN (ANALYZE, BUFFERS) \nSELECT member_id, member_name, email \nFROM MEMBERS \nWHERE LOWER(SPLIT_PART(email, '@', 2)) = 'exemail.com.au'; \nQ2.2.5 domain counts after indexing — complete replay output \n \n",
+      "image": "assets/images/report/page-23.jpg",
+      "pdf": "materials/report-native.pdf"
+    },
+    {
+      "page": 24,
+      "text": " \n24\nScreenshot Q2.2 (5) \nMarks:    /1.5 \nQ2.2.5 rare provider lookup — complete replay output \n \nExplanation \nThe domain-count query keeps its Seq Scan -> HashAggregate -> Sort plan, estimates \n24,000 groups and returns 12. Its top cost stays 2864.09..2924.09; execution is 5.274 ms \ncompared with 6.997 ms before the index. All 24,000 members still have to contribute to the \ncounts, and an index ordered by domain cannot directly satisfy ORDER BY COUNT(*) \nDESC. \nThe rare-provider lookup instead uses Bitmap Index Scan on IDX_MEMBER_DOMAIN \nfollowed by Bitmap Heap Scan. It returns 248 members, about 1.03 percent of MEMBERS, \nversus 120 estimated, with cost 5.22..226.08 and execution time 0.510 ms. The bitmap \nbatches access to 164 exact heap blocks; heap access is needed for member_id, \nmember_name and email. The index avoids evaluating the domain predicate on every \nmember. Its advantage is selective access, rather than speeding every query that mentions \nthe expression. \nComments: \n   \n",
+      "image": "assets/images/report/page-24.jpg",
+      "pdf": "materials/report-native.pdf"
+    },
+    {
+      "page": 25,
+      "text": " \n25\nScreenshot Q3.1 (1) \nMarks:    /1.5 \nSQL \n-- Statement A: find vehicles with no Collect event using NOT EXISTS. \nSELECT v.vehicle_id \nFROM VEHICLES v \nWHERE NOT EXISTS ( \n    SELECT 1 \n    FROM BOOKING_EVENTS e \n    WHERE e.vehicle_id = v.vehicle_id \n      AND e.event_type = 'Collect' \n) \nORDER BY v.vehicle_id; \n \n-- Statement B: find the same vehicles using a left join and a NULL check. \nSELECT v.vehicle_id \nFROM VEHICLES v \nLEFT JOIN BOOKING_EVENTS e \n    ON e.vehicle_id = v.vehicle_id \n   AND e.event_type = 'Collect' \nWHERE e.vehicle_id IS NULL \nORDER BY v.vehicle_id; \nStatement A native pgAdmin result, first ten and last ten rows \nLeft: rows 1 to 10. Right: rows 66 to 75. The 55 intermediate rows are omitted. \n \n \n",
+      "image": "assets/images/report/page-25.jpg",
+      "pdf": "materials/report-native.pdf"
+    },
+    {
+      "page": 26,
+      "text": " \n26\nScreenshot Q3.1 (1) \nMarks:    /1.5 \nStatement B native pgAdmin result, first ten and last ten rows \nLeft: rows 1 to 10. Right: rows 66 to 75. The 55 intermediate rows are omitted. \n \n \nExplanation \nBoth statements return the same 75 vehicle IDs, ordered by vehicle_id. Statement A uses a \ncorrelated NOT EXISTS test. Statement B places the Collect predicate in the LEFT JOIN \ncondition and keeps rows with no matching event vehicle_id. The matched-side vehicle_id is \nNOT NULL in the schema, so NULL identifies an unmatched vehicle unambiguously. \nPutting event_type in WHERE instead of ON would remove the unmatched rows and break \nthe outer-join solution. Independent EXCEPT ALL checks in both directions previously found \nno differences. The native result captures show the same first ten and last ten IDs and a total \nof 75 rows. They are placed in the supplied Statement A then Statement B order alongside \nthe SQL above; the captured result panes themselves do not display the SQL text. \nComments: \n  \n",
+      "image": "assets/images/report/page-26.jpg",
+      "pdf": "materials/report-native.pdf"
+    },
+    {
+      "page": 27,
+      "text": " \n27\nScreenshot Q3.1 (2) \nMarks:    /1.5 \nSQL \n-- Report the execution plan for Statement A. \nEXPLAIN (ANALYZE, BUFFERS) \nSELECT v.vehicle_id \nFROM VEHICLES v \nWHERE NOT EXISTS ( \n    SELECT 1 \n    FROM BOOKING_EVENTS e \n    WHERE e.vehicle_id = v.vehicle_id \n      AND e.event_type = 'Collect' \n) \nORDER BY v.vehicle_id; \n \n-- Report the execution plan for Statement B. \nEXPLAIN (ANALYZE, BUFFERS) \nSELECT v.vehicle_id \nFROM VEHICLES v \nLEFT JOIN BOOKING_EVENTS e \n    ON e.vehicle_id = v.vehicle_id \n   AND e.event_type = 'Collect' \nWHERE e.vehicle_id IS NULL \nORDER BY v.vehicle_id; \n",
+      "image": "assets/images/report/page-27.jpg",
+      "pdf": "materials/report-native.pdf"
+    },
+    {
+      "page": 28,
+      "text": " \n28\nScreenshot Q3.1 (2) \nMarks:    /1.5 \nStatement A execution plan — complete replay output \n \n",
+      "image": "assets/images/report/page-28.jpg",
+      "pdf": "materials/report-native.pdf"
+    },
+    {
+      "page": 29,
+      "text": " \n29\nScreenshot Q3.1 (2) \nMarks:    /1.5 \nStatement B execution plan — complete replay output \n \nExplanation \nThe two plans have the same operator structure and cost 4576.31..4576.43. Both return 75 \nrows, versus 49 estimated, using Hash Right Anti Join and a final vehicle_id sort. Statement \nA takes 17.320 ms and Statement B 14.630 ms in these runs. \nPostgreSQL decorrelates NOT EXISTS and recognizes the outer-join NULL filter as the \nsame anti-join operation. It hashes the small set of 900 vehicles and scans 59,539 Collect \nevents through a bitmap index/heap path, keeping the vehicle rows without any match. The \nRight direction describes the physical join inputs chosen by the optimizer; it preserves the \nintended vehicle-side anti-join semantics. Neither syntax forces a separate full event scan for \neach vehicle. The minor time difference does not establish a consistent performance \ndifference. \nComments: \n   \n",
+      "image": "assets/images/report/page-29.jpg",
+      "pdf": "materials/report-native.pdf"
+    },
+    {
+      "page": 30,
+      "text": " \n30\nScreenshot Q3.2 (1) \nMarks:    /2 \n \n \n",
+      "image": "assets/images/report/page-30.jpg",
+      "pdf": "materials/report-native.pdf"
+    },
+    {
+      "page": 31,
+      "text": " \n31\nScreenshot Q3.2 (1) \nMarks:    /2 \n \n \n",
+      "image": "assets/images/report/page-31.jpg",
+      "pdf": "materials/report-native.pdf"
+    },
+    {
+      "page": 32,
+      "text": " \n32\nScreenshot Q3.2 (1) \nMarks:    /2 \n \n \n",
+      "image": "assets/images/report/page-32.jpg",
+      "pdf": "materials/report-native.pdf"
+    },
+    {
+      "page": 33,
+      "text": " \n33\nScreenshot Q3.2 (1) \nMarks:    /2 \n \n",
+      "image": "assets/images/report/page-33.jpg",
+      "pdf": "materials/report-native.pdf"
+    },
+    {
+      "page": 34,
+      "text": " \n34\nScreenshot Q3.2 (1) \nMarks:    /2 \nFull text of the recorded plans \nThese are transcriptions of the original interactive pgAdmin plans above, with unchanged \nvalues. They belong to the recorded run, rather than the clean replay used to supplement \nQ1–Q3.1. \nC1 \nBitmap Heap Scan on booking_events (cost=196.97..1937.08 rows=8329 width=38) \n    (actual time=1.964..11.097 rows=8158.00 loops=1) \n  Recheck Cond: ((event_type)::text < 'Collect'::text) \n  Heap Blocks: exact=1625 \n  Buffers: shared hit=1628 read=31 \n  -> Bitmap Index Scan on idx_event_type_time (cost=0.00..194.89 rows=8329 \n    width=0) (actual time=1.606..1.606 rows=8158.00 loops=1) \n     Index Cond: ((event_type)::text < 'Collect'::text) \n     Index Searches: 1 \n     Buffers: shared hit=3 read=31 \nPlanning: \n  Buffers: shared hit=3 dirtied=1 \nPlanning Time: 4.423 ms \nExecution Time: 12.443 ms \nD1 \nSeq Scan on booking_events (cost=0.00..4091.51 rows=188112 width=38) (actual \n    time=0.021..20.210 rows=188283.00 loops=1) \n  Filter: ((event_type)::text >= 'Collect'::text) \n  Rows Removed by Filter: 8158 \n  Buffers: shared hit=1636 \nPlanning: \n  Buffers: shared hit=3 \nPlanning Time: 0.937 ms \nExecution Time: 24.116 ms \nC2 \nBitmap Heap Scan on booking_events (cost=196.97..1937.08 rows=8329 width=38) \n    (actual time=0.343..1.911 rows=8158.00 loops=1) \n  Recheck Cond: ((event_type)::text < 'Collect'::text) \n  Heap Blocks: exact=1625 \n  Buffers: shared hit=1659 \n  -> Bitmap Index Scan on idx_event_type_time (cost=0.00..194.89 rows=8329 \n    width=0) (actual time=0.246..0.246 rows=8158.00 loops=1) \n     Index Cond: ((event_type)::text < 'Collect'::text) \n     Index Searches: 1 \n     Buffers: shared hit=34 \nPlanning Time: 0.103 ms \nExecution Time: 2.095 ms \nD2 \nBitmap Heap Scan on booking_events (cost=4370.29..8357.69 rows=188112 \n    width=38) (actual time=11.749..19.345 rows=188283.00 loops=1) \n  Recheck Cond: ((event_type)::text >= 'Collect'::text) \n  Heap Blocks: exact=1636 \n  Buffers: shared hit=1868 read=493 \n  -> Bitmap Index Scan on idx_event_type_time (cost=0.00..4323.26 rows=188112 \n    width=0) (actual time=11.638..11.639 rows=188283.00 loops=1) \n     Index Cond: ((event_type)::text >= 'Collect'::text) \n     Index Searches: 1 \n     Buffers: shared hit=232 read=493 \nPlanning Time: 0.099 ms \nExecution Time: 22.959 ms \n",
+      "image": "assets/images/report/page-34.jpg",
+      "pdf": "materials/report-native.pdf"
+    },
+    {
+      "page": 35,
+      "text": " \n35\nScreenshot Q3.2 (1) \nMarks:    /2 \nC3 \nSeq Scan on booking_events (cost=0.00..4091.51 rows=8329 width=38) (actual \n    time=0.021..20.523 rows=8158.00 loops=1) \n  Filter: ((event_type)::text < 'Collect'::text) \n  Rows Removed by Filter: 188283 \n  Buffers: shared hit=1636 \nPlanning Time: 0.108 ms \nExecution Time: 20.725 ms \nD3 \nSeq Scan on booking_events (cost=0.00..4091.51 rows=188112 width=38) (actual \n    time=0.015..17.643 rows=188283.00 loops=1) \n  Filter: ((event_type)::text >= 'Collect'::text) \n  Rows Removed by Filter: 8158 \n  Buffers: shared hit=1636 \nPlanning Time: 0.095 ms \nExecution Time: 21.383 ms \nComments: \n    \nScreenshot Q3.2 (2) \nMarks:    /2 \nQueries C and D partition 196,441 events at this stage. C returns 8,158 rows (4.15 \npercent), while D returns 188,283 (95.85 percent). The opposite inequalities on the \nsame indexed column therefore have very different selectivity. \nC1 uses Bitmap Index Scan on IDX_EVENT_TYPE_TIME followed by Bitmap Heap Scan. \nIts cost is 196. 97..1937.08, with 8,329 rows estimated and 8,158 returned. Planning \ntakes 4.423 ms and execution 12.443 ms. It visits 1,625 exact heap blocks; total buffers \nare 1,628 shared hits and 31 reads. Selective index access costs less than scanning and \nfiltering the whole event log, even though the matching events are spread across many \nheap pages. \nD1 uses Seq Scan, with cost 0. 00..4091.51, 188,112 estimated rows and 188,283 \nactual rows. Planning takes 0.937 ms and execution 24.116 ms. It reads the heap \nthrough 1,636 shared buffer hits and removes 8,158 nonmatching rows. Returning \nalmost the whole table makes a sequential pass cheaper in the cost model than \ntraversing many index entries and then visiting almost every heap page. \nC2 retains the bitmap plan and the same cost and row estimates when sequential \nscans are suppressed. Planning takes 0.103 ms and execution 2.095 ms. All 1,659 \nbuffer accesses are hits, including 34 for the index. The change from C1 includes a \nwarmer cache; suppressing a scan type did not change the chosen access method, so \nthe faster time cannot be attributed to a new plan. \nD2 uses Bitmap Index Scan plus Bitmap Heap Scan because sequential scans are \nsuppressed. Its cost rises to 4370. 29..8357.69. It still returns 188,283 rows versus \n188,112 estimated and visits all 1,636 heap blocks, with 1,868 shared hits and 493 \nreads overall. Planning takes 0.099 ms and execution 22.959 ms. This is slightly faster \nthan D1 in this single run despite the higher estimated cost. It does not establish that \nbitmap access is generally better for this broad predicate; cache state and \nmeasurement variation affect elapsed time. \n",
+      "image": "assets/images/report/page-35.jpg",
+      "pdf": "materials/report-native.pdf"
+    },
+    {
+      "page": 36,
+      "text": " \n36\nScreenshot Q3.2 (2) \nMarks:    /2 \nC3 uses Seq Scan after index, index-only and bitmap scans are suppressed. Its cost is \n0. 00..4091.51, with 8,329 rows estimated and 8,158 returned. It discards 188,283 rows \nand has 1,636 shared hits. Planning takes 0.108 ms and execution 20.725 ms, slower \nthan both bitmap C runs. Removing the selective index option forces a full-table read \nand filter. \nD3 also uses Seq Scan, with the same cost and row estimates as D1. Planning takes \n0.095 ms and execution 21.383 ms. It returns 188,283 rows, discards 8,158 and has \n1,636 shared hits. This remains the natural access method for a query needing nearly \nevery row. \nPlanner costs are estimates in cost units, not milliseconds. The comparison shows how \nrow selectivity, page access and extra index work influence the chosen method. The \nswitches discourage scan methods; they are useful for this experiment but should not \nreplace normal planner choices in production. All four switches were restored to on. \nComments: \n   \n",
+      "image": "assets/images/report/page-36.jpg",
+      "pdf": "materials/report-native.pdf"
+    },
+    {
+      "page": 37,
+      "text": " \n37\nScreenshot Q4.1 (1) \nMarks:    /2 \nComments: \n   \n",
+      "image": "assets/images/report/page-37.jpg",
+      "pdf": "materials/report-native.pdf"
+    },
+    {
+      "page": 38,
+      "text": " \n38\nScreenshot Q4.1 (2) \nMarks:    /0.5 \nComments: \n   \n",
+      "image": "assets/images/report/page-38.jpg",
+      "pdf": "materials/report-native.pdf"
+    },
+    {
+      "page": 39,
+      "text": " \n39\nScreenshot Q4.1 (3) \nMarks:    /1 \nComments: \n   \n",
+      "image": "assets/images/report/page-39.jpg",
+      "pdf": "materials/report-native.pdf"
+    },
+    {
+      "page": 40,
+      "text": " \n40\nScreenshot Q4.1 (4) \nMarks:    /2.5 \nThe schedule is T1 BEGIN and availability read; T2 BEGIN and availability read; T2 \nReserve and COMMIT; T1 Collect attempt; trigger exception; T1 ROLLBACK. T1 initially \nsees an available car, but that answer becomes stale before its next operation. \nAt READ COMMITTED, each statement uses a fresh snapshot. The Collect attempt runs \nafter T2 has committed, so the trigger can see the committed Reserve. The trigger \norders events by event time and treats that future-dated reservation as the latest state. \nBecause it belongs to member 2, it refuses a Collect by member 1. \nAn ordinary SELECT reads without a row lock that reserves this car. Its ACCESS SHARE \nrelation lock is compatible with the other transaction's insertion, so it does not prevent \nT2 from changing the answer. T1 stays open but does not retain its first statement's \nsnapshot for later statements. In this schedule the rejection is a business-rule \nexception, with no circular lock wait. \nFor the co-operative, the person at the parking bay is refused the car even though the \nother person reserved it three days ahead. The simplified trigger makes a future \nreservation an immediate hold. Coordinating availability checks and writes would \naddress races, while interval-aware booking rules would also be needed to distinguish \navailable now from reserved later. \nComments: \n   \n",
+      "image": "assets/images/report/page-40.jpg",
+      "pdf": "materials/report-native.pdf"
+    },
+    {
+      "page": 41,
+      "text": " \n41\nScreenshot Q4.2 \nMarks:    /3 \n \n",
+      "image": "assets/images/report/page-41.jpg",
+      "pdf": "materials/report-native.pdf"
+    },
+    {
+      "page": 42,
+      "text": " \n42\nScreenshot Q4.2 \nMarks:    /3 \n \n \n",
+      "image": "assets/images/report/page-42.jpg",
+      "pdf": "materials/report-native.pdf"
+    },
+    {
+      "page": 43,
+      "text": " \n43\nScreenshot Q4.2 \nMarks:    /3 \n \nDeadlock explanation \nT1 updates VEH-0401 by 10 and holds its row lock. T2 updates VEH-0501 by 20 and holds \nthe other row lock. T1 then requests VEH-0501 and waits. While it is waiting, T2 requests \nVEH-0401, completing the cycle. Both updates cannot finish until the other transaction ends. \nPostgreSQL detects the deadlock and aborts T2 in this recorded run. T2's earlier +20 on \nVEH-0501 is undone and its locks are released. T1's waiting update resumes, returning \n122160, and T1 commits. T2's attempted COMMIT reports ROLLBACK. Final values are \nVEH-0401 = 149110 and VEH-0501 = 122160. \n",
+      "image": "assets/images/report/page-43.jpg",
+      "pdf": "materials/report-native.pdf"
+    },
+    {
+      "page": 44,
+      "text": " \n44\nScreenshot Q4.2 \nMarks:    /3 \nThe full original error is shown below and transcribed without translating its diagnostic text. \nT1's reported 116906.993 ms includes the time spent waiting while the next command was \nentered in the other window. T2's error took 1019.158 ms. These are not ordinary update \nprocessing times. \nThe wait-for graph immediately before detection has T1 -> T2 for VEH-0501 and T2 -> T1 for \nVEH-0401. Its cycle T1 -> T2 -> T1 explains why neither could proceed. The photographed \nhand drawing marks both held resources and both waiting edges. \nA consistent ascending vehicle_id lock order would prevent this cycle: every correction \ntransaction must acquire VEH-0401 before VEH-0501. A transaction blocked on the first row \nwould then hold no later row needed by its predecessor. The co-operative would pay with \nmore waiting or queuing when corrections overlap, while unrelated vehicles could still be \nprocessed concurrently. The victim can differ on a rerun, so the outcome here is based on \nthe actual screenshot. \nFull diagnostic text from the recorded error \n错误:  检测到死锁 \n描述:  进程40916 等待在事务 857 上的ShareLock; 由进程8668 阻塞. \n进程8668 等待在事务 858 上的ShareLock; 由进程40916 阻塞. \n提示:  详细信息请查看服务器日志. \n背景:  当更新关系\"vehicles\"的元组(2, 129)时 \nTechnical references \nPostgreSQL 18 Using EXPLAIN \nPostgreSQL 18 Materialized Views \nPostgreSQL 18 Indexes on Expressions \nPostgreSQL 18 Explicit Locking and Deadlocks \nComments: \n   \n",
+      "image": "assets/images/report/page-44.jpg",
+      "pdf": "materials/report-native.pdf"
+    },
+    {
+      "page": 45,
+      "text": " \n45\nScreenshot P \nMarks:    /2 \n \n \n \n \n \n \n \n \nComments: \n  \nPenalty: _______________ \nReason of the Penalty  \n(Late Submission/No Show to Tutor/Purely AI Generated Solutions): ___________ \n \nFinal Marks： ———————— / 30 \n  \n---ooo000OOO000ooo--- \n \n",
+      "image": "assets/images/report/page-45.jpg",
+      "pdf": "materials/report-native.pdf"
+    }
+  ]
+}

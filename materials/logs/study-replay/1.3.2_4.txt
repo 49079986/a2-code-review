@@ -1,0 +1,11 @@
+EXPLAIN (ANALYZE, BUFFERS) SELECT * FROM MV_ACCOUNT_LIABILITY;
+                                                      QUERY PLAN                                                      
+----------------------------------------------------------------------------------------------------------------------
+ Seq Scan on mv_account_liability  (cost=0.00..18.50 rows=850 width=68) (actual time=0.008..0.009 rows=10.00 loops=1)
+   Buffers: shared hit=1
+ Planning:
+   Buffers: shared hit=35
+ Planning Time: 0.580 ms
+ Execution Time: 0.055 ms
+(6 rows)
+

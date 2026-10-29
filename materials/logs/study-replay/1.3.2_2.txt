@@ -1,0 +1,57 @@
+EXPLAIN (ANALYZE, BUFFERS) SELECT * FROM V_ACCOUNT_LIABILITY;
+                                                                                                                   QUERY PLAN                                                                                                                    
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=389551.20..389551.22 rows=10 width=48) (actual time=47.796..47.802 rows=10.00 loops=1)
+   Buffers: shared hit=2476
+   CTE account_tree
+     ->  Recursive Union  (cost=0.00..102462.80 rows=1868540 width=8) (actual time=0.019..7.426 rows=24000.00 loops=1)
+           Storage: Memory  Maximum Storage: 860kB
+           Buffers: shared hit=556
+           ->  Seq Scan on members  (cost=0.00..518.00 rows=15600 width=8) (actual time=0.017..1.335 rows=15600.00 loops=1)
+                 Filter: (sponsor_id IS NULL)
+                 Rows Removed by Filter: 8400
+                 Buffers: shared hit=278
+           ->  Hash Join  (cost=818.00..8325.94 rows=185294 width=8) (actual time=0.542..1.166 rows=2100.00 loops=4)
+                 Hash Cond: (parent.member_id = child.sponsor_id)
+                 Buffers: shared hit=278
+                 ->  WorkTable Scan on account_tree parent  (cost=0.00..3120.00 rows=156000 width=8) (actual time=0.001..0.143 rows=6000.00 loops=4)
+                 ->  Hash  (cost=518.00..518.00 rows=24000 width=8) (actual time=2.055..2.055 rows=8400.00 loops=1)
+                       Buckets: 32768  Batches: 1  Memory Usage: 585kB
+                       Buffers: shared hit=278
+                       ->  Seq Scan on members child  (cost=0.00..518.00 rows=24000 width=8) (actual time=0.023..1.136 rows=24000.00 loops=1)
+                             Buffers: shared hit=278
+   ->  Sort  (cost=287088.40..287148.40 rows=24000 width=48) (actual time=47.794..47.797 rows=10.00 loops=1)
+         Sort Key: (sum(e.amount)) DESC, root.member_id
+         Sort Method: top-N heapsort  Memory: 26kB
+         Buffers: shared hit=2476
+         ->  HashAggregate  (cost=286269.77..286569.77 rows=24000 width=48) (actual time=44.514..47.021 rows=10175.00 loops=1)
+               Group Key: root.member_id
+               Batches: 1  Memory Usage: 4625kB
+               Buffers: shared hit=2470
+               ->  Hash Join  (cost=6274.50..270093.43 rows=3235267 width=22) (actual time=20.048..38.634 rows=30275.00 loops=1)
+                     Hash Cond: (t.member_id = e.member_id)
+                     Buffers: shared hit=2470
+                     ->  Hash Join  (cost=818.00..43094.59 rows=1868540 width=20) (actual time=3.500..16.848 rows=24000.00 loops=1)
+                           Hash Cond: (t.account_id = root.member_id)
+                           Buffers: shared hit=834
+                           ->  CTE Scan on account_tree t  (cost=0.00..37370.80 rows=1868540 width=8) (actual time=0.021..9.653 rows=24000.00 loops=1)
+                                 Storage: Memory  Maximum Storage: 1007kB
+                                 Buffers: shared hit=556
+                           ->  Hash  (cost=518.00..518.00 rows=24000 width=16) (actual time=3.436..3.436 rows=24000.00 loops=1)
+                                 Buckets: 32768  Batches: 1  Memory Usage: 1400kB
+                                 Buffers: shared hit=278
+                                 ->  Seq Scan on members root  (cost=0.00..518.00 rows=24000 width=16) (actual time=0.003..1.708 rows=24000.00 loops=1)
+                                       Buffers: shared hit=278
+                     ->  Hash  (cost=5073.70..5073.70 rows=30624 width=10) (actual time=16.502..16.504 rows=30275.00 loops=1)
+                           Buckets: 32768  Batches: 1  Memory Usage: 1557kB
+                           Buffers: shared hit=1636
+                           ->  Seq Scan on booking_events e  (cost=0.00..5073.70 rows=30624 width=10) (actual time=7.001..14.264 rows=30275.00 loops=1)
+                                 Filter: (((event_type)::text = ANY ('{Return,Incident}'::text[])) AND (event_time >= '2026-01-01 00:00:00'::timestamp without time zone) AND (event_time < '2026-07-01 00:00:00'::timestamp without time zone))
+                                 Rows Removed by Filter: 166165
+                                 Buffers: shared hit=1636
+ Planning:
+   Buffers: shared hit=374
+ Planning Time: 2.616 ms
+ Execution Time: 48.775 ms
+(52 rows)
+

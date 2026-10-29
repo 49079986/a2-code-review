@@ -1,0 +1,1526 @@
+\i 'C:/Users/yuyan/Desktop/S4/INFS 7903/A2/completed/sql/49079984_A2_1.1.1.sql'
+-- INFS7903 Assignment 2 | Yuyang Gong | 49079984
+
+CREATE VIEW V_BUSIEST_BAYS AS
+
+WITH collection_counts AS (
+
+    SELECT m.body_type, s.station_id, s.station_name,
+
+           COUNT(*) AS collections
+
+    FROM BOOKING_EVENTS e
+
+    JOIN VEHICLES v ON v.vehicle_id = e.vehicle_id
+
+    JOIN MODELS m ON m.model_code = v.model_code
+
+    JOIN STATIONS s ON s.station_id = v.station_id
+
+    WHERE e.event_type = 'Collect'
+
+    GROUP BY m.body_type, s.station_id, s.station_name
+
+), ranked_stations AS (
+
+    SELECT *, ROW_NUMBER() OVER (
+
+        PARTITION BY body_type
+
+        ORDER BY collections DESC, station_id
+
+    ) AS rn
+
+    FROM collection_counts
+
+)
+
+SELECT body_type, station_name, collections
+
+FROM ranked_stations
+
+WHERE rn = 1
+
+ORDER BY collections DESC, body_type;
+
+CREATE VIEW
+\i 'C:/Users/yuyan/Desktop/S4/INFS 7903/A2/completed/sql/49079984_A2_1.1.2.sql'
+-- INFS7903 Assignment 2 | Yuyang Gong | 49079984
+
+SELECT * FROM V_BUSIEST_BAYS;
+
+  body_type   |  station_name  | collections 
+--------------+----------------+-------------
+ Sedan        | Carindale Park |         973
+ SUV          | Chermside Park |         838
+ Hatchback    | Chermside Park |         794
+ People Mover | St Lucia Hub   |         510
+ Van          | Chermside Park |         384
+ Ute          | Carindale Park |         333
+(6 rows)
+
+EXPLAIN (ANALYZE, BUFFERS) SELECT * FROM V_BUSIEST_BAYS;
+
+                                                                                               QUERY PLAN                                                                                                
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=4784.12..4784.12 rows=2 width=32) (actual time=26.395..29.554 rows=6.00 loops=1)
+   Sort Key: ranked_stations.collections DESC, ranked_stations.body_type
+   Sort Method: quicksort  Memory: 25kB
+   Buffers: shared hit=1662
+   ->  Subquery Scan on ranked_stations  (cost=4684.53..4784.11 rows=2 width=32) (actual time=26.217..29.548 rows=6.00 loops=1)
+         Filter: (ranked_stations.rn = 1)
+         Buffers: shared hit=1662
+         ->  WindowAgg  (cost=4684.53..4779.61 rows=360 width=47) (actual time=26.216..29.546 rows=6.00 loops=1)
+               Window: w1 AS (PARTITION BY collection_counts.body_type ORDER BY collection_counts.collections, collection_counts.station_id ROWS UNBOUNDED PRECEDING)
+               Run Condition: (row_number() OVER w1 <= 1)
+               Storage: Memory  Maximum Storage: 17kB
+               Buffers: shared hit=1662
+               ->  Incremental Sort  (cost=4684.27..4772.41 rows=360 width=39) (actual time=26.209..29.526 rows=279.00 loops=1)
+                     Sort Key: collection_counts.body_type, collection_counts.collections DESC, collection_counts.station_id
+                     Presorted Key: collection_counts.body_type
+                     Full-sort Groups: 6  Sort Method: quicksort  Average Memory: 28kB  Peak Memory: 28kB
+                     Buffers: shared hit=1662
+                     ->  Subquery Scan on collection_counts  (cost=4683.87..4761.81 rows=360 width=39) (actual time=26.169..29.444 rows=279.00 loops=1)
+                           Buffers: shared hit=1662
+                           ->  Finalize GroupAggregate  (cost=4683.87..4761.81 rows=360 width=39) (actual time=26.168..29.429 rows=279.00 loops=1)
+                                 Group Key: m.body_type, s.station_id
+                                 Buffers: shared hit=1662
+                                 ->  Gather Merge  (cost=4683.87..4753.62 rows=612 width=39) (actual time=26.163..29.375 rows=558.00 loops=1)
+                                       Workers Planned: 1
+                                       Workers Launched: 1
+                                       Buffers: shared hit=1662
+                                       ->  Sort  (cost=3683.86..3684.76 rows=360 width=39) (actual time=16.850..16.858 rows=279.00 loops=2)
+                                             Sort Key: m.body_type, s.station_id
+                                             Sort Method: quicksort  Memory: 41kB
+                                             Buffers: shared hit=1662
+                                             Worker 0:  Sort Method: quicksort  Memory: 41kB
+                                             ->  Partial HashAggregate  (cost=3664.97..3668.57 rows=360 width=39) (actual time=16.736..16.752 rows=279.00 loops=2)
+                                                   Group Key: m.body_type, s.station_id
+                                                   Batches: 1  Memory Usage: 72kB
+                                                   Buffers: shared hit=1654
+                                                   Worker 0:  Batches: 1  Memory Usage: 72kB
+                                                   ->  Hash Join  (cost=32.62..3401.25 rows=35163 width=31) (actual time=0.733..13.556 rows=29769.50 loops=2)
+                                                         Hash Cond: ((v.station_id)::text = (s.station_id)::text)
+                                                         Buffers: shared hit=1654
+                                                         ->  Hash Join  (cost=30.27..3300.08 rows=35163 width=14) (actual time=0.535..10.796 rows=29769.50 loops=2)
+                                                               Hash Cond: ((v.model_code)::text = (m.model_code)::text)
+                                                               Buffers: shared hit=1652
+                                                               ->  Hash Join  (cost=27.25..3200.40 rows=35163 width=15) (actual time=0.350..8.147 rows=29769.50 loops=2)
+                                                                     Hash Cond: ((e.vehicle_id)::text = (v.vehicle_id)::text)
+                                                                     Buffers: shared hit=1650
+                                                                     ->  Parallel Seq Scan on booking_events e  (cost=0.00..3080.41 rows=35163 width=9) (actual time=0.006..5.085 rows=29769.50 loops=2)
+                                                                           Filter: ((event_type)::text = 'Collect'::text)
+                                                                           Rows Removed by Filter: 68450
+                                                                           Buffers: shared hit=1636
+                                                                     ->  Hash  (cost=16.00..16.00 rows=900 width=24) (actual time=0.338..0.339 rows=900.00 loops=2)
+                                                                           Buckets: 1024  Batches: 1  Memory Usage: 58kB
+                                                                           Buffers: shared hit=14
+                                                                           ->  Seq Scan on vehicles v  (cost=0.00..16.00 rows=900 width=24) (actual time=0.164..0.211 rows=900.00 loops=2)
+                                                                                 Buffers: shared hit=14
+                                                               ->  Hash  (cost=1.90..1.90 rows=90 width=15) (actual time=0.181..0.182 rows=90.00 loops=2)
+                                                                     Buckets: 1024  Batches: 1  Memory Usage: 13kB
+                                                                     Buffers: shared hit=2
+                                                                     ->  Seq Scan on models m  (cost=0.00..1.90 rows=90 width=15) (actual time=0.168..0.172 rows=90.00 loops=2)
+                                                                           Buffers: shared hit=2
+                                                         ->  Hash  (cost=1.60..1.60 rows=60 width=24) (actual time=0.194..0.194 rows=60.00 loops=2)
+                                                               Buckets: 1024  Batches: 1  Memory Usage: 12kB
+                                                               Buffers: shared hit=2
+                                                               ->  Seq Scan on stations s  (cost=0.00..1.60 rows=60 width=24) (actual time=0.183..0.186 rows=60.00 loops=2)
+                                                                     Buffers: shared hit=2
+ Planning:
+   Buffers: shared hit=14
+ Planning Time: 0.375 ms
+ Execution Time: 29.659 ms
+(68 rows)
+
+\i 'C:/Users/yuyan/Desktop/S4/INFS 7903/A2/completed/sql/49079984_A2_1.2.sql'
+-- INFS7903 Assignment 2 | Yuyang Gong | 49079984
+
+CREATE VIEW V_ACCOUNT_LIABILITY AS
+
+WITH RECURSIVE account_tree AS (
+
+    SELECT member_id, member_id AS account_id
+
+    FROM MEMBERS
+
+    WHERE sponsor_id IS NULL
+
+    UNION ALL
+
+    SELECT child.member_id, parent.account_id
+
+    FROM MEMBERS child
+
+    JOIN account_tree parent ON child.sponsor_id = parent.member_id
+
+)
+
+SELECT root.member_id, root.member_name,
+
+       SUM(e.amount) AS total_amount
+
+FROM account_tree t
+
+JOIN MEMBERS root ON root.member_id = t.account_id
+
+JOIN BOOKING_EVENTS e ON e.member_id = t.member_id
+
+WHERE e.event_type IN ('Return', 'Incident')
+
+  AND e.event_time >= TIMESTAMP '2026-01-01'
+
+  AND e.event_time <  TIMESTAMP '2026-07-01'
+
+GROUP BY root.member_id, root.member_name
+
+ORDER BY total_amount DESC, root.member_id
+
+LIMIT 10;
+
+CREATE VIEW
+\i 'C:/Users/yuyan/Desktop/S4/INFS 7903/A2/completed/sql/49079984_A2_1.3.1.sql'
+-- INFS7903 Assignment 2 | Yuyang Gong | 49079984
+
+CREATE MATERIALIZED VIEW MV_ACCOUNT_LIABILITY AS
+
+WITH RECURSIVE account_tree AS (
+
+    SELECT member_id, member_id AS account_id
+
+    FROM MEMBERS
+
+    WHERE sponsor_id IS NULL
+
+    UNION ALL
+
+    SELECT child.member_id, parent.account_id
+
+    FROM MEMBERS child
+
+    JOIN account_tree parent ON child.sponsor_id = parent.member_id
+
+)
+
+SELECT root.member_id, root.member_name,
+
+       SUM(e.amount) AS total_amount
+
+FROM account_tree t
+
+JOIN MEMBERS root ON root.member_id = t.account_id
+
+JOIN BOOKING_EVENTS e ON e.member_id = t.member_id
+
+WHERE e.event_type IN ('Return', 'Incident')
+
+  AND e.event_time >= TIMESTAMP '2026-01-01'
+
+  AND e.event_time <  TIMESTAMP '2026-07-01'
+
+GROUP BY root.member_id, root.member_name
+
+ORDER BY total_amount DESC, root.member_id
+
+LIMIT 10;
+
+SELECT 10
+\i 'C:/Users/yuyan/Desktop/S4/INFS 7903/A2/completed/sql/49079984_A2_1.3.2.sql'
+-- INFS7903 Assignment 2 | Yuyang Gong | 49079984
+
+-- Query A
+
+SELECT * FROM V_ACCOUNT_LIABILITY;
+
+ member_id |  member_name   | total_amount 
+-----------+----------------+--------------
+     14881 | Ana Lopez      |      6214.77
+     13572 | Samuel Choi    |      5629.17
+       414 | Nikau Anderson |      4903.24
+     12727 | Rohan Wilson   |      4745.38
+      6147 | Lily Kim       |      4459.37
+      6558 | Tomas Ali      |      4387.82
+      5543 | Aisha Robinson |      4025.80
+     10682 | Rohan Novak    |      3965.63
+     11445 | Minh Bianchi   |      3864.68
+       397 | Nikau White    |      3834.32
+(10 rows)
+
+EXPLAIN (ANALYZE, BUFFERS) SELECT * FROM V_ACCOUNT_LIABILITY;
+
+                                                                                                                   QUERY PLAN                                                                                                                    
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=371929.85..371929.87 rows=10 width=48) (actual time=40.126..40.131 rows=10.00 loops=1)
+   Buffers: shared hit=2470
+   CTE account_tree
+     ->  Recursive Union  (cost=0.00..102462.80 rows=1868540 width=8) (actual time=0.013..6.863 rows=24000.00 loops=1)
+           Storage: Memory  Maximum Storage: 860kB
+           Buffers: shared hit=556
+           ->  Seq Scan on members  (cost=0.00..518.00 rows=15600 width=8) (actual time=0.012..1.294 rows=15600.00 loops=1)
+                 Filter: (sponsor_id IS NULL)
+                 Rows Removed by Filter: 8400
+                 Buffers: shared hit=278
+           ->  Hash Join  (cost=818.00..8325.94 rows=185294 width=8) (actual time=0.503..1.040 rows=2100.00 loops=4)
+                 Hash Cond: (parent.member_id = child.sponsor_id)
+                 Buffers: shared hit=278
+                 ->  WorkTable Scan on account_tree parent  (cost=0.00..3120.00 rows=156000 width=8) (actual time=0.000..0.143 rows=6000.00 loops=4)
+                 ->  Hash  (cost=518.00..518.00 rows=24000 width=8) (actual time=1.945..1.945 rows=8400.00 loops=1)
+                       Buckets: 32768  Batches: 1  Memory Usage: 585kB
+                       Buffers: shared hit=278
+                       ->  Seq Scan on members child  (cost=0.00..518.00 rows=24000 width=8) (actual time=0.016..1.079 rows=24000.00 loops=1)
+                             Buffers: shared hit=278
+   ->  Sort  (cost=269467.05..269527.05 rows=24000 width=48) (actual time=40.126..40.128 rows=10.00 loops=1)
+         Sort Key: (sum(e.amount)) DESC, root.member_id
+         Sort Method: top-N heapsort  Memory: 26kB
+         Buffers: shared hit=2470
+         ->  HashAggregate  (cost=268648.42..268948.42 rows=24000 width=48) (actual time=37.235..39.348 rows=10175.00 loops=1)
+               Group Key: root.member_id
+               Batches: 1  Memory Usage: 4625kB
+               Buffers: shared hit=2470
+               ->  Hash Join  (cost=6269.46..252894.28 rows=3150828 width=22) (actual time=15.818..32.016 rows=30275.00 loops=1)
+                     Hash Cond: (t.member_id = e.member_id)
+                     Buffers: shared hit=2470
+                     ->  Hash Join  (cost=818.00..43094.59 rows=1868540 width=20) (actual time=2.617..14.992 rows=24000.00 loops=1)
+                           Hash Cond: (t.account_id = root.member_id)
+                           Buffers: shared hit=834
+                           ->  CTE Scan on account_tree t  (cost=0.00..37370.80 rows=1868540 width=8) (actual time=0.015..9.149 rows=24000.00 loops=1)
+                                 Storage: Memory  Maximum Storage: 1007kB
+                                 Buffers: shared hit=556
+                           ->  Hash  (cost=518.00..518.00 rows=24000 width=16) (actual time=2.570..2.570 rows=24000.00 loops=1)
+                                 Buckets: 32768  Batches: 1  Memory Usage: 1400kB
+                                 Buffers: shared hit=278
+                                 ->  Seq Scan on members root  (cost=0.00..518.00 rows=24000 width=16) (actual time=0.002..1.135 rows=24000.00 loops=1)
+                                       Buffers: shared hit=278
+                     ->  Hash  (cost=5073.70..5073.70 rows=30221 width=10) (actual time=13.158..13.158 rows=30275.00 loops=1)
+                           Buckets: 32768  Batches: 1  Memory Usage: 1557kB
+                           Buffers: shared hit=1636
+                           ->  Seq Scan on booking_events e  (cost=0.00..5073.70 rows=30221 width=10) (actual time=4.760..10.947 rows=30275.00 loops=1)
+                                 Filter: (((event_type)::text = ANY ('{Return,Incident}'::text[])) AND (event_time >= '2026-01-01 00:00:00'::timestamp without time zone) AND (event_time < '2026-07-01 00:00:00'::timestamp without time zone))
+                                 Rows Removed by Filter: 166165
+                                 Buffers: shared hit=1636
+ Planning Time: 0.216 ms
+ Execution Time: 40.974 ms
+(50 rows)
+
+-- Query B
+
+SELECT * FROM MV_ACCOUNT_LIABILITY;
+
+ member_id |  member_name   | total_amount 
+-----------+----------------+--------------
+     14881 | Ana Lopez      |      6214.77
+     13572 | Samuel Choi    |      5629.17
+       414 | Nikau Anderson |      4903.24
+     12727 | Rohan Wilson   |      4745.38
+      6147 | Lily Kim       |      4459.37
+      6558 | Tomas Ali      |      4387.82
+      5543 | Aisha Robinson |      4025.80
+     10682 | Rohan Novak    |      3965.63
+     11445 | Minh Bianchi   |      3864.68
+       397 | Nikau White    |      3834.32
+(10 rows)
+
+EXPLAIN (ANALYZE, BUFFERS) SELECT * FROM MV_ACCOUNT_LIABILITY;
+
+                                                      QUERY PLAN                                                      
+----------------------------------------------------------------------------------------------------------------------
+ Seq Scan on mv_account_liability  (cost=0.00..18.50 rows=850 width=68) (actual time=0.004..0.005 rows=10.00 loops=1)
+   Buffers: shared hit=1
+ Planning Time: 0.024 ms
+ Execution Time: 0.009 ms
+(4 rows)
+
+\i 'C:/Users/yuyan/Desktop/S4/INFS 7903/A2/completed/sql/49079984_A2_1.3.3.sql'
+-- INFS7903 Assignment 2 | Yuyang Gong | 49079984
+
+INSERT INTO BOOKING_EVENTS (member_id, vehicle_id, event_type, event_time, amount)
+
+SELECT member_id, 'VEH-0001', 'Incident', TIMESTAMP '2026-05-04 09:15:00', 90000.00
+
+FROM MEMBERS WHERE sponsor_id IS NOT NULL ORDER BY member_id DESC LIMIT 1;
+
+INSERT 0 1
+-- Query A reflects the inserted charge immediately.
+
+SELECT * FROM V_ACCOUNT_LIABILITY;
+
+ member_id |  member_name   | total_amount 
+-----------+----------------+--------------
+     13943 | Tuan Haddad    |     90673.75
+     14881 | Ana Lopez      |      6214.77
+     13572 | Samuel Choi    |      5629.17
+       414 | Nikau Anderson |      4903.24
+     12727 | Rohan Wilson   |      4745.38
+      6147 | Lily Kim       |      4459.37
+      6558 | Tomas Ali      |      4387.82
+      5543 | Aisha Robinson |      4025.80
+     10682 | Rohan Novak    |      3965.63
+     11445 | Minh Bianchi   |      3864.68
+(10 rows)
+
+-- Query B still contains its stored result.
+
+SELECT * FROM MV_ACCOUNT_LIABILITY;
+
+ member_id |  member_name   | total_amount 
+-----------+----------------+--------------
+     14881 | Ana Lopez      |      6214.77
+     13572 | Samuel Choi    |      5629.17
+       414 | Nikau Anderson |      4903.24
+     12727 | Rohan Wilson   |      4745.38
+      6147 | Lily Kim       |      4459.37
+      6558 | Tomas Ali      |      4387.82
+      5543 | Aisha Robinson |      4025.80
+     10682 | Rohan Novak    |      3965.63
+     11445 | Minh Bianchi   |      3864.68
+       397 | Nikau White    |      3834.32
+(10 rows)
+
+REFRESH MATERIALIZED VIEW MV_ACCOUNT_LIABILITY;
+
+REFRESH MATERIALIZED VIEW
+-- Query B after refresh.
+
+SELECT * FROM MV_ACCOUNT_LIABILITY;
+
+ member_id |  member_name   | total_amount 
+-----------+----------------+--------------
+     13943 | Tuan Haddad    |     90673.75
+     14881 | Ana Lopez      |      6214.77
+     13572 | Samuel Choi    |      5629.17
+       414 | Nikau Anderson |      4903.24
+     12727 | Rohan Wilson   |      4745.38
+      6147 | Lily Kim       |      4459.37
+      6558 | Tomas Ali      |      4387.82
+      5543 | Aisha Robinson |      4025.80
+     10682 | Rohan Novak    |      3965.63
+     11445 | Minh Bianchi   |      3864.68
+(10 rows)
+
+\i 'C:/Users/yuyan/Desktop/S4/INFS 7903/A2/completed/sql/49079984_A2_2.1.1.sql'
+-- INFS7903 Assignment 2 | Yuyang Gong | 49079984
+
+CREATE INDEX IDX_EVENT_TYPE_TIME
+
+ON BOOKING_EVENTS (event_type, event_time);
+
+CREATE INDEX
+\i 'C:/Users/yuyan/Desktop/S4/INFS 7903/A2/completed/sql/49079984_A2_2.1.2.sql'
+-- INFS7903 Assignment 2 | Yuyang Gong | 49079984
+
+SELECT * FROM V_BUSIEST_BAYS;
+
+  body_type   |  station_name  | collections 
+--------------+----------------+-------------
+ Sedan        | Carindale Park |         973
+ SUV          | Chermside Park |         838
+ Hatchback    | Chermside Park |         794
+ People Mover | St Lucia Hub   |         510
+ Van          | Chermside Park |         384
+ Ute          | Carindale Park |         333
+(6 rows)
+
+EXPLAIN (ANALYZE, BUFFERS) SELECT * FROM V_BUSIEST_BAYS;
+
+                                                                                               QUERY PLAN                                                                                                
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=4784.12..4784.13 rows=2 width=32) (actual time=25.576..28.614 rows=6.00 loops=1)
+   Sort Key: ranked_stations.collections DESC, ranked_stations.body_type
+   Sort Method: quicksort  Memory: 25kB
+   Buffers: shared hit=1662
+   ->  Subquery Scan on ranked_stations  (cost=4684.54..4784.11 rows=2 width=32) (actual time=25.400..28.611 rows=6.00 loops=1)
+         Filter: (ranked_stations.rn = 1)
+         Buffers: shared hit=1662
+         ->  WindowAgg  (cost=4684.54..4779.61 rows=360 width=47) (actual time=25.399..28.609 rows=6.00 loops=1)
+               Window: w1 AS (PARTITION BY collection_counts.body_type ORDER BY collection_counts.collections, collection_counts.station_id ROWS UNBOUNDED PRECEDING)
+               Run Condition: (row_number() OVER w1 <= 1)
+               Storage: Memory  Maximum Storage: 17kB
+               Buffers: shared hit=1662
+               ->  Incremental Sort  (cost=4684.27..4772.41 rows=360 width=39) (actual time=25.388..28.585 rows=279.00 loops=1)
+                     Sort Key: collection_counts.body_type, collection_counts.collections DESC, collection_counts.station_id
+                     Presorted Key: collection_counts.body_type
+                     Full-sort Groups: 6  Sort Method: quicksort  Average Memory: 28kB  Peak Memory: 28kB
+                     Buffers: shared hit=1662
+                     ->  Subquery Scan on collection_counts  (cost=4683.87..4761.81 rows=360 width=39) (actual time=25.344..28.496 rows=279.00 loops=1)
+                           Buffers: shared hit=1662
+                           ->  Finalize GroupAggregate  (cost=4683.87..4761.81 rows=360 width=39) (actual time=25.343..28.481 rows=279.00 loops=1)
+                                 Group Key: m.body_type, s.station_id
+                                 Buffers: shared hit=1662
+                                 ->  Gather Merge  (cost=4683.87..4753.62 rows=612 width=39) (actual time=25.338..28.430 rows=558.00 loops=1)
+                                       Workers Planned: 1
+                                       Workers Launched: 1
+                                       Buffers: shared hit=1662
+                                       ->  Sort  (cost=3683.86..3684.76 rows=360 width=39) (actual time=16.125..16.133 rows=279.00 loops=2)
+                                             Sort Key: m.body_type, s.station_id
+                                             Sort Method: quicksort  Memory: 41kB
+                                             Buffers: shared hit=1662
+                                             Worker 0:  Sort Method: quicksort  Memory: 41kB
+                                             ->  Partial HashAggregate  (cost=3664.98..3668.58 rows=360 width=39) (actual time=16.009..16.027 rows=279.00 loops=2)
+                                                   Group Key: m.body_type, s.station_id
+                                                   Batches: 1  Memory Usage: 72kB
+                                                   Buffers: shared hit=1654
+                                                   Worker 0:  Batches: 1  Memory Usage: 72kB
+                                                   ->  Hash Join  (cost=32.62..3401.26 rows=35163 width=31) (actual time=0.547..12.871 rows=29769.50 loops=2)
+                                                         Hash Cond: ((v.station_id)::text = (s.station_id)::text)
+                                                         Buffers: shared hit=1654
+                                                         ->  Hash Join  (cost=30.27..3300.08 rows=35163 width=14) (actual time=0.365..10.222 rows=29769.50 loops=2)
+                                                               Hash Cond: ((v.model_code)::text = (m.model_code)::text)
+                                                               Buffers: shared hit=1652
+                                                               ->  Hash Join  (cost=27.25..3200.41 rows=35163 width=15) (actual time=0.229..7.634 rows=29769.50 loops=2)
+                                                                     Hash Cond: ((e.vehicle_id)::text = (v.vehicle_id)::text)
+                                                                     Buffers: shared hit=1650
+                                                                     ->  Parallel Seq Scan on booking_events e  (cost=0.00..3080.42 rows=35163 width=9) (actual time=0.007..4.774 rows=29769.50 loops=2)
+                                                                           Filter: ((event_type)::text = 'Collect'::text)
+                                                                           Rows Removed by Filter: 68451
+                                                                           Buffers: shared hit=1636
+                                                                     ->  Hash  (cost=16.00..16.00 rows=900 width=24) (actual time=0.217..0.217 rows=900.00 loops=2)
+                                                                           Buckets: 1024  Batches: 1  Memory Usage: 58kB
+                                                                           Buffers: shared hit=14
+                                                                           ->  Seq Scan on vehicles v  (cost=0.00..16.00 rows=900 width=24) (actual time=0.108..0.152 rows=900.00 loops=2)
+                                                                                 Buffers: shared hit=14
+                                                               ->  Hash  (cost=1.90..1.90 rows=90 width=15) (actual time=0.131..0.132 rows=90.00 loops=2)
+                                                                     Buckets: 1024  Batches: 1  Memory Usage: 13kB
+                                                                     Buffers: shared hit=2
+                                                                     ->  Seq Scan on models m  (cost=0.00..1.90 rows=90 width=15) (actual time=0.120..0.123 rows=90.00 loops=2)
+                                                                           Buffers: shared hit=2
+                                                         ->  Hash  (cost=1.60..1.60 rows=60 width=24) (actual time=0.178..0.178 rows=60.00 loops=2)
+                                                               Buckets: 1024  Batches: 1  Memory Usage: 12kB
+                                                               Buffers: shared hit=2
+                                                               ->  Seq Scan on stations s  (cost=0.00..1.60 rows=60 width=24) (actual time=0.168..0.171 rows=60.00 loops=2)
+                                                                     Buffers: shared hit=2
+ Planning:
+   Buffers: shared hit=14
+ Planning Time: 0.329 ms
+ Execution Time: 28.702 ms
+(68 rows)
+
+\i 'C:/Users/yuyan/Desktop/S4/INFS 7903/A2/completed/sql/49079984_A2_2.1.3.sql'
+-- INFS7903 Assignment 2 | Yuyang Gong | 49079984
+
+SELECT count(*), sum(amount) FROM BOOKING_EVENTS
+
+WHERE event_type = 'Incident'
+
+  AND event_time >= TIMESTAMP '2026-03-01'
+
+  AND event_time <  TIMESTAMP '2026-04-01';
+
+ count |   sum    
+-------+----------
+   116 | 86382.67
+(1 row)
+
+EXPLAIN (ANALYZE, BUFFERS) SELECT count(*), sum(amount) FROM BOOKING_EVENTS
+
+WHERE event_type = 'Incident'
+
+  AND event_time >= TIMESTAMP '2026-03-01'
+
+  AND event_time <  TIMESTAMP '2026-04-01';
+
+                                                                                                    QUERY PLAN                                                                                                    
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Aggregate  (cost=371.45..371.46 rows=1 width=40) (actual time=0.044..0.044 rows=1.00 loops=1)
+   Buffers: shared hit=82
+   ->  Bitmap Heap Scan on booking_events  (cost=5.91..370.87 rows=117 width=6) (actual time=0.018..0.036 rows=116.00 loops=1)
+         Recheck Cond: (((event_type)::text = 'Incident'::text) AND (event_time >= '2026-03-01 00:00:00'::timestamp without time zone) AND (event_time < '2026-04-01 00:00:00'::timestamp without time zone))
+         Heap Blocks: exact=79
+         Buffers: shared hit=82
+         ->  Bitmap Index Scan on idx_event_type_time  (cost=0.00..5.88 rows=117 width=0) (actual time=0.011..0.011 rows=116.00 loops=1)
+               Index Cond: (((event_type)::text = 'Incident'::text) AND (event_time >= '2026-03-01 00:00:00'::timestamp without time zone) AND (event_time < '2026-04-01 00:00:00'::timestamp without time zone))
+               Index Searches: 1
+               Buffers: shared hit=3
+ Planning Time: 0.051 ms
+ Execution Time: 0.056 ms
+(12 rows)
+
+\i 'C:/Users/yuyan/Desktop/S4/INFS 7903/A2/completed/sql/49079984_A2_2.2.1.sql'
+-- INFS7903 Assignment 2 | Yuyang Gong | 49079984
+
+SELECT LOWER(SPLIT_PART(email, '@', 2)) AS provider_domain,
+
+       COUNT(*) AS member_count
+
+FROM MEMBERS
+
+GROUP BY LOWER(SPLIT_PART(email, '@', 2))
+
+ORDER BY member_count DESC, provider_domain;
+
+ provider_domain  | member_count 
+------------------+--------------
+ gmail.com        |         8164
+ outlook.com      |         3388
+ hotmail.com      |         2200
+ yahoo.com.au     |         1937
+ bigpond.com      |         1686
+ icloud.com       |         1652
+ uqconnect.edu.au |         1486
+ protonmail.com   |         1165
+ optusnet.com.au  |          901
+ iinet.net.au     |          733
+ tpg.com.au       |          440
+ exemail.com.au   |          248
+(12 rows)
+
+\i 'C:/Users/yuyan/Desktop/S4/INFS 7903/A2/completed/sql/49079984_A2_2.2.2.sql'
+-- INFS7903 Assignment 2 | Yuyang Gong | 49079984
+
+EXPLAIN (ANALYZE, BUFFERS) SELECT LOWER(SPLIT_PART(email, '@', 2)) AS provider_domain,
+
+       COUNT(*) AS member_count
+
+FROM MEMBERS
+
+GROUP BY LOWER(SPLIT_PART(email, '@', 2))
+
+ORDER BY member_count DESC, provider_domain;
+
+                                                        QUERY PLAN                                                         
+---------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=2864.09..2924.09 rows=24000 width=40) (actual time=4.963..4.963 rows=12.00 loops=1)
+   Sort Key: (count(*)) DESC, (lower(split_part((email)::text, '@'::text, 2)))
+   Sort Method: quicksort  Memory: 25kB
+   Buffers: shared hit=278
+   ->  HashAggregate  (cost=758.00..1118.00 rows=24000 width=40) (actual time=4.933..4.954 rows=12.00 loops=1)
+         Group Key: lower(split_part((email)::text, '@'::text, 2))
+         Batches: 1  Memory Usage: 545kB
+         Buffers: shared hit=278
+         ->  Seq Scan on members  (cost=0.00..638.00 rows=24000 width=32) (actual time=0.014..3.152 rows=24000.00 loops=1)
+               Buffers: shared hit=278
+ Planning Time: 0.094 ms
+ Execution Time: 5.113 ms
+(12 rows)
+
+\i 'C:/Users/yuyan/Desktop/S4/INFS 7903/A2/completed/sql/49079984_A2_2.2.4.sql'
+-- INFS7903 Assignment 2 | Yuyang Gong | 49079984
+
+CREATE INDEX IDX_MEMBER_DOMAIN
+
+ON MEMBERS (LOWER(SPLIT_PART(email, '@', 2)));
+
+CREATE INDEX
+\i 'C:/Users/yuyan/Desktop/S4/INFS 7903/A2/completed/sql/49079984_A2_2.2.5.sql'
+-- INFS7903 Assignment 2 | Yuyang Gong | 49079984
+
+EXPLAIN (ANALYZE, BUFFERS) SELECT LOWER(SPLIT_PART(email, '@', 2)) AS provider_domain,
+
+       COUNT(*) AS member_count
+
+FROM MEMBERS
+
+GROUP BY LOWER(SPLIT_PART(email, '@', 2))
+
+ORDER BY member_count DESC, provider_domain;
+
+                                                        QUERY PLAN                                                         
+---------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=2864.09..2924.09 rows=24000 width=40) (actual time=4.225..4.226 rows=12.00 loops=1)
+   Sort Key: (count(*)) DESC, (lower(split_part((email)::text, '@'::text, 2)))
+   Sort Method: quicksort  Memory: 25kB
+   Buffers: shared hit=278
+   ->  HashAggregate  (cost=758.00..1118.00 rows=24000 width=40) (actual time=4.195..4.217 rows=12.00 loops=1)
+         Group Key: lower(split_part((email)::text, '@'::text, 2))
+         Batches: 1  Memory Usage: 545kB
+         Buffers: shared hit=278
+         ->  Seq Scan on members  (cost=0.00..638.00 rows=24000 width=32) (actual time=0.011..2.670 rows=24000.00 loops=1)
+               Buffers: shared hit=278
+ Planning:
+   Buffers: shared hit=21 read=1
+ Planning Time: 0.889 ms
+ Execution Time: 4.338 ms
+(14 rows)
+
+SELECT member_id, member_name, email FROM MEMBERS
+
+WHERE LOWER(SPLIT_PART(email, '@', 2)) = 'exemail.com.au';
+
+ member_id |     member_name     |                 email                  
+-----------+---------------------+----------------------------------------
+         3 | Elena O'Brien       | elena.obrien3@exemail.com.au
+        21 | Minh Sullivan       | minh.sullivan21@exemail.com.au
+       123 | Amelia Kelly        | amelia.kelly123@exemail.com.au
+       479 | Kiri Liu            | kiri.liu479@exemail.com.au
+       507 | Cillian Dubois      | Cillian.dubois507@Exemail.com.au
+       526 | Marcus Novak        | marcus.novak526@exemail.com.au
+       622 | Sanjay Ivanova      | sanjay.ivanova622@exemail.com.au
+       678 | Lucas Larsen        | lucas.larsen678@exemail.com.au
+       806 | Thomas Walker       | thomas.walker806@exemail.com.au
+       833 | Minh Chen           | Minh.chen833@Exemail.com.au
+       849 | Hiro Hayes          | hiro.hayes849@exemail.com.au
+       926 | Katya Kelly         | katya.kelly926@exemail.com.au
+      1010 | Pablo Santos        | Pablo.santos1010@Exemail.com.au
+      1189 | Ruby Lee            | ruby.lee1189@exemail.com.au
+      1255 | Ana Okafor          | ana.okafor1255@exemail.com.au
+      1386 | Dmitri Ryan         | Dmitri.ryan1386@Exemail.com.au
+      1402 | Aria Tupou          | aria.tupou1402@exemail.com.au
+      1616 | Amelia Silva        | amelia.silva1616@exemail.com.au
+      1684 | Ingrid Lopez        | ingrid.lopez1684@exemail.com.au
+      1756 | Chi Mensah          | chi.mensah1756@exemail.com.au
+      2110 | Mateo Johnson       | mateo.johnson2110@exemail.com.au
+      2213 | Yusuf White         | yusuf.white2213@exemail.com.au
+      2264 | Priya Virtanen      | priya.virtanen2264@exemail.com.au
+      2275 | Priya Ivanova       | priya.ivanova2275@exemail.com.au
+      2391 | Max Tupou           | max.tupou2391@exemail.com.au
+      2451 | Marcus Ryan         | Marcus.ryan2451@Exemail.com.au
+      2711 | Aria Zhang          | Aria.zhang2711@Exemail.com.au
+      2783 | Samuel Tran         | samuel.tran2783@exemail.com.au
+      2809 | Rafael White        | rafael.white2809@exemail.com.au
+      2821 | Archie Williams     | archie.williams2821@exemail.com.au
+      2830 | Linh Tran           | linh.tran2830@exemail.com.au
+      2963 | Declan Muller       | Declan.muller2963@Exemail.com.au
+      3206 | William Wilson      | william.wilson3206@exemail.com.au
+      3246 | Diego Park          | diego.park3246@exemail.com.au
+      3362 | Chi Dubois          | chi.dubois3362@exemail.com.au
+      3426 | Amelia Garcia       | amelia.garcia3426@exemail.com.au
+      3488 | Aisha Ngata         | aisha.ngata3488@exemail.com.au
+      3547 | Willow Choi         | willow.choi3547@exemail.com.au
+      3643 | Noah Kowal          | Noah.kowal3643@Exemail.com.au
+      3713 | Yuki Johnson        | yuki.johnson3713@exemail.com.au
+      3775 | Max Anderson        | Max.anderson3775@Exemail.com.au
+      3790 | Lars Rossi          | lars.rossi3790@exemail.com.au
+      3808 | Ana Macleod         | ana.macleod3808@exemail.com.au
+      3985 | Leo Okafor          | leo.okafor3985@exemail.com.au
+      4089 | Tomas Rossi         | tomas.rossi4089@exemail.com.au
+      4103 | Chi Walker          | chi.walker4103@exemail.com.au
+      4242 | Yusuf Bianchi       | yusuf.bianchi4242@exemail.com.au
+      4497 | Wei Rossi           | wei.rossi4497@exemail.com.au
+      4620 | Leo Singh           | leo.singh4620@exemail.com.au
+      4788 | Linh Sato           | linh.sato4788@exemail.com.au
+      4849 | Amelia Virtanen     | amelia.virtanen4849@exemail.com.au
+      4890 | Sienna Tanaka       | sienna.tanaka4890@exemail.com.au
+      4975 | Oliver Gallagher    | oliver.gallagher4975@exemail.com.au
+      5153 | Henry Ivanova       | henry.ivanova5153@exemail.com.au
+      5241 | Elena Jones         | elena.jones5241@exemail.com.au
+      5252 | Matilda Kim         | matilda.kim5252@exemail.com.au
+      5261 | Valeria Bianchi     | valeria.bianchi5261@exemail.com.au
+      5319 | Kiri Tran           | kiri.tran5319@exemail.com.au
+      5605 | Diego Larsen        | diego.larsen5605@exemail.com.au
+      5792 | Lars Dimitriou      | Lars.dimitriou5792@Exemail.com.au
+      5801 | Jarrah Ivanova      | Jarrah.ivanova5801@Exemail.com.au
+      5854 | Ingrid Kim          | ingrid.kim5854@exemail.com.au
+      5912 | Lily Muller         | Lily.muller5912@Exemail.com.au
+      5954 | Oliver Taylor       | Oliver.taylor5954@Exemail.com.au
+      6152 | Noah Park           | noah.park6152@exemail.com.au
+      6165 | Noah Sato           | noah.sato6165@exemail.com.au
+      6417 | Tuan Williams       | Tuan.williams6417@Exemail.com.au
+      6737 | Willow Fifita       | willow.fifita6737@exemail.com.au
+      6808 | Fatima Reid         | fatima.reid6808@exemail.com.au
+      6868 | Linh Sullivan       | Linh.sullivan6868@Exemail.com.au
+      6870 | Max Mensah          | Max.mensah6870@Exemail.com.au
+      6993 | Aisha Silva         | aisha.silva6993@exemail.com.au
+      7006 | Poppy Ali           | poppy.ali7006@exemail.com.au
+      7013 | Leo O'Brien         | leo.obrien7013@exemail.com.au
+      7103 | Dmitri Kowal        | Dmitri.kowal7103@Exemail.com.au
+      7186 | Poppy Rossi         | poppy.rossi7186@exemail.com.au
+      7352 | Chloe Smith         | chloe.smith7352@exemail.com.au
+      7488 | Harper Singh        | harper.singh7488@exemail.com.au
+      7538 | Sanjay Kowalski     | sanjay.kowalski7538@exemail.com.au
+      7575 | Charlotte Hayes     | charlotte.hayes7575@exemail.com.au
+      7769 | Hiro Silva          | hiro.silva7769@exemail.com.au
+      8029 | Yusuf Barnes        | Yusuf.barnes8029@Exemail.com.au
+      8052 | Valeria Williams    | valeria.williams8052@exemail.com.au
+      8108 | Fatima Novak        | fatima.novak8108@exemail.com.au
+      8119 | Angus Muller        | angus.muller8119@exemail.com.au
+      8132 | Sophie Kim          | sophie.kim8132@exemail.com.au
+      8289 | Fatima Papadopoulos | fatima.papadopoulos8289@exemail.com.au
+      8493 | Max Kowal           | max.kowal8493@exemail.com.au
+      8568 | Marcus Mensah       | marcus.mensah8568@exemail.com.au
+      8680 | Chloe Hoang         | chloe.hoang8680@exemail.com.au
+      8795 | Hamish Kowalski     | Hamish.kowalski8795@Exemail.com.au
+      8940 | Max Mensah          | max.mensah8940@exemail.com.au
+      8944 | Diego Rahman        | diego.rahman8944@exemail.com.au
+      8974 | Sophie Kelly        | Sophie.kelly8974@Exemail.com.au
+      9003 | Samuel Virtanen     | samuel.virtanen9003@exemail.com.au
+      9007 | Isaac Kim           | isaac.kim9007@exemail.com.au
+      9082 | Lucas Papadopoulos  | lucas.papadopoulos9082@exemail.com.au
+      9182 | Oliver Okafor       | oliver.okafor9182@exemail.com.au
+      9259 | Ava Kowal           | ava.kowal9259@exemail.com.au
+      9269 | Cillian Thompson    | cillian.thompson9269@exemail.com.au
+      9644 | Sophie Kowalski     | sophie.kowalski9644@exemail.com.au
+     10185 | Priya Lee           | Priya.lee10185@Exemail.com.au
+     10226 | Sophie Pham         | sophie.pham10226@exemail.com.au
+     10344 | Ella Santos         | ella.santos10344@exemail.com.au
+     10362 | Willow Rossi        | Willow.rossi10362@Exemail.com.au
+     10503 | Sione Park          | Sione.park10503@Exemail.com.au
+     10541 | Nadia Haddad        | nadia.haddad10541@exemail.com.au
+     10565 | Freya Smith         | freya.smith10565@exemail.com.au
+     10670 | Anjali Wilson       | anjali.wilson10670@exemail.com.au
+     10855 | Rohan Brown         | rohan.brown10855@exemail.com.au
+     10937 | Mateo Kowalski      | Mateo.kowalski10937@Exemail.com.au
+     11099 | Leo Macleod         | Leo.macleod11099@Exemail.com.au
+     11111 | Max Moreau          | max.moreau11111@exemail.com.au
+     11159 | Chloe Novak         | chloe.novak11159@exemail.com.au
+     11175 | Sienna Anderson     | Sienna.anderson11175@Exemail.com.au
+     11222 | Aria Campbell       | Aria.campbell11222@Exemail.com.au
+     11272 | Oliver Patel        | oliver.patel11272@exemail.com.au
+     11336 | Samuel Wilson       | samuel.wilson11336@exemail.com.au
+     11366 | Jack Ferrari        | jack.ferrari11366@exemail.com.au
+     11403 | Tuan Schmidt        | Tuan.schmidt11403@Exemail.com.au
+     11485 | Amelia Walker       | Amelia.walker11485@Exemail.com.au
+     11492 | Jack Lee            | jack.lee11492@exemail.com.au
+     11548 | Isaac Reid          | isaac.reid11548@exemail.com.au
+     11596 | Thomas Ngata        | thomas.ngata11596@exemail.com.au
+     11668 | Grace Gallagher     | grace.gallagher11668@exemail.com.au
+     11921 | Oliver Jones        | Oliver.jones11921@Exemail.com.au
+     12000 | Amelia Doyle        | amelia.doyle12000@exemail.com.au
+     12123 | Isaac Kaur          | isaac.kaur12123@exemail.com.au
+     12132 | Angus Tanaka        | angus.tanaka12132@exemail.com.au
+     12202 | Willow Barnes       | willow.barnes12202@exemail.com.au
+     12227 | Lars Thompson       | lars.thompson12227@exemail.com.au
+     12231 | Cillian Ferrari     | cillian.ferrari12231@exemail.com.au
+     12260 | Henry Wilson        | Henry.wilson12260@Exemail.com.au
+     12424 | Mateo Garcia        | mateo.garcia12424@exemail.com.au
+     12537 | Dmitri Costa        | dmitri.costa12537@exemail.com.au
+     12578 | Ella Chen           | ella.chen12578@exemail.com.au
+     12582 | Noah Fifita         | Noah.fifita12582@Exemail.com.au
+     12631 | Ruby Hoang          | ruby.hoang12631@exemail.com.au
+     12734 | Nadia Macleod       | nadia.macleod12734@exemail.com.au
+     12780 | Thomas Johnson      | thomas.johnson12780@exemail.com.au
+     13030 | Fatima Wilson       | fatima.wilson13030@exemail.com.au
+     13068 | Ingrid Kowalski     | ingrid.kowalski13068@exemail.com.au
+     13170 | Mateo Patel         | mateo.patel13170@exemail.com.au
+     13279 | Ana Pham            | ana.pham13279@exemail.com.au
+     13503 | Freya Whetu         | freya.whetu13503@exemail.com.au
+     13664 | Kiri Sato           | kiri.sato13664@exemail.com.au
+     13730 | Ava Smith           | Ava.smith13730@Exemail.com.au
+     13805 | Harper Lopez        | harper.lopez13805@exemail.com.au
+     13920 | Diego Kaur          | diego.kaur13920@exemail.com.au
+     13986 | Declan Chen         | declan.chen13986@exemail.com.au
+     14009 | Omar Hayes          | omar.hayes14009@exemail.com.au
+     14023 | Saoirse Reid        | saoirse.reid14023@exemail.com.au
+     14223 | Hazel Papadopoulos  | Hazel.papadopoulos14223@Exemail.com.au
+     14328 | Evelyn Costa        | evelyn.costa14328@exemail.com.au
+     14331 | Noah Taylor         | noah.taylor14331@exemail.com.au
+     14352 | Yuki King           | yuki.king14352@exemail.com.au
+     14712 | Zara O'Brien        | zara.obrien14712@exemail.com.au
+     14759 | Nadia Hoang         | nadia.hoang14759@exemail.com.au
+     14787 | Felix Thompson      | felix.thompson14787@exemail.com.au
+     15052 | Nikau Choi          | nikau.choi15052@exemail.com.au
+     15186 | Ingrid Chen         | ingrid.chen15186@exemail.com.au
+     15285 | Jarrah Anderson     | jarrah.anderson15285@exemail.com.au
+     15495 | Hiro Andersen       | Hiro.andersen15495@Exemail.com.au
+     15658 | Ethan Doyle         | ethan.doyle15658@exemail.com.au
+     15736 | Saoirse Thompson    | Saoirse.thompson15736@Exemail.com.au
+     16003 | Priya Khan          | priya.khan16003@exemail.com.au
+     16123 | Lars Wilson         | lars.wilson16123@exemail.com.au
+     16371 | Evelyn Hernandez    | Evelyn.hernandez16371@Exemail.com.au
+     16392 | Elena Kelly         | Elena.kelly16392@Exemail.com.au
+     16415 | Yusuf Santos        | yusuf.santos16415@exemail.com.au
+     16441 | Poppy White         | poppy.white16441@exemail.com.au
+     16547 | Harper Kaur         | harper.kaur16547@exemail.com.au
+     16706 | Ava Kaur            | ava.kaur16706@exemail.com.au
+     16942 | Sione Liu           | Sione.liu16942@Exemail.com.au
+     16976 | Aisha Lee           | aisha.lee16976@exemail.com.au
+     17209 | Mateo Silva         | mateo.silva17209@exemail.com.au
+     17259 | Archie Murphy       | archie.murphy17259@exemail.com.au
+     17350 | Noah Ivanova        | noah.ivanova17350@exemail.com.au
+     17481 | Noah Mokoena        | noah.mokoena17481@exemail.com.au
+     17559 | Linh Petrov         | linh.petrov17559@exemail.com.au
+     17579 | Cillian Ferrari     | cillian.ferrari17579@exemail.com.au
+     17884 | Mateo Khan          | mateo.khan17884@exemail.com.au
+     17910 | Samuel Lee          | samuel.lee17910@exemail.com.au
+     17948 | Nadia Fraser        | nadia.fraser17948@exemail.com.au
+     18062 | Felix Ferrari       | felix.ferrari18062@exemail.com.au
+     18136 | Noah Liu            | noah.liu18136@exemail.com.au
+     18294 | Jack Andersen       | jack.andersen18294@exemail.com.au
+     18308 | Amelia White        | Amelia.white18308@Exemail.com.au
+     18319 | Harper Dimitriou    | Harper.dimitriou18319@Exemail.com.au
+     18406 | Yusuf Ali           | yusuf.ali18406@exemail.com.au
+     18533 | Noah Khan           | noah.khan18533@exemail.com.au
+     18722 | Declan Sato         | Declan.sato18722@Exemail.com.au
+     18813 | Yuki Park           | Yuki.park18813@Exemail.com.au
+     18968 | Evelyn Andersen     | evelyn.andersen18968@exemail.com.au
+     18987 | Dmitri Walker       | Dmitri.walker18987@Exemail.com.au
+     19009 | Mia Macleod         | mia.macleod19009@exemail.com.au
+     19016 | Hugo Smith          | hugo.smith19016@exemail.com.au
+     19179 | Rafael Schmidt      | rafael.schmidt19179@exemail.com.au
+     19185 | Freya Papadopoulos  | freya.papadopoulos19185@exemail.com.au
+     19249 | Minh Dimitriou      | minh.dimitriou19249@exemail.com.au
+     19761 | Omar Zhang          | omar.zhang19761@exemail.com.au
+     19764 | Ella Chen           | Ella.chen19764@Exemail.com.au
+     19796 | Linh Mokoena        | linh.mokoena19796@exemail.com.au
+     19800 | Anjali Okafor       | anjali.okafor19800@exemail.com.au
+     20076 | Dmitri Pham         | dmitri.pham20076@exemail.com.au
+     20115 | Yuki Walker         | yuki.walker20115@exemail.com.au
+     20155 | Angus Muller        | Angus.muller20155@Exemail.com.au
+     20276 | Hiro Patel          | Hiro.patel20276@Exemail.com.au
+     20309 | Ella Sullivan       | ella.sullivan20309@exemail.com.au
+     20324 | Evelyn Andersen     | evelyn.andersen20324@exemail.com.au
+     20354 | Matilda Rossi       | Matilda.rossi20354@Exemail.com.au
+     20446 | Diego Andersen      | diego.andersen20446@exemail.com.au
+     20510 | Valeria Ngata       | valeria.ngata20510@exemail.com.au
+     20513 | Thomas Dubois       | thomas.dubois20513@exemail.com.au
+     20686 | Minh Taylor         | Minh.taylor20686@Exemail.com.au
+     20770 | Lars Ngata          | lars.ngata20770@exemail.com.au
+     21023 | Lars Singh          | Lars.singh21023@Exemail.com.au
+     21057 | Henry Wilson        | henry.wilson21057@exemail.com.au
+     21155 | Jack Rossi          | Jack.rossi21155@Exemail.com.au
+     21216 | Mia Chen            | mia.chen21216@exemail.com.au
+     21234 | Anjali Rossi        | anjali.rossi21234@exemail.com.au
+     21474 | Minh Tran           | minh.tran21474@exemail.com.au
+     21554 | Harper Wilson       | harper.wilson21554@exemail.com.au
+     21831 | Valeria Moreau      | valeria.moreau21831@exemail.com.au
+     22075 | Aisha Taylor        | aisha.taylor22075@exemail.com.au
+     22101 | Zara Hayes          | zara.hayes22101@exemail.com.au
+     22239 | Ruby Gallagher      | ruby.gallagher22239@exemail.com.au
+     22352 | Fatima King         | fatima.king22352@exemail.com.au
+     22445 | Zoe Macleod         | zoe.macleod22445@exemail.com.au
+     22528 | Ethan Singh         | Ethan.singh22528@Exemail.com.au
+     22759 | Mateo Tanaka        | mateo.tanaka22759@exemail.com.au
+     22812 | Grace Fifita        | grace.fifita22812@exemail.com.au
+     22861 | Ingrid Anderson     | ingrid.anderson22861@exemail.com.au
+     23031 | Katya Santos        | katya.santos23031@exemail.com.au
+     23049 | Priya Wilson        | priya.wilson23049@exemail.com.au
+     23059 | Thomas Murphy       | thomas.murphy23059@exemail.com.au
+     23062 | Amara Kowal         | amara.kowal23062@exemail.com.au
+     23139 | Ava Robinson        | ava.robinson23139@exemail.com.au
+     23294 | Hiro Wilson         | hiro.wilson23294@exemail.com.au
+     23409 | Willow Okafor       | willow.okafor23409@exemail.com.au
+     23507 | Yusuf Kowalski      | yusuf.kowalski23507@exemail.com.au
+     23598 | Ethan Garcia        | Ethan.garcia23598@Exemail.com.au
+     23655 | Amara Mokoena       | amara.mokoena23655@exemail.com.au
+     23797 | Linh Zhang          | linh.zhang23797@exemail.com.au
+     23806 | Ava Johnson         | Ava.johnson23806@Exemail.com.au
+     23816 | Elena Whetu         | elena.whetu23816@exemail.com.au
+     23921 | Yuki Dimitriou      | yuki.dimitriou23921@exemail.com.au
+     23930 | Saoirse Hayes       | Saoirse.hayes23930@Exemail.com.au
+(248 rows)
+
+EXPLAIN (ANALYZE, BUFFERS) SELECT member_id, member_name, email FROM MEMBERS
+
+WHERE LOWER(SPLIT_PART(email, '@', 2)) = 'exemail.com.au';
+
+                                                           QUERY PLAN                                                            
+---------------------------------------------------------------------------------------------------------------------------------
+ Bitmap Heap Scan on members  (cost=5.22..226.08 rows=120 width=45) (actual time=0.015..0.050 rows=248.00 loops=1)
+   Recheck Cond: (lower(split_part((email)::text, '@'::text, 2)) = 'exemail.com.au'::text)
+   Heap Blocks: exact=164
+   Buffers: shared hit=166
+   ->  Bitmap Index Scan on idx_member_domain  (cost=0.00..5.19 rows=120 width=0) (actual time=0.007..0.007 rows=248.00 loops=1)
+         Index Cond: (lower(split_part((email)::text, '@'::text, 2)) = 'exemail.com.au'::text)
+         Index Searches: 1
+         Buffers: shared hit=2
+ Planning Time: 0.032 ms
+ Execution Time: 0.061 ms
+(10 rows)
+
+\i 'C:/Users/yuyan/Desktop/S4/INFS 7903/A2/completed/sql/49079984_A2_3.1.1.sql'
+-- INFS7903 Assignment 2 | Yuyang Gong | 49079984
+
+-- Statement A
+
+SELECT v.vehicle_id
+
+FROM VEHICLES v
+
+WHERE NOT EXISTS (
+
+    SELECT 1 FROM BOOKING_EVENTS e
+
+    WHERE e.vehicle_id = v.vehicle_id
+
+      AND e.event_type = 'Collect'
+
+)
+
+ORDER BY v.vehicle_id;
+
+ vehicle_id 
+------------
+ VEH-0019
+ VEH-0041
+ VEH-0045
+ VEH-0049
+ VEH-0057
+ VEH-0094
+ VEH-0098
+ VEH-0123
+ VEH-0137
+ VEH-0139
+ VEH-0142
+ VEH-0186
+ VEH-0192
+ VEH-0216
+ VEH-0231
+ VEH-0234
+ VEH-0264
+ VEH-0269
+ VEH-0271
+ VEH-0284
+ VEH-0293
+ VEH-0317
+ VEH-0319
+ VEH-0328
+ VEH-0331
+ VEH-0342
+ VEH-0346
+ VEH-0347
+ VEH-0350
+ VEH-0362
+ VEH-0373
+ VEH-0374
+ VEH-0383
+ VEH-0406
+ VEH-0425
+ VEH-0433
+ VEH-0439
+ VEH-0441
+ VEH-0442
+ VEH-0446
+ VEH-0464
+ VEH-0482
+ VEH-0506
+ VEH-0518
+ VEH-0519
+ VEH-0525
+ VEH-0534
+ VEH-0540
+ VEH-0576
+ VEH-0584
+ VEH-0587
+ VEH-0603
+ VEH-0614
+ VEH-0648
+ VEH-0650
+ VEH-0665
+ VEH-0698
+ VEH-0709
+ VEH-0714
+ VEH-0731
+ VEH-0744
+ VEH-0751
+ VEH-0771
+ VEH-0778
+ VEH-0801
+ VEH-0820
+ VEH-0826
+ VEH-0845
+ VEH-0857
+ VEH-0860
+ VEH-0861
+ VEH-0874
+ VEH-0881
+ VEH-0882
+ VEH-0891
+(75 rows)
+
+-- Statement B
+
+SELECT v.vehicle_id
+
+FROM VEHICLES v
+
+LEFT JOIN BOOKING_EVENTS e
+
+  ON e.vehicle_id = v.vehicle_id
+
+ AND e.event_type = 'Collect'
+
+WHERE e.vehicle_id IS NULL
+
+ORDER BY v.vehicle_id;
+
+ vehicle_id 
+------------
+ VEH-0019
+ VEH-0041
+ VEH-0045
+ VEH-0049
+ VEH-0057
+ VEH-0094
+ VEH-0098
+ VEH-0123
+ VEH-0137
+ VEH-0139
+ VEH-0142
+ VEH-0186
+ VEH-0192
+ VEH-0216
+ VEH-0231
+ VEH-0234
+ VEH-0264
+ VEH-0269
+ VEH-0271
+ VEH-0284
+ VEH-0293
+ VEH-0317
+ VEH-0319
+ VEH-0328
+ VEH-0331
+ VEH-0342
+ VEH-0346
+ VEH-0347
+ VEH-0350
+ VEH-0362
+ VEH-0373
+ VEH-0374
+ VEH-0383
+ VEH-0406
+ VEH-0425
+ VEH-0433
+ VEH-0439
+ VEH-0441
+ VEH-0442
+ VEH-0446
+ VEH-0464
+ VEH-0482
+ VEH-0506
+ VEH-0518
+ VEH-0519
+ VEH-0525
+ VEH-0534
+ VEH-0540
+ VEH-0576
+ VEH-0584
+ VEH-0587
+ VEH-0603
+ VEH-0614
+ VEH-0648
+ VEH-0650
+ VEH-0665
+ VEH-0698
+ VEH-0709
+ VEH-0714
+ VEH-0731
+ VEH-0744
+ VEH-0751
+ VEH-0771
+ VEH-0778
+ VEH-0801
+ VEH-0820
+ VEH-0826
+ VEH-0845
+ VEH-0857
+ VEH-0860
+ VEH-0861
+ VEH-0874
+ VEH-0881
+ VEH-0882
+ VEH-0891
+(75 rows)
+
+\i 'C:/Users/yuyan/Desktop/S4/INFS 7903/A2/completed/sql/49079984_A2_3.1.2.sql'
+-- INFS7903 Assignment 2 | Yuyang Gong | 49079984
+
+-- Statement A
+
+EXPLAIN (ANALYZE, BUFFERS) SELECT v.vehicle_id
+
+FROM VEHICLES v
+
+WHERE NOT EXISTS (
+
+    SELECT 1 FROM BOOKING_EVENTS e
+
+    WHERE e.vehicle_id = v.vehicle_id
+
+      AND e.event_type = 'Collect'
+
+)
+
+ORDER BY v.vehicle_id;
+
+                                                                      QUERY PLAN                                                                      
+------------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=4589.96..4590.08 rows=48 width=9) (actual time=9.048..9.051 rows=75.00 loops=1)
+   Sort Key: v.vehicle_id
+   Sort Method: quicksort  Memory: 25kB
+   Buffers: shared hit=1874
+   ->  Hash Right Anti Join  (cost=1418.94..4588.62 rows=48 width=9) (actual time=9.026..9.036 rows=75.00 loops=1)
+         Hash Cond: ((e.vehicle_id)::text = (v.vehicle_id)::text)
+         Buffers: shared hit=1874
+         ->  Bitmap Heap Scan on booking_events e  (cost=1391.69..3774.90 rows=59777 width=9) (actual time=1.028..5.368 rows=59539.00 loops=1)
+               Recheck Cond: ((event_type)::text = 'Collect'::text)
+               Heap Blocks: exact=1636
+               Buffers: shared hit=1867
+               ->  Bitmap Index Scan on idx_event_type_time  (cost=0.00..1376.75 rows=59777 width=0) (actual time=0.935..0.936 rows=59539.00 loops=1)
+                     Index Cond: ((event_type)::text = 'Collect'::text)
+                     Index Searches: 1
+                     Buffers: shared hit=231
+         ->  Hash  (cost=16.00..16.00 rows=900 width=9) (actual time=0.091..0.092 rows=900.00 loops=1)
+               Buckets: 1024  Batches: 1  Memory Usage: 45kB
+               Buffers: shared hit=7
+               ->  Seq Scan on vehicles v  (cost=0.00..16.00 rows=900 width=9) (actual time=0.006..0.044 rows=900.00 loops=1)
+                     Buffers: shared hit=7
+ Planning:
+   Buffers: shared hit=6
+ Planning Time: 0.151 ms
+ Execution Time: 9.073 ms
+(24 rows)
+
+-- Statement B
+
+EXPLAIN (ANALYZE, BUFFERS) SELECT v.vehicle_id
+
+FROM VEHICLES v
+
+LEFT JOIN BOOKING_EVENTS e
+
+  ON e.vehicle_id = v.vehicle_id
+
+ AND e.event_type = 'Collect'
+
+WHERE e.vehicle_id IS NULL
+
+ORDER BY v.vehicle_id;
+
+                                                                      QUERY PLAN                                                                      
+------------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=4589.96..4590.08 rows=48 width=9) (actual time=9.035..9.037 rows=75.00 loops=1)
+   Sort Key: v.vehicle_id
+   Sort Method: quicksort  Memory: 25kB
+   Buffers: shared hit=1874
+   ->  Hash Right Anti Join  (cost=1418.94..4588.62 rows=48 width=9) (actual time=9.014..9.024 rows=75.00 loops=1)
+         Hash Cond: ((e.vehicle_id)::text = (v.vehicle_id)::text)
+         Buffers: shared hit=1874
+         ->  Bitmap Heap Scan on booking_events e  (cost=1391.69..3774.90 rows=59777 width=9) (actual time=1.015..5.342 rows=59539.00 loops=1)
+               Recheck Cond: ((event_type)::text = 'Collect'::text)
+               Heap Blocks: exact=1636
+               Buffers: shared hit=1867
+               ->  Bitmap Index Scan on idx_event_type_time  (cost=0.00..1376.75 rows=59777 width=0) (actual time=0.902..0.902 rows=59539.00 loops=1)
+                     Index Cond: ((event_type)::text = 'Collect'::text)
+                     Index Searches: 1
+                     Buffers: shared hit=231
+         ->  Hash  (cost=16.00..16.00 rows=900 width=9) (actual time=0.076..0.076 rows=900.00 loops=1)
+               Buckets: 1024  Batches: 1  Memory Usage: 45kB
+               Buffers: shared hit=7
+               ->  Seq Scan on vehicles v  (cost=0.00..16.00 rows=900 width=9) (actual time=0.005..0.037 rows=900.00 loops=1)
+                     Buffers: shared hit=7
+ Planning:
+   Buffers: shared hit=6
+ Planning Time: 0.121 ms
+ Execution Time: 9.056 ms
+(24 rows)
+
+\i 'C:/Users/yuyan/Desktop/S4/INFS 7903/A2/completed/sql/49079984_A2_3.2.sql'
+-- INFS7903 Assignment 2 | Yuyang Gong | 49079984
+
+-- Setting 1: index scans enabled; sequential scans enabled.
+
+SET enable_indexscan = on;
+
+SET
+SET enable_indexonlyscan = on;
+
+SET
+SET enable_bitmapscan = on;
+
+SET
+SET enable_seqscan = on;
+
+SET
+-- Query C
+
+EXPLAIN (ANALYZE, BUFFERS) SELECT * FROM BOOKING_EVENTS WHERE event_type < 'Collect';
+
+                                                              QUERY PLAN                                                               
+---------------------------------------------------------------------------------------------------------------------------------------
+ Bitmap Heap Scan on booking_events  (cost=191.91..1930.31 rows=8192 width=38) (actual time=0.459..1.724 rows=8158.00 loops=1)
+   Recheck Cond: ((event_type)::text < 'Collect'::text)
+   Heap Blocks: exact=1625
+   Buffers: shared hit=1628 read=31
+   ->  Bitmap Index Scan on idx_event_type_time  (cost=0.00..189.86 rows=8192 width=0) (actual time=0.368..0.368 rows=8158.00 loops=1)
+         Index Cond: ((event_type)::text < 'Collect'::text)
+         Index Searches: 1
+         Buffers: shared hit=3 read=31
+ Planning:
+   Buffers: shared hit=3
+ Planning Time: 0.067 ms
+ Execution Time: 1.883 ms
+(12 rows)
+
+-- Query D
+
+EXPLAIN (ANALYZE, BUFFERS) SELECT * FROM BOOKING_EVENTS WHERE event_type >= 'Collect';
+
+                                                        QUERY PLAN                                                        
+--------------------------------------------------------------------------------------------------------------------------
+ Seq Scan on booking_events  (cost=0.00..4091.51 rows=188249 width=38) (actual time=0.005..10.208 rows=188283.00 loops=1)
+   Filter: ((event_type)::text >= 'Collect'::text)
+   Rows Removed by Filter: 8158
+   Buffers: shared hit=1636
+ Planning:
+   Buffers: shared hit=3
+ Planning Time: 0.056 ms
+ Execution Time: 13.734 ms
+(8 rows)
+
+-- Setting 2: index scans enabled; sequential scans suppressed.
+
+SET enable_indexscan = on;
+
+SET
+SET enable_indexonlyscan = on;
+
+SET
+SET enable_bitmapscan = on;
+
+SET
+SET enable_seqscan = off;
+
+SET
+-- Query C
+
+EXPLAIN (ANALYZE, BUFFERS) SELECT * FROM BOOKING_EVENTS WHERE event_type < 'Collect';
+
+                                                              QUERY PLAN                                                               
+---------------------------------------------------------------------------------------------------------------------------------------
+ Bitmap Heap Scan on booking_events  (cost=191.91..1930.31 rows=8192 width=38) (actual time=0.275..1.246 rows=8158.00 loops=1)
+   Recheck Cond: ((event_type)::text < 'Collect'::text)
+   Heap Blocks: exact=1625
+   Buffers: shared hit=1659
+   ->  Bitmap Index Scan on idx_event_type_time  (cost=0.00..189.86 rows=8192 width=0) (actual time=0.183..0.183 rows=8158.00 loops=1)
+         Index Cond: ((event_type)::text < 'Collect'::text)
+         Index Searches: 1
+         Buffers: shared hit=34
+ Planning Time: 0.057 ms
+ Execution Time: 1.412 ms
+(10 rows)
+
+-- Query D
+
+EXPLAIN (ANALYZE, BUFFERS) SELECT * FROM BOOKING_EVENTS WHERE event_type >= 'Collect';
+
+                                                                 QUERY PLAN                                                                 
+--------------------------------------------------------------------------------------------------------------------------------------------
+ Bitmap Heap Scan on booking_events  (cost=4375.35..8364.46 rows=188249 width=38) (actual time=5.560..12.822 rows=188283.00 loops=1)
+   Recheck Cond: ((event_type)::text >= 'Collect'::text)
+   Heap Blocks: exact=1636
+   Buffers: shared hit=1868 read=493
+   ->  Bitmap Index Scan on idx_event_type_time  (cost=0.00..4328.29 rows=188249 width=0) (actual time=5.466..5.466 rows=188283.00 loops=1)
+         Index Cond: ((event_type)::text >= 'Collect'::text)
+         Index Searches: 1
+         Buffers: shared hit=232 read=493
+ Planning Time: 0.035 ms
+ Execution Time: 16.433 ms
+(10 rows)
+
+-- Setting 3: index scans suppressed; sequential scans enabled.
+
+SET enable_indexscan = off;
+
+SET
+SET enable_indexonlyscan = off;
+
+SET
+SET enable_bitmapscan = off;
+
+SET
+SET enable_seqscan = on;
+
+SET
+-- Query C
+
+EXPLAIN (ANALYZE, BUFFERS) SELECT * FROM BOOKING_EVENTS WHERE event_type < 'Collect';
+
+                                                     QUERY PLAN                                                      
+---------------------------------------------------------------------------------------------------------------------
+ Seq Scan on booking_events  (cost=0.00..4091.51 rows=8192 width=38) (actual time=0.011..7.779 rows=8158.00 loops=1)
+   Filter: ((event_type)::text < 'Collect'::text)
+   Rows Removed by Filter: 188283
+   Buffers: shared hit=1636
+ Planning Time: 0.078 ms
+ Execution Time: 7.946 ms
+(6 rows)
+
+-- Query D
+
+EXPLAIN (ANALYZE, BUFFERS) SELECT * FROM BOOKING_EVENTS WHERE event_type >= 'Collect';
+
+                                                       QUERY PLAN                                                        
+-------------------------------------------------------------------------------------------------------------------------
+ Seq Scan on booking_events  (cost=0.00..4091.51 rows=188249 width=38) (actual time=0.005..9.896 rows=188283.00 loops=1)
+   Filter: ((event_type)::text >= 'Collect'::text)
+   Rows Removed by Filter: 8158
+   Buffers: shared hit=1636
+ Planning Time: 0.048 ms
+ Execution Time: 13.384 ms
+(6 rows)
+
+-- Restore all four scan settings.
+
+SET enable_indexscan = on;
+
+SET
+SET enable_indexonlyscan = on;
+
+SET
+SET enable_bitmapscan = on;
+
+SET
+SET enable_seqscan = on;
+
+SET
+
+\i 'C:/Users/yuyan/Desktop/S4/INFS 7903/A2/completed/sql/49079984_A2_4.1.1.sql'
+-- INFS7903 Assignment 2 | Yuyang Gong | 49079984
+
+-- connection 1
+
+BEGIN;
+
+BEGIN
+SHOW transaction_isolation;
+
+ transaction_isolation 
+-----------------------
+ read committed
+(1 row)
+
+SELECT v.vehicle_id, latest.event_id,
+
+       latest.event_type, latest.event_time
+
+FROM VEHICLES v
+
+CROSS JOIN LATERAL (
+
+    SELECT e.event_id, e.event_type, e.event_time
+
+    FROM BOOKING_EVENTS e
+
+    WHERE e.vehicle_id = v.vehicle_id
+
+    ORDER BY e.event_time DESC, e.event_id DESC
+
+    LIMIT 1
+
+) latest
+
+WHERE v.vehicle_id = 'VEH-0001'
+
+  AND latest.event_type = 'Return';
+
+ vehicle_id | event_id | event_type |     event_time      
+------------+----------+------------+---------------------
+ VEH-0001   |   194486 | Return     | 2026-06-27 11:05:11
+(1 row)
+
+-- Keep this transaction open. Run 4.1.2 in connection 2.
+
+
+\i 'C:/Users/yuyan/Desktop/S4/INFS 7903/A2/completed/sql/49079984_A2_4.1.2.sql'
+-- INFS7903 Assignment 2 | Yuyang Gong | 49079984
+
+-- connection 2
+
+BEGIN;
+
+BEGIN
+SHOW transaction_isolation;
+
+ transaction_isolation 
+-----------------------
+ read committed
+(1 row)
+
+SELECT v.vehicle_id, latest.event_id,
+
+       latest.event_type, latest.event_time
+
+FROM VEHICLES v
+
+CROSS JOIN LATERAL (
+
+    SELECT e.event_id, e.event_type, e.event_time
+
+    FROM BOOKING_EVENTS e
+
+    WHERE e.vehicle_id = v.vehicle_id
+
+    ORDER BY e.event_time DESC, e.event_id DESC
+
+    LIMIT 1
+
+) latest
+
+WHERE v.vehicle_id = 'VEH-0001'
+
+  AND latest.event_type = 'Return';
+
+ vehicle_id | event_id | event_type |     event_time      
+------------+----------+------------+---------------------
+ VEH-0001   |   194486 | Return     | 2026-06-27 11:05:11
+(1 row)
+
+INSERT INTO BOOKING_EVENTS
+
+    (member_id, vehicle_id, event_type, event_time, amount)
+
+VALUES (2, 'VEH-0001', 'Reserve', NOW() + INTERVAL '3 days', NULL);
+
+INSERT 0 1
+COMMIT;
+
+COMMIT
+
+\i 'C:/Users/yuyan/Desktop/S4/INFS 7903/A2/completed/sql/49079984_A2_4.1.3.sql'
+-- INFS7903 Assignment 2 | Yuyang Gong | 49079984
+
+-- connection 1, after connection 2 has committed
+
+INSERT INTO BOOKING_EVENTS
+
+    (member_id, vehicle_id, event_type, event_time, amount)
+
+VALUES (1, 'VEH-0001', 'Collect', NOW(), NULL);
+
+psql:C:/Users/yuyan/Desktop/S4/INFS 7903/A2/completed/sql/49079984_A2_4.1.3.sql:5: ERROR:  Vehicle VEH-0001 is reserved by member 2
+CONTEXT:  PL/pgSQL function udf_bi_collect() line 22 at RAISE
+-- The trigger raises an exception, so COMMIT ends this failed transaction as ROLLBACK.
+
+COMMIT;
+
+ROLLBACK
+SELECT event_id, member_id, vehicle_id, event_type, event_time, amount
+
+FROM BOOKING_EVENTS
+
+WHERE vehicle_id = 'VEH-0001'
+
+ORDER BY event_time DESC, event_id DESC LIMIT 3;
+
+ event_id | member_id | vehicle_id | event_type |         event_time         | amount 
+----------+-----------+------------+------------+----------------------------+--------
+   196442 |         2 | VEH-0001   | Reserve    | 2026-10-29 03:08:52.609182 |       
+   194486 |     20450 | VEH-0001   | Return     | 2026-06-27 11:05:11        | 115.49
+   194367 |     20450 | VEH-0001   | Collect    | 2026-06-27 04:21:33        |       
+(3 rows)
+
+
+BEGIN;
+BEGIN
+
+BEGIN;
+BEGIN
+
+UPDATE VEHICLES SET odometer = odometer + 10 WHERE vehicle_id = 'VEH-0401';
+UPDATE 1
+
+UPDATE VEHICLES SET odometer = odometer + 20 WHERE vehicle_id = 'VEH-0501';
+UPDATE 1
+
+UPDATE VEHICLES SET odometer = odometer + 10 WHERE vehicle_id = 'VEH-0501';
+ERROR:  deadlock detected
+DETAIL:  Process 43072 waits for ShareLock on transaction 814; blocked by process 47464.
+Process 47464 waits for ShareLock on transaction 813; blocked by process 43072.
+HINT:  See server log for query details.
+CONTEXT:  while updating tuple (3,93) in relation "vehicles"
+
+UPDATE VEHICLES SET odometer = odometer + 20 WHERE vehicle_id = 'VEH-0401';
+UPDATE 1
+
+COMMIT;
+ROLLBACK
+
+COMMIT;
+COMMIT
+
+SELECT vehicle_id, odometer FROM VEHICLES WHERE vehicle_id IN ('VEH-0401', 'VEH-0501') ORDER BY vehicle_id;
+ vehicle_id | odometer 
+------------+----------
+ VEH-0401   |   149120
+ VEH-0501   |   122170
+(2 rows)
+

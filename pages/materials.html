@@ -1,0 +1,510 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="description" content="从原题到代码、截图与数据库原理的双语学习手册"><meta name="color-scheme" content="dark light"><title>原始资料与版本 · A2 Code Review</title><link rel="icon" href="../assets/images/favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="../assets/css/site.css"><script src="../data/search-index.js" defer></script><script src="../assets/js/app.js" defer></script></head><body data-root="../" data-page="pages/materials.html"><a class="skip-link" href="#main">跳到正文</a><aside class="sidebar" id="sidebar"><a class="brand" href="../index.html"><span class="brand-icon">a<span>2</span></span><span>A2 / Code Review<small>INFS 7903 · 学习手册</small></span></a><div class="sidebar-inner"><p class="nav-label">YOUR LEARNING SPACE</p><nav aria-label="学习导航"><a class="nav-link " href="../index.html" ><span>学习路线</span><small>00 / START</small></a><a class="nav-link " href="../pages/foundations.html" ><span>从零开始</span><small>DATABASE BASICS</small></a><a class="nav-link " href="../pages/glossary.html" ><span>术语与函数</span><small>REFERENCE</small></a><a class="nav-link " href="../pages/evidence.html" ><span>截图与结果</span><small>EVIDENCE</small></a><a class="nav-link active" href="../pages/materials.html" aria-current=page><span>原始资料与版本</span><small>SOURCES</small></a><a class="nav-link " href="../complete.html" ><span>连续阅读 / 打印</span><small>FULL BOOK</small></a><p class="nav-label">01 / 视图与账户责任</p><a class="question-link " data-progress-link="1.1.1" href="../pages/q1-1-1.html" ><span class="nav-q">1.1.1</span><span>每种车身类别最繁忙的站点</span><i aria-hidden="true"></i></a><a class="question-link " data-progress-link="1.1.2" href="../pages/q1-1-2.html" ><span class="nav-q">1.1.2</span><span>从六行结果读到完整执行树</span><i aria-hidden="true"></i></a><a class="question-link " data-progress-link="1.2" href="../pages/q1-2.html" ><span class="nav-q">1.2</span><span>沿赞助链找到最终付款账号</span><i aria-hidden="true"></i></a><a class="question-link " data-progress-link="1.3.1" href="../pages/q1-3-1.html" ><span class="nav-q">1.3.1</span><span>用同一查询保存物化结果</span><i aria-hidden="true"></i></a><a class="question-link " data-progress-link="1.3.2" href="../pages/q1-3-2.html" ><span class="nav-q">1.3.2</span><span>比较现算视图与已保存结果</span><i aria-hidden="true"></i></a><a class="question-link " data-progress-link="1.3.3" href="../pages/q1-3-3.html" ><span class="nav-q">1.3.3</span><span>新增费用、陈旧榜单与刷新</span><i aria-hidden="true"></i></a><p class="nav-label">02 / 索引与性能</p><a class="question-link " data-progress-link="2.1.1" href="../pages/q2-1-1.html" ><span class="nav-q">2.1.1</span><span>按事件类型、时间建立复合索引</span><i aria-hidden="true"></i></a><a class="question-link " data-progress-link="2.1.2" href="../pages/q2-1-2.html" ><span class="nav-q">2.1.2</span><span>有索引却仍然顺序扫描</span><i aria-hidden="true"></i></a><a class="question-link " data-progress-link="2.1.3" href="../pages/q2-1-3.html" ><span class="nav-q">2.1.3</span><span>三月事故：高选择性的索引范围</span><i aria-hidden="true"></i></a><a class="question-link " data-progress-link="2.2.1" href="../pages/q2-2-1.html" ><span class="nav-q">2.2.1</span><span>从邮箱提取域名再数人数</span><i aria-hidden="true"></i></a><a class="question-link " data-progress-link="2.2.2" href="../pages/q2-2-2.html" ><span class="nav-q">2.2.2</span><span>读懂全体会员的域名聚合计划</span><i aria-hidden="true"></i></a><a class="question-link " data-progress-link="2.2.3" href="../pages/q2-2-3.html" ><span class="nav-q">2.2.3</span><span>完整邮箱唯一索引为何不是域名索引</span><i aria-hidden="true"></i></a><a class="question-link " data-progress-link="2.2.4" href="../pages/q2-2-4.html" ><span class="nav-q">2.2.4</span><span>把规范化域名变成索引键</span><i aria-hidden="true"></i></a><a class="question-link " data-progress-link="2.2.5" href="../pages/q2-2-5.html" ><span class="nav-q">2.2.5</span><span>同一个表达式，两种完全不同的读取量</span><i aria-hidden="true"></i></a><p class="nav-label">03 / 查询与执行计划</p><a class="question-link " data-progress-link="3.1.1" href="../pages/q3-1-1.html" ><span class="nav-q">3.1.1</span><span>找出从未被取走的车辆</span><i aria-hidden="true"></i></a><a class="question-link " data-progress-link="3.1.2" href="../pages/q3-1-2.html" ><span class="nav-q">3.1.2</span><span>两种写法汇合为反连接</span><i aria-hidden="true"></i></a><a class="question-link " data-progress-link="3.2" href="../pages/q3-2.html" ><span class="nav-q">3.2</span><span>两条查询 × 三组开关：六份计划</span><i aria-hidden="true"></i></a><p class="nav-label">04 / 事务与死锁</p><a class="question-link " data-progress-link="4.1.1" href="../pages/q4-1-1.html" ><span class="nav-q">4.1.1</span><span>会话1：找到最新事件为Return的车</span><i aria-hidden="true"></i></a><a class="question-link " data-progress-link="4.1.2" href="../pages/q4-1-2.html" ><span class="nav-q">4.1.2</span><span>会话2：未来预约先提交</span><i aria-hidden="true"></i></a><a class="question-link " data-progress-link="4.1.3" href="../pages/q4-1-3.html" ><span class="nav-q">4.1.3</span><span>会话1：Collect被触发器拒绝</span><i aria-hidden="true"></i></a><a class="question-link " data-progress-link="4.1.4" href="../pages/q4-1-4.html" ><span class="nav-q">4.1.4</span><span>快照、陈旧检查与业务含义</span><i aria-hidden="true"></i></a><a class="question-link " data-progress-link="4.2.1" href="../pages/q4-2-1.html" ><span class="nav-q">4.2.1</span><span>反向更新两行，亲眼看到死锁</span><i aria-hidden="true"></i></a><a class="question-link " data-progress-link="4.2.2" href="../pages/q4-2-2.html" ><span class="nav-q">4.2.2</span><span>等待图、受害事务与最终值</span><i aria-hidden="true"></i></a><a class="question-link " data-progress-link="4.2.3" href="../pages/q4-2-3.html" ><span class="nav-q">4.2.3</span><span>用一致顺序预防等待环</span><i aria-hidden="true"></i></a></nav><div class="sidebar-bottom"><div><span>学习进度</span><strong data-progress-count>0 / 24</strong></div><progress data-progress-bar max="24" value="0">0 / 24</progress><small>保存在此浏览器 · 支持离线阅读</small></div></div></aside><div class="workspace"><header class="topbar"><button type="button" class="menu-button" aria-controls="sidebar" aria-expanded="false">☰ <span>目录</span></button><span class="top-label">A2 LEARNING STUDIO <span class="muted">/ 从理解开始</span></span><div class="top-actions"><button type="button" class="search-trigger" aria-haspopup="dialog">搜索题目、函数或关键词 <kbd>⌘ / Ctrl K</kbd></button><label class="language"><span class="sr-only">对照阅读方式</span><select id="language" title="只切换中英对照区域；核心中文讲解始终可读"><option value="both">中英对照</option><option value="zh">中文重点</option><option value="en">英文原题</option></select></label><button type="button" class="print-button" data-print>打印</button></div></header><div class="reading-layout"><main id="main" tabindex="-1"><div class="eyebrow">SOURCES / PROVENANCE</div><h1>每一处解释，都能找到来处。</h1><p class="lede">作业要求PDF定义题目；答案报告记录已做实验；SQL是当前原始文件；本站文字是对照翻译、教学解释与明确标注的建议。</p><div class="download-grid"><a href="../materials/assignment.pdf" download><span>↓</span><strong>作业要求 · 12页</strong><small>原题、schema、提示、分值、20脚本清单</small></a><a href="../materials/report-native.pdf" download><span>↓</span><strong>主要答案报告 · 45页</strong><small>原生图、补充重放、Q3.2六图、Q4完整轮次</small></a><a href="../materials/report-native.docx" download><span>↓</span><strong>主要答案 Word</strong><small>检查嵌入媒体与报告文字</small></a><a href="../materials/report-root.pdf" download><span>↓</span><strong>根目录答案报告 · 33页</strong><small>保留原版对照</small></a><a href="../materials/report-root.docx" download><span>↓</span><strong>根目录答案 Word</strong><small>保留原内容</small></a><a href="../materials/report-supplemented.pdf" download><span>↓</span><strong>补齐版报告 · 47页</strong><small>完整重放的其他版本</small></a><a href="../materials/report-completed.pdf" download><span>↓</span><strong>completed报告 · 36页</strong><small>另一轮独立实验，Q4结果不同</small></a><a href="../materials/setup.sql" download><span>↓</span><strong>FleetDB初始化脚本 v1.0</strong><small>保留表、数据、触发器与初始化命令</small></a></div><section class="lesson-section" id="versions"><div class="section-heading"><span>LEARN</span><h2>版本选择：看内容和证据，不按修改时间</h2></div><div class="table-wrap" tabindex="0" role="region" aria-label="数据表格，窄窗口可横向滚动"><table><thead><tr><th>来源</th><th>采用方式</th><th>原因 / 影响</th></tr></thead><tbody><tr><td>作业要求a2-2026-v1.pdf</td><td>题号、英文、页码与覆盖基准</td><td>PDF内部Assignment Version1.0，文件名v1；不自行改成新版本。</td></tr><tr><td>A2根20份SQL</td><td>完整代码主线</td><td>根SQL.zip逐文件hash一致；395物理行重新对齐。</td></tr><tr><td>原生截图更新版45页PDF</td><td>主要答案证据</td><td>53嵌图；保留原生截断和独立重放说明；原生Q4更完整。</td></tr><tr><td>补齐版47页PDF</td><td>下载保留，供版本比较</td><td>较多重放输出；不是当前所有原生实验的同次结果。</td></tr><tr><td>completed36页PDF与日志</td><td>单独归档</td><td>Q4采用VEH-0001、另一死锁受害者；不能混配根代码。</td></tr><tr><td>Study旧专项与逐行解释</td><td>核对后复用概念、排版和原题提取</td><td>旧SQL265行；当前395行，Q4有实质变化，重新写行号与讲解。</td></tr></tbody></table></div><p class="">SHA-256清单见data/materials.json与data/audit-versions.json；报告详细审计见下方链接。所有导入文件均复制到此项目，无需原A2或Study文件夹运行。</p></section><section class="lesson-section" id="corrections"><div class="section-heading"><span>LEARN</span><h2>原内容保留；问题与建议另外说明</h2></div><div class="table-wrap" tabindex="0" role="region" aria-label="数据表格，窄窗口可横向滚动"><table><thead><tr><th>核对问题</th><th>原内容/版本</th><th>本站处理</th></tr></thead><tbody><tr><td>死锁受害会话不同</td><td>completed/旧Study：T1失败，T2+20；原生：RIGHT/T2失败</td><td>主线按原生最终149110/122160；旧149120/122170仅在独立下载中。</td></tr><tr><td>D2强制bitmap不一定更慢</td><td>原生D2 22.959ms &lt; D1 24.116ms</td><td>保留实测，说明成本更高不等于单次时间必更长。</td></tr><tr><td>Q1.3计划截断/不同阶段</td><td>原生长条件截断，原生30276条，早期重放30275条</td><td>两套计划分别标明；不给出受控倍速比。</td></tr><tr><td>原题“普通读无锁”的简化</td><td>PDF p7背景措辞</td><td>补充普通SELECT兼容ACCESS SHARE表锁；没有预留车辆的冲突行锁。</td></tr><tr><td>赞助环/零次类别/邮箱格式</td><td>约束没有防环或邮箱格式CHECK</td><td>逐题注明边界；不伪造课程数据有这些错误。</td></tr><tr><td>固定实验车辆与SAVEPOINT</td><td>根Q4固定VEH-0004，建立保存点但未恢复</td><td>说明重跑可能无可用结果；异常后仍按整事务ROLLBACK。</td></tr><tr><td>图片可读性</td><td>原生长过滤右端截断，小结果裁图像素少</td><td>保留原图和报告页；缺字不猜，重放仅补充语义结构。</td></tr></tbody></table></div></section><section class="lesson-section" id="common"><div class="section-heading"><span>LEARN</span><h2>公共要求、完整原页与提交范围</h2></div><p class="">原题PDF p1–3给出FleetDB业务、全部表、触发器规则与初始化方式；p7给出事务快照背景；p9列20份SQL，四道解释题不单交SQL；p10要求按题号在新初始化库通过psql的\i重现，Q4人工切换连接。</p><p class="">原题p10说明报告应含全部回答、所需SQL及执行输出截图；普通结果超过20行可展示前10末10，不跨行拆元组，计划须完整。明确评分为功能/理解/解释28分与展示2分。本站额外自测、口头稿、学习检查点是学习建议，不是新增评分项。</p><p class="">本地保留完整原题，以下12页可直接阅读。原图含ER图、表格、代码和评分清单，未用文字提取猜测图示。</p><div class="source-page-grid"><a href="../assets/images/assignment/page-01.jpg" data-image data-caption="作业要求 PDF p1"><img src="../assets/images/assignment/page-01.jpg" alt="作业要求原页p1" loading="lazy"><span>作业要求 p1</span></a><a href="../assets/images/assignment/page-02.jpg" data-image data-caption="作业要求 PDF p2"><img src="../assets/images/assignment/page-02.jpg" alt="作业要求原页p2" loading="lazy"><span>作业要求 p2</span></a><a href="../assets/images/assignment/page-03.jpg" data-image data-caption="作业要求 PDF p3"><img src="../assets/images/assignment/page-03.jpg" alt="作业要求原页p3" loading="lazy"><span>作业要求 p3</span></a><a href="../assets/images/assignment/page-04.jpg" data-image data-caption="作业要求 PDF p4"><img src="../assets/images/assignment/page-04.jpg" alt="作业要求原页p4" loading="lazy"><span>作业要求 p4</span></a><a href="../assets/images/assignment/page-05.jpg" data-image data-caption="作业要求 PDF p5"><img src="../assets/images/assignment/page-05.jpg" alt="作业要求原页p5" loading="lazy"><span>作业要求 p5</span></a><a href="../assets/images/assignment/page-06.jpg" data-image data-caption="作业要求 PDF p6"><img src="../assets/images/assignment/page-06.jpg" alt="作业要求原页p6" loading="lazy"><span>作业要求 p6</span></a><a href="../assets/images/assignment/page-07.jpg" data-image data-caption="作业要求 PDF p7"><img src="../assets/images/assignment/page-07.jpg" alt="作业要求原页p7" loading="lazy"><span>作业要求 p7</span></a><a href="../assets/images/assignment/page-08.jpg" data-image data-caption="作业要求 PDF p8"><img src="../assets/images/assignment/page-08.jpg" alt="作业要求原页p8" loading="lazy"><span>作业要求 p8</span></a><a href="../assets/images/assignment/page-09.jpg" data-image data-caption="作业要求 PDF p9"><img src="../assets/images/assignment/page-09.jpg" alt="作业要求原页p9" loading="lazy"><span>作业要求 p9</span></a><a href="../assets/images/assignment/page-10.jpg" data-image data-caption="作业要求 PDF p10"><img src="../assets/images/assignment/page-10.jpg" alt="作业要求原页p10" loading="lazy"><span>作业要求 p10</span></a><a href="../assets/images/assignment/page-11.jpg" data-image data-caption="作业要求 PDF p11"><img src="../assets/images/assignment/page-11.jpg" alt="作业要求原页p11" loading="lazy"><span>作业要求 p11</span></a><a href="../assets/images/assignment/page-12.jpg" data-image data-caption="作业要求 PDF p12"><img src="../assets/images/assignment/page-12.jpg" alt="作业要求原页p12" loading="lazy"><span>作业要求 p12</span></a></div><details class="source-detail"><summary>完整公共背景英文原文（PDF p1–3、7、9–12）</summary><h3>作业要求PDF p1</h3><pre class="raw-report english">1 
+ 
+INFS2200/INFS7903 Assignment 2 
+Semester 2, 2026 
+Total Marks 
+30 marks (15% of the course) 
+Due Date 
+4:00 pm, Friday 30th October 2026 
+What to submit 
+Report file, and one SQL script file per 
+question part 
+Where to submit 
+Report via Blackboard Ultra Course Website; 
+SQL scripts via Gradescope 
+Assignment Version 
+1.0 
+ 
+The goal of the project assignments is to gain practical experience in applying several database 
+management concepts and techniques using the PostgreSQL DBMS. In particular, this 
+assignment mainly focuses on improving database efficiency with views, indexing and query 
+planning, and on understanding what the DBMS does when transactions run concurrently. 
+Your main task is to first populate your database with the supplied data, then design, implement, 
+and test the appropriate queries to perform the tasks explained in the next sections. 
+You must work on this project individually. Academic integrity policies apply. Please refer to 
+3.60.04 Student Integrity and Misconduct of the University Policy for more information. 
+This document is in three sections: This section describes the database schema for the 
+assignment and provides instructions on downloading the script file needed to create and 
+populate the database. The middle section describes the tasks to be completed for this 
+assignment. The final section describes the submission guidelines and marking scheme. 
+Enjoy the project! 
+Section 1 - The FleetDB Database 
+You are a developer working on FleetDB. 
+Cooee Car Share is a member-owned car-sharing co-operative. Members reserve a vehicle 
+online, collect it from a parking station, drive it, and return it to a station. FleetDB records the fleet, 
+the membership, and every booking event. It has five tables: 
+• 
+STATIONS records each parking station where vehicles are picked up and dropped off; 
+• 
+MODELS records the specification shared by every vehicle of a given model, including its body 
+type and replacement value; 
+• 
+VEHICLES records each individual vehicle in the fleet, its model, and its home station; 
+• 
+MEMBERS records each member of the co-operative. Members may be sponsored by another 
+member — a business account sponsors a team account, which in turn sponsors the staff 
+who drive. sponsor_id points to the sponsoring member, and is NULL for an account that 
+pays its own way; 
+• 
+BOOKING_EVENTS is an append-only log of everything that happens to a vehicle: Reserve, 
+Collect, Return, Cancel and Incident events, each stamped with the member responsible. 
+</pre><h3>作业要求PDF p2</h3><pre class="raw-report english">2 
+amount holds the fare charged on a Return and the damage charge raised on an Incident; 
+it is NULL for every other event type. 
+ 
+Entity-Relationship diagram 
+The tables are created as follows. 
+CREATE TABLE STATIONS ( 
+    station_id    VARCHAR PRIMARY KEY, 
+    station_name  VARCHAR NOT NULL, 
+    suburb        VARCHAR NOT NULL, 
+    bays          INTEGER NOT NULL); 
+  
+CREATE TABLE MODELS ( 
+    model_code        VARCHAR PRIMARY KEY, 
+    make              VARCHAR NOT NULL, 
+    model_name        VARCHAR NOT NULL, 
+    body_type         VARCHAR NOT NULL, 
+    seats             INTEGER NOT NULL, 
+    replacement_value INTEGER NOT NULL); 
+  
+CREATE TABLE VEHICLES ( 
+    vehicle_id    VARCHAR PRIMARY KEY, 
+    model_code    VARCHAR NOT NULL REFERENCES MODELS, 
+    station_id    VARCHAR NOT NULL REFERENCES STATIONS, 
+    in_service    DATE NOT NULL, 
+    odometer      INTEGER NOT NULL); 
+  
+CREATE TABLE MEMBERS ( 
+    member_id     SERIAL PRIMARY KEY, 
+    member_name   VARCHAR NOT NULL, 
+    email         VARCHAR NOT NULL UNIQUE, 
+    joined        DATE NOT NULL, 
+    plan          VARCHAR NOT NULL, 
+    sponsor_id    INTEGER REFERENCES MEMBERS); 
+  
+CREATE TABLE BOOKING_EVENTS ( 
+    event_id      SERIAL PRIMARY KEY, 
+</pre><h3>作业要求PDF p3</h3><pre class="raw-report english">3 
+    member_id     INTEGER NOT NULL REFERENCES MEMBERS, 
+    vehicle_id    VARCHAR NOT NULL REFERENCES VEHICLES, 
+    event_type    VARCHAR NOT NULL, 
+    event_time    TIMESTAMP NOT NULL, 
+    amount        NUMERIC(8,2)); 
+Notes on the schema 
+Two details of the schema will matter later: 
+1. MEMBERS.sponsor_id is a self-referencing foreign key, and sponsorship chains can be 
+more than one level deep. 
+2. MEMBERS.email carries a UNIQUE constraint, so PostgreSQL has already built an index over 
+it. 
+Further, the trigger BI_COLLECT and its associated user-defined function UDF_BI_COLLECT have 
+been added to the BOOKING_EVENTS table. This trigger treats a vehicle&#x27;s most recent event as its 
+current state, and refuses to record a Collect that would break the co-operative&#x27;s rules: 
+Most recent event for the vehicle 
+Meaning 
+A new Collect is … 
+Return or Cancel 
+available 
+allowed 
+Reserve by the same member 
+held for you 
+allowed 
+Reserve by a different member 
+held for someone else 
+rejected 
+Collect 
+already out on hire 
+rejected 
+Incident 
+off the road pending repair 
+rejected 
+ 
+No triggers implemented in Assignment 1 are present. 
+Setup 
+Before starting work on this assignment, run the setup file a2-2026-fleetdb.sql from psql with 
+the \i command (it may take a minute): 
+\i a2-2026-fleetdb.sql 
+The script drops and recreates a database called assignment2 and leaves you connected to it, 
+so your work on this assignment is kept separate from your other work. Wait until you see the 
+message DONE! All data has been inserted. 
+The setup file is available on Blackboard, and with mget as follows: 
+mget -O /infs2200/stor/data/assignments/2/a2-2026-fleetdb.sql 
+Note: as of this version of the assignment, the setup script version is 1.0 
+</pre><h3>作业要求PDF p7</h3><pre class="raw-report english">7 
+(2 marks for explaining up to 6 possible query plans; 2 marks for explaining the query planner&#x27;s 
+choices.) 
+Between them, Queries C and D return every row of BOOKING_EVENTS exactly once — they differ 
+only in which side of &#x27;Collect&#x27; they take. Your explanation should account for why that is 
+enough to change the plan. 
+Be sure to reset index, bitmap, index-only and sequential scans back to on before proceeding to 
+another question. 
+Q4 Transactions (9 marks total) 
+In PostgreSQL, a transaction is set up by surrounding the SQL commands of the transaction with 
+BEGIN and COMMIT commands. For example, a banking transaction would look like: 
+BEGIN; 
+UPDATE accounts SET balance = balance - 100.00 
+  WHERE name = &#x27;Alice&#x27;; 
+-- some more statements etc etc 
+COMMIT; 
+https://www.postgresql.org/docs/current/tutorial-transactions.html 
+In this question we will examine what happens when two transactions occur concurrently. 
+Background: how PostgreSQL reads 
+You have seen two ways of keeping a concurrent schedule serialisable: locking protocols such as 
+two-phase locking, and timestamp ordering. PostgreSQL uses neither of these for ordinary 
+reads, so what you are about to observe will not follow from either one directly. This section gives 
+you what you need; you are not expected to have met it before. 
+Instead of taking read locks, a PostgreSQL query reads from a snapshot — a consistent picture 
+of the database containing exactly those changes that were committed before the snapshot was 
+taken. Because reading acquires no locks, readers never block writers and writers never block 
+readers. 
+At PostgreSQL&#x27;s default isolation level, READ COMMITTED, a new snapshot is taken at the start 
+of every statement. Two statements in the same transaction may therefore see different data, if 
+another transaction committed in between them. 
+Two consequences are worth holding on to as you work through this question: 
+• 
+A trigger runs inside the transaction that fired it. Any query the trigger makes is answered 
+from that transaction&#x27;s current snapshot. It gets no special or privileged view of the database. 
+• 
+A snapshot is not a lock. Reading a row records nothing and reserves nothing; it does not 
+prevent another transaction from changing what you just read. 
+Q4.1 A race for the same car (6 marks) 
+Two members go after the same car at the same moment: 
+• 
+Session 1 is a member at the parking bay about to drive away. It checks that the vehicle is 
+available, and then records a Collect. 
+• 
+Session 2 is a member on the website. It checks that the same vehicle is available, and then 
+records a Reserve for three days&#x27; time, and commits — all while session 1 is still open. 
+You will need two psql connections open side by side, both at the default isolation level. You can 
+use the now() function to provide a timestamp. Include screenshots of both connections. 
+</pre><h3>作业要求PDF p9</h3><pre class="raw-report english">9 
+Late submissions will be penalised unless you are approved for an extension (refer to Section 5.3 
+of the ECP). 
+6. A report file titled 4xxxxxxx_A2.pdf in PDF format, containing relevant code, screenshots 
+and answers to all questions. Submit via the Turnitin link &quot;Report Submission&quot; on the 
+Blackboard Ultra Course Website. 
+7. A set of SQL script files, one per question part, submitted via the Gradescope link &quot;SQL 
+Script Submission&quot;. Each file must be plain text with a .sql extension, and must be named 
+4xxxxxxx_A2_&lt;question&gt;.sql, where &lt;question&gt; is the number of the question part it 
+answers. Your answer to Q2.1 (3), for instance, goes in 4xxxxxxx_A2_2.1.3.sql. 
+Replace 4xxxxxxx with your student number in every filename. Upload the script files individually, 
+or as a single .zip archive containing them with no enclosing folder. 
+Which script files to submit 
+Submit the twenty files listed below. The remaining question parts — Q2.2 (3), Q4.1 (4), Q4.2 (2) 
+and Q4.2 (3) — ask only for an explanation and have no script file; answer those in your report. 
+File 
+What it should contain 
+4xxxxxxx_A2_1.1.1.sql 
+The CREATE VIEW V_BUSIEST_BAYS statement 
+4xxxxxxx_A2_1.1.2.sql 
+SELECT * FROM V_BUSIEST_BAYS; 
+and 
+the 
+EXPLAIN you ran on it 
+4xxxxxxx_A2_1.2.sql 
+The 
+CREATE 
+VIEW 
+V_ACCOUNT_LIABILITY 
+statement 
+4xxxxxxx_A2_1.3.1.sql 
+The 
+CREATE 
+MATERIALIZED 
+VIEW 
+MV_ACCOUNT_LIABILITY statement 
+4xxxxxxx_A2_1.3.2.sql 
+Queries A and B, with the EXPLAIN you ran on 
+each 
+4xxxxxxx_A2_1.3.3.sql 
+The supplied INSERT, your re-runs of Queries A 
+and B, and the REFRESH 
+4xxxxxxx_A2_2.1.1.sql 
+The 
+CREATE 
+INDEX 
+IDX_EVENT_TYPE_TIME 
+statement 
+4xxxxxxx_A2_2.1.2.sql 
+The re-run of your Q1.1 query, with its EXPLAIN 
+4xxxxxxx_A2_2.1.3.sql 
+The EXPLAIN of the March incidents query 
+4xxxxxxx_A2_2.2.1.sql 
+Your statement reporting the count of members per 
+provider domain 
+4xxxxxxx_A2_2.2.2.sql 
+The EXPLAIN of your Q2.2 (1) statement 
+4xxxxxxx_A2_2.2.4.sql 
+The 
+CREATE 
+INDEX 
+IDX_MEMBER_DOMAIN 
+statement 
+4xxxxxxx_A2_2.2.5.sql 
+Both EXPLAINs, run with the function-based index 
+in place 
+4xxxxxxx_A2_3.1.1.sql 
+Statements (A) and (B) 
+4xxxxxxx_A2_3.1.2.sql 
+The EXPLAIN of statement (A) and of statement (B) 
+4xxxxxxx_A2_3.2.sql 
+Queries C and D under all three settings, including 
+the SET statements 
+4xxxxxxx_A2_4.1.1.sql 
+Connection 1: BEGIN and your availability query 
+4xxxxxxx_A2_4.1.2.sql 
+Connection 2: BEGIN, the availability query, the 
+Reserve, COMMIT 
+4xxxxxxx_A2_4.1.3.sql 
+Connection 1: the attempted Collect, and COMMIT 
+4xxxxxxx_A2_4.2.1.sql 
+Every statement you ran in both connections, in the 
+order you ran them 
+ 
+</pre><h3>作业要求PDF p10</h3><pre class="raw-report english">10 
+How your script files will be run 
+You will be marked primarily on the contents of your report file. However, the teaching team must 
+be able to reproduce the screenshots in your report by loading a2-2026-fleetdb.sql into a 
+fresh database and then running your files in question order, each with the \i command in 
+psql. Write your files on that assumption: a file may rely on objects created by an earlier file, but 
+no file should repeat the dataset setup. 
+A single script cannot show two connections running at the same time, so in the Q4 files mark 
+each statement with the connection you ran it in, and keep the statements in the order you 
+actually ran them: 
+-- connection 1 
+BEGIN; 
+... 
+-- connection 2 
+BEGIN; 
+... 
+If code is not provided for any question such that your screenshots cannot be reproduced, 
+your marks will be halved for that question. A file that is misnamed, empty, or does not run 
+counts as not provided. 
+Report File &amp; Presentation (2 marks) 
+Your report file should include the following content: 
+• 
+Answers to all the questions in the Assignment Tasks section. 
+• 
+If you are asked to write SQL statements, you need to include those statements in your 
+report. 
+• 
+After you execute a SQL statement, if PostgreSQL produces any output (e.g. query result, 
+query execution time, query plan, etc), you should also include a screenshot of the output as 
+well. 
+• 
+Where one sub-question asks you to write a query and a later sub-question asks you to 
+report on its timing, please simply refer back to the initial screenshot. 
+The presentation mark is given as follows: 
+• 
+Ordinary query results (not plans) do not exceed a page — any query returning more than 20 
+rows may show just the first 10 and the last 10 rows. You may find some helpful instructions 
+for formatting query output in Practical 1. (1 mark) 
+• 
+No result tuples are broken across lines, and all query plans are shown in full (if a plan takes 
+more than one page, break it at an appropriate spot). (1 mark) 
+Marking Scheme 
+Question 
+Marks 
+Specific Criteria 
+1.1 (1) 
+1 
+V_BUSIEST_BAYS 
+created 
+with 
+the correct name and semantics: 
+one row per body type, naming 
+the 
+station 
+with 
+the 
+most 
+collections. Tested by SELECT * 
+FROM V_BUSIEST_BAYS; 
+1.1 (2) 
+0.5 
+Result and query plan reported 
+and explained with reference to 
+costs, times and row counts. 
+</pre><h3>作业要求PDF p11</h3><pre class="raw-report english">11 
+1.2 
+1.5 
+V_ACCOUNT_LIABILITY 
+created 
+with 
+the 
+correct 
+name 
+and 
+semantics. Full marks require the 
+charges to be rolled up the 
+whole sponsorship chain; a one-
+level rollup earns at most 0.5. 
+1.3 (2) 
+0.5 
+Both 
+plans 
+reported 
+and 
+compared; the cost of the view 
+versus 
+the 
+stored 
+result 
+is 
+explained. 
+1.3 (3) 
+0.5 
+Staleness of the materialised 
+view 
+demonstrated 
+and 
+the 
+trade-off stated. 
+2.1 (1) 
+0.5 
+Index created with the correct 
+name and semantics. 
+2.1 (2) 
+1.5 
+Plan reported and compared with 
+Q1.1; correctly explains why the 
+index is (or is not) used. 
+2.1 (3) 
+1 
+Plan 
+reported; 
+the 
+role 
+of 
+selectivity and of the second 
+index column is explained. 
+2.2 (1) 
+1 
+One SQL statement producing 
+the correct per-domain counts, 
+folding case. 
+2.2 (2) 
+1 
+Plan reported and explained. 
+2.2 (3) 
+1 
+Correctly explains that an index 
+on 
+email 
+orders 
+whole 
+addresses, not domains. 
+2.2 (4) 
+0.5 
+Function-based 
+index 
+created 
+with 
+the 
+correct 
+name 
+and 
+semantics. 
+2.2 (5) 
+1.5 
+Both 
+plans 
+reported; 
+the 
+difference 
+between 
+the 
+aggregate 
+and 
+the 
+selective 
+lookup is explained. 
+3.1 (1) 
+1.5 
+Two correct statements returning 
+the 
+same 
+rows, 
+using 
+the 
+required formulations. 
+3.1 (2) 
+1.5 
+Plans reported and compared; 
+anti-join behaviour explained. 
+3.2 (1) 
+2 
+Each 
+distinct 
+query 
+plan 
+explained, for all combinations of 
+query and settings. 
+3.2 (2) 
+2 
+The 
+planner&#x27;s 
+decisions 
+explained by comparing plans; 
+selectivity 
+identified 
+as 
+the 
+cause. 
+4.1 (1) 
+2 
+Availability query correct — must 
+find a vehicle whose latest event 
+is a Return, not merely one that 
+has a Return. 
+4.1 (2) 
+0.5 
+Second transaction carried out 
+correctly and screenshotted. 
+4.1 (3) 
+1 
+Outcome of each step reported, 
+and 
+the 
+resulting 
+events 
+</pre><h3>作业要求PDF p12</h3><pre class="raw-report english">12 
+identified. 
+4.1 (4) 
+2.5 
+Outcome explained in database 
+terms (the step (1) answer went 
+stale; the trigger re-read on a 
+later snapshot) and in car-share 
+terms. A schedule or precedence 
+graph earns credit but is not 
+required. 
+4.2 
+3 
+Deadlock produced and the error 
+quoted 
+(1.5); 
+wait-for 
+graph 
+drawn with the cycle marked, 
+and 
+the 
+DBMS&#x27;s 
+response 
+described 
+(1); 
+a 
+prevention 
+strategy named with its cost 
+(0.5). 
+P 
+2 
+Presentation marks as described 
+above. 
+Total 
+30 
+ 
+ 
+Enjoy the project! Good luck! 
+END OF ASSIGNMENT 2 
+</pre></details></section><section class="lesson-section" id="coverage"><div class="section-heading"><span>LEARN</span><h2>24个单元的对应清单</h2></div><div class="table-wrap"><table><thead><tr><th>题号 / 网站</th><th>原题PDF</th><th>主答案报告</th><th>SQL</th><th>截图/日志</th></tr></thead><tbody><tr><td><a href="../pages/q1-1-1.html">Q1.1.1 每种车身类别最繁忙的站点</a></td><td>p4</td><td>原生版p2</td><td>32行</td><td>r02-1</td></tr><tr><td><a href="../pages/q1-1-2.html">Q1.1.2 从六行结果读到完整执行树</a></td><td>p4</td><td>原生版p3,4,5</td><td>4行</td><td>r03-1, r04-1, r04-2</td></tr><tr><td><a href="../pages/q1-2.html">Q1.2 沿赞助链找到最终付款账号</a></td><td>p4</td><td>原生版p5,6,8</td><td>29行</td><td>r05-1, r06-1</td></tr><tr><td><a href="../pages/q1-3-1.html">Q1.3.1 用同一查询保存物化结果</a></td><td>p4</td><td>原生版p7,12</td><td>28行</td><td>复用关联题证据</td></tr><tr><td><a href="../pages/q1-3-2.html">Q1.3.2 比较现算视图与已保存结果</a></td><td>p4,5</td><td>原生版p8,9,10,11,12</td><td>13行</td><td>r08-1, r08-2, r09-1, r10-1, r11-1, r12-1, r12-2</td></tr><tr><td><a href="../pages/q1-3-3.html">Q1.3.3 新增费用、陈旧榜单与刷新</a></td><td>p5</td><td>原生版p13,14,15</td><td>19行</td><td>r13-1, r13-2, r14-1, r14-2, r15-1</td></tr><tr><td><a href="../pages/q2-1-1.html">Q2.1.1 按事件类型、时间建立复合索引</a></td><td>p5</td><td>原生版p16</td><td>3行</td><td>r16-1</td></tr><tr><td><a href="../pages/q2-1-2.html">Q2.1.2 有索引却仍然顺序扫描</a></td><td>p5</td><td>原生版p16,17,18</td><td>6行</td><td>r16-2, r17-1, r17-2</td></tr><tr><td><a href="../pages/q2-1-3.html">Q2.1.3 三月事故：高选择性的索引范围</a></td><td>p5</td><td>原生版p18,19</td><td>14行</td><td>r18-1, r19-1</td></tr><tr><td><a href="../pages/q2-2-1.html">Q2.2.1 从邮箱提取域名再数人数</a></td><td>p5</td><td>原生版p20</td><td>6行</td><td>r20-1</td></tr><tr><td><a href="../pages/q2-2-2.html">Q2.2.2 读懂全体会员的域名聚合计划</a></td><td>p5</td><td>原生版p21</td><td>7行</td><td>r21-1</td></tr><tr><td><a href="../pages/q2-2-3.html">Q2.2.3 完整邮箱唯一索引为何不是域名索引</a></td><td>p5</td><td>原生版p21,22</td><td>解释题</td><td>复用关联题证据</td></tr><tr><td><a href="../pages/q2-2-4.html">Q2.2.4 把规范化域名变成索引键</a></td><td>p5</td><td>原生版p22</td><td>3行</td><td>r22-1</td></tr><tr><td><a href="../pages/q2-2-5.html">Q2.2.5 同一个表达式，两种完全不同的读取量</a></td><td>p5,6</td><td>原生版p23,24</td><td>13行</td><td>r23-1, r24-1</td></tr><tr><td><a href="../pages/q3-1-1.html">Q3.1.1 找出从未被取走的车辆</a></td><td>p6</td><td>原生版p25,26</td><td>19行</td><td>r25-1, r25-2, r25-3, r26-1, r26-2, r26-3</td></tr><tr><td><a href="../pages/q3-1-2.html">Q3.1.2 两种写法汇合为反连接</a></td><td>p6</td><td>原生版p27,28,29</td><td>21行</td><td>r28-1, r29-1</td></tr><tr><td><a href="../pages/q3-2.html">Q3.2 两条查询 × 三组开关：六份计划</a></td><td>p6,7</td><td>原生版p30,31,32,33,34,35,36</td><td>50行</td><td>r30-1, r30-2, r31-1, r31-2, r32-1, r32-2, r33-1</td></tr><tr><td><a href="../pages/q4-1-1.html">Q4.1.1 会话1：找到最新事件为Return的车</a></td><td>p7,8</td><td>原生版p37</td><td>30行</td><td>r37-1</td></tr><tr><td><a href="../pages/q4-1-2.html">Q4.1.2 会话2：未来预约先提交</a></td><td>p7,8</td><td>原生版p38</td><td>34行</td><td>r38-1</td></tr><tr><td><a href="../pages/q4-1-3.html">Q4.1.3 会话1：Collect被触发器拒绝</a></td><td>p7,8</td><td>原生版p39</td><td>19行</td><td>r39-1</td></tr><tr><td><a href="../pages/q4-1-4.html">Q4.1.4 快照、陈旧检查与业务含义</a></td><td>p7,8</td><td>原生版p37,38,39,40</td><td>解释题</td><td>复用关联题证据</td></tr><tr><td><a href="../pages/q4-2-1.html">Q4.2.1 反向更新两行，亲眼看到死锁</a></td><td>p8</td><td>原生版p41,42,43,44</td><td>45行</td><td>r41-1, r41-2, r42-1, r42-2, r43-1</td></tr><tr><td><a href="../pages/q4-2-2.html">Q4.2.2 等待图、受害事务与最终值</a></td><td>p8</td><td>原生版p41,42,43,44</td><td>解释题</td><td>r43-2</td></tr><tr><td><a href="../pages/q4-2-3.html">Q4.2.3 用一致顺序预防等待环</a></td><td>p8</td><td>原生版p44</td><td>解释题</td><td>复用关联题证据</td></tr></tbody></table></div><div class="source-links"><a href="../reports/coverage.md">内容覆盖表</a><a href="../reports/source-audit.md">版本审计</a><a href="../reports/study-reuse.md">Study复用记录</a><a href="../reports/checks.md">检查记录与环境</a><a href="../data/materials.json">文件SHA清单</a></div></section><section class="lesson-section" id="sql-downloads"><div class="section-heading"><span>LEARN</span><h2>20份原始SQL下载</h2></div><div class="file-list"><a href="../materials/sql/49079984_A2_1.1.1.sql" download><b>Q1.1.1</b>49079984_A2_1.1.1.sql <span>32行 ↓</span></a><a href="../materials/sql/49079984_A2_1.1.2.sql" download><b>Q1.1.2</b>49079984_A2_1.1.2.sql <span>4行 ↓</span></a><a href="../materials/sql/49079984_A2_1.2.sql" download><b>Q1.2</b>49079984_A2_1.2.sql <span>29行 ↓</span></a><a href="../materials/sql/49079984_A2_1.3.1.sql" download><b>Q1.3.1</b>49079984_A2_1.3.1.sql <span>28行 ↓</span></a><a href="../materials/sql/49079984_A2_1.3.2.sql" download><b>Q1.3.2</b>49079984_A2_1.3.2.sql <span>13行 ↓</span></a><a href="../materials/sql/49079984_A2_1.3.3.sql" download><b>Q1.3.3</b>49079984_A2_1.3.3.sql <span>19行 ↓</span></a><a href="../materials/sql/49079984_A2_2.1.1.sql" download><b>Q2.1.1</b>49079984_A2_2.1.1.sql <span>3行 ↓</span></a><a href="../materials/sql/49079984_A2_2.1.2.sql" download><b>Q2.1.2</b>49079984_A2_2.1.2.sql <span>6行 ↓</span></a><a href="../materials/sql/49079984_A2_2.1.3.sql" download><b>Q2.1.3</b>49079984_A2_2.1.3.sql <span>14行 ↓</span></a><a href="../materials/sql/49079984_A2_2.2.1.sql" download><b>Q2.2.1</b>49079984_A2_2.2.1.sql <span>6行 ↓</span></a><a href="../materials/sql/49079984_A2_2.2.2.sql" download><b>Q2.2.2</b>49079984_A2_2.2.2.sql <span>7行 ↓</span></a><a href="../materials/sql/49079984_A2_2.2.4.sql" download><b>Q2.2.4</b>49079984_A2_2.2.4.sql <span>3行 ↓</span></a><a href="../materials/sql/49079984_A2_2.2.5.sql" download><b>Q2.2.5</b>49079984_A2_2.2.5.sql <span>13行 ↓</span></a><a href="../materials/sql/49079984_A2_3.1.1.sql" download><b>Q3.1.1</b>49079984_A2_3.1.1.sql <span>19行 ↓</span></a><a href="../materials/sql/49079984_A2_3.1.2.sql" download><b>Q3.1.2</b>49079984_A2_3.1.2.sql <span>21行 ↓</span></a><a href="../materials/sql/49079984_A2_3.2.sql" download><b>Q3.2</b>49079984_A2_3.2.sql <span>50行 ↓</span></a><a href="../materials/sql/49079984_A2_4.1.1.sql" download><b>Q4.1.1</b>49079984_A2_4.1.1.sql <span>30行 ↓</span></a><a href="../materials/sql/49079984_A2_4.1.2.sql" download><b>Q4.1.2</b>49079984_A2_4.1.2.sql <span>34行 ↓</span></a><a href="../materials/sql/49079984_A2_4.1.3.sql" download><b>Q4.1.3</b>49079984_A2_4.1.3.sql <span>19行 ↓</span></a><a href="../materials/sql/49079984_A2_4.2.1.sql" download><b>Q4.2.1</b>49079984_A2_4.2.1.sql <span>45行 ↓</span></a></div></section><section class="lesson-section" id="additional"><div class="section-heading"><span>LEARN</span><h2>独立截图与原始说明版本索引</h2></div><p class="">这些原生截图多与报告嵌图重复，保留用于核对原文件。Q4.1早期VEH-0001/0002/0003轮次含粘贴语法错误或错窗口，不作为完整并发主线；notes是按时间追加的原记录，早段“后续待补充”须结合其后完整VEH-0004段阅读。</p><details class="source-detail"><summary>展开独立原生截图文件列表</summary><div class="file-list"><a href="../assets/images/native/00_assignment2_connection.png" data-image data-caption="独立原始截图：00_assignment2_connection.png">00_assignment2_connection.png</a><a href="../assets/images/native/00_setup_complete.png" data-image data-caption="独立原始截图：00_setup_complete.png">00_setup_complete.png</a><a href="../assets/images/native/Q1.1.1_create_view.png" data-image data-caption="独立原始截图：Q1.1.1_create_view.png">Q1.1.1_create_view.png</a><a href="../assets/images/native/Q1.1.2_native_bottom.png" data-image data-caption="独立原始截图：Q1.1.2_native_bottom.png">Q1.1.2_native_bottom.png</a><a href="../assets/images/native/Q1.1.2_native_top.png" data-image data-caption="独立原始截图：Q1.1.2_native_top.png">Q1.1.2_native_top.png</a><a href="../assets/images/native/Q1.1.2_plan_partial.png" data-image data-caption="独立原始截图：Q1.1.2_plan_partial.png">Q1.1.2_plan_partial.png</a><a href="../assets/images/native/Q1.1.2_result_partial.png" data-image data-caption="独立原始截图：Q1.1.2_result_partial.png">Q1.1.2_result_partial.png</a><a href="../assets/images/native/Q1.2_create_view.png" data-image data-caption="独立原始截图：Q1.2_create_view.png">Q1.2_create_view.png</a><a href="../assets/images/native/Q1.2_result.png" data-image data-caption="独立原始截图：Q1.2_result.png">Q1.2_result.png</a><a href="../assets/images/native/Q1.3.2_A_native_bottom.png" data-image data-caption="独立原始截图：Q1.3.2_A_native_bottom.png">Q1.3.2_A_native_bottom.png</a><a href="../assets/images/native/Q1.3.2_A_native_top.png" data-image data-caption="独立原始截图：Q1.3.2_A_native_top.png">Q1.3.2_A_native_top.png</a><a href="../assets/images/native/Q1.3.2_MV_native_plan.png" data-image data-caption="独立原始截图：Q1.3.2_MV_native_plan.png">Q1.3.2_MV_native_plan.png</a><a href="../assets/images/native/Q2.1.2_native_bottom.png" data-image data-caption="独立原始截图：Q2.1.2_native_bottom.png">Q2.1.2_native_bottom.png</a><a href="../assets/images/native/Q2.1.2_native_top.png" data-image data-caption="独立原始截图：Q2.1.2_native_top.png">Q2.1.2_native_top.png</a><a href="../assets/images/native/Q2.2.1_domain_counts.png" data-image data-caption="独立原始截图：Q2.2.1_domain_counts.png">Q2.2.1_domain_counts.png</a><a href="../assets/images/native/Q3.1.1_A_native.png" data-image data-caption="独立原始截图：Q3.1.1_A_native.png">Q3.1.1_A_native.png</a><a href="../assets/images/native/Q3.1.1_B_native.png" data-image data-caption="独立原始截图：Q3.1.1_B_native.png">Q3.1.1_B_native.png</a><a href="../assets/images/native/Q3.2_C1_from_word.png" data-image data-caption="独立原始截图：Q3.2_C1_from_word.png">Q3.2_C1_from_word.png</a><a href="../assets/images/native/Q3.2_C1_partial_width.png" data-image data-caption="独立原始截图：Q3.2_C1_partial_width.png">Q3.2_C1_partial_width.png</a><a href="../assets/images/native/Q3.2_C2_from_word.png" data-image data-caption="独立原始截图：Q3.2_C2_from_word.png">Q3.2_C2_from_word.png</a><a href="../assets/images/native/Q3.2_C3_from_word.png" data-image data-caption="独立原始截图：Q3.2_C3_from_word.png">Q3.2_C3_from_word.png</a><a href="../assets/images/native/Q3.2_D1.png" data-image data-caption="独立原始截图：Q3.2_D1.png">Q3.2_D1.png</a><a href="../assets/images/native/Q3.2_D1_from_word.png" data-image data-caption="独立原始截图：Q3.2_D1_from_word.png">Q3.2_D1_from_word.png</a><a href="../assets/images/native/Q3.2_D2_from_word.png" data-image data-caption="独立原始截图：Q3.2_D2_from_word.png">Q3.2_D2_from_word.png</a><a href="../assets/images/native/Q3.2_D3_from_word.png" data-image data-caption="独立原始截图：Q3.2_D3_from_word.png">Q3.2_D3_from_word.png</a><a href="../assets/images/native/Q4.1.1_connection1.png" data-image data-caption="独立原始截图：Q4.1.1_connection1.png">Q4.1.1_connection1.png</a><a href="../assets/images/native/Q4.1.2_two_connections.png" data-image data-caption="独立原始截图：Q4.1.2_two_connections.png">Q4.1.2_two_connections.png</a><a href="../assets/images/native/Q4.1_retry_connection1.png" data-image data-caption="独立原始截图：Q4.1_retry_connection1.png">Q4.1_retry_connection1.png</a><a href="../assets/images/native/Q4.1_retry_reserve_two_connections.png" data-image data-caption="独立原始截图：Q4.1_retry_reserve_two_connections.png">Q4.1_retry_reserve_two_connections.png</a><a href="../assets/images/native/Q4.1_VEH0004_collect_result.png" data-image data-caption="独立原始截图：Q4.1_VEH0004_collect_result.png">Q4.1_VEH0004_collect_result.png</a><a href="../assets/images/native/Q4.1_VEH0004_connection1.png" data-image data-caption="独立原始截图：Q4.1_VEH0004_connection1.png">Q4.1_VEH0004_connection1.png</a><a href="../assets/images/native/Q4.1_VEH0004_connection2.png" data-image data-caption="独立原始截图：Q4.1_VEH0004_connection2.png">Q4.1_VEH0004_connection2.png</a><a href="../assets/images/native/Q4.1_wrong_window_reserve3.png" data-image data-caption="独立原始截图：Q4.1_wrong_window_reserve3.png">Q4.1_wrong_window_reserve3.png</a><a href="../assets/images/native/Q4.2_01_LEFT_first_update.png" data-image data-caption="独立原始截图：Q4.2_01_LEFT_first_update.png">Q4.2_01_LEFT_first_update.png</a><a href="../assets/images/native/Q4.2_02_RIGHT_first_update.png" data-image data-caption="独立原始截图：Q4.2_02_RIGHT_first_update.png">Q4.2_02_RIGHT_first_update.png</a><a href="../assets/images/native/Q4.2_03_LEFT_waiting.png" data-image data-caption="独立原始截图：Q4.2_03_LEFT_waiting.png">Q4.2_03_LEFT_waiting.png</a><a href="../assets/images/native/Q4.2_04_deadlock_detected.png" data-image data-caption="独立原始截图：Q4.2_04_deadlock_detected.png">Q4.2_04_deadlock_detected.png</a><a href="../assets/images/native/Q4.2_05_final_values.png" data-image data-caption="独立原始截图：Q4.2_05_final_values.png">Q4.2_05_final_values.png</a><a href="../assets/images/native/Q4.2_wait_for_graph.png" data-image data-caption="独立原始截图：Q4.2_wait_for_graph.png">Q4.2_wait_for_graph.png</a></div></details><div class="source-links"><a href="../materials/notes/Q3.2_plan_notes.md">Q3.2_plan_notes.md</a><a href="../materials/notes/Q4.1_notes.md">Q4.1_notes.md</a><a href="../materials/notes/Q4.2_notes.md">Q4.2_notes.md</a><a href="../materials/notes/README.md">README.md</a><a href="../materials/notes/文档待补项目.md">文档待补项目.md</a></div></section><section class="lesson-section" id="limits"><div class="section-heading"><span>LEARN</span><h2>来源与已知限制</h2></div><p class="">本站未重新连接或运行数据库实验。所有“实际输出”均来源于用户已有报告、截图或日志；小数据与交互均明确为教学示例。缺失的独立创建截图、截断条件和裁图像素限制在对应题注明。</p><p class="">所有资料均保留原来源，不擅自为课程PDF、数据、第三方材料指定开源许可证。项目未创建远程仓库或公开发布。公开发布前由资料权利人判断课程材料的可分享范围。</p><p class="">本轮实际浏览器与路径检查结果记录在reports/checks.md。未在真实Mac Safari上运行，不宣称已实测。中文/英文/代码采用系统字体栈，无外部字体或CDN依赖。</p><p>概念核对使用 <a href="https://www.postgresql.org/docs/17/using-explain.html" target="_blank" rel="noopener">PostgreSQL 17 EXPLAIN</a>、<a href="https://www.postgresql.org/docs/17/transaction-iso.html" target="_blank" rel="noopener">事务隔离</a>、<a href="https://www.postgresql.org/docs/17/runtime-config-query.html" target="_blank" rel="noopener">规划开关</a>。文档版本随原题Q3.2链接选择；不据此推断本机数据库服务器版本。发布说明核对 <a href="https://docs.github.com/en/pages/getting-started-with-github-pages/configuring-a-publishing-source-for-your-github-pages-site">GitHub Pages 官方文档</a>（2026-10-29）。</p></section></main></div><footer>INFS 7903 / A2 CODE REVIEW <span>原题 · 原代码 · 证据 · 理解</span><a href="../pages/materials.html">资料来源与已知限制 ↗</a></footer></div><dialog id="search-dialog" aria-labelledby="search-title"><div class="dialog-head"><h2 id="search-title">找到一个知识点</h2><button type="button" data-close aria-label="关闭搜索">✕</button></div><label class="sr-only" for="search-input">搜索内容</label><input id="search-input" type="search" placeholder="试试：3.2、ROW_NUMBER、死锁、NULL…" autocomplete="off"><p class="muted" id="search-status" aria-live="polite">输入题号、函数或中英文关键词。</p><div id="search-results"></div></dialog><dialog id="image-dialog" aria-labelledby="image-title"><div class="dialog-head"><strong id="image-title">原始证据</strong><div><button type="button" data-image-size>原尺寸 / 适应</button><a id="image-original" target="_blank" rel="noopener">单独打开 ↗</a><button type="button" data-close aria-label="关闭图片">✕</button></div></div><div class="image-viewport"><img id="zoom-image" alt=""></div><p id="image-caption"></p></dialog><dialog id="copy-dialog" aria-labelledby="copy-title"><div class="dialog-head"><h2 id="copy-title">手动复制代码</h2><button type="button" data-close aria-label="关闭复制">✕</button></div><p>已选中完整原代码，请按 Command+C（Mac）或 Ctrl+C（Windows）。</p><textarea spellcheck="false" aria-label="待复制代码"></textarea></dialog><div id="toast" role="status" aria-live="polite"></div><noscript><style>@media(max-width:800px){.sidebar{position:relative;left:0;visibility:visible;width:100%;max-height:360px;overflow:auto;box-shadow:none}.sidebar-inner{overflow:visible}.menu-button{display:none}}body{padding-bottom:65px}</style><div class="no-js">JavaScript未开启：全部教材、原图链接、SQL/PDF下载与导航仍可阅读；搜索、自动复制和进度记录不可用。</div></noscript></body></html>

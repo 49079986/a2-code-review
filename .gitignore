@@ -1,0 +1,32 @@
+# Runtime/build helpers (the authored HTML, data and materials are tracked)
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+node_modules/
+.build-deps/
+.DS_Store
+Thumbs.db
+Desktop.ini
+~$*
+*.tmp
+*.temp
+*.bak
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.pfx
+*.p12
+# Never add PostgreSQL data/runtime trees
+pgdata/
+pg_data/
+postgres-data/
+data/base/
+data/global/
+data/pg_*/
+# Intermediate extraction and browser QA
+data/extracted/
+reports/qa/
+*.zip

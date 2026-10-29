@@ -1,0 +1,124 @@
+-- Setting 1: index scans enabled; sequential scans enabled.
+SET enable_indexscan = on;
+SET
+SET enable_indexonlyscan = on;
+SET
+SET enable_bitmapscan = on;
+SET
+SET enable_seqscan = on;
+SET
+-- Query C
+EXPLAIN (ANALYZE, BUFFERS) SELECT * FROM BOOKING_EVENTS WHERE event_type < 'Collect';
+                                                              QUERY PLAN                                                               
+---------------------------------------------------------------------------------------------------------------------------------------
+ Bitmap Heap Scan on booking_events  (cost=179.44..1910.62 rows=7615 width=38) (actual time=0.562..4.431 rows=8158.00 loops=1)
+   Recheck Cond: ((event_type)::text < 'Collect'::text)
+   Heap Blocks: exact=1625
+   Buffers: shared hit=1628 read=31
+   ->  Bitmap Index Scan on idx_event_type_time  (cost=0.00..177.53 rows=7615 width=0) (actual time=0.463..0.464 rows=8158.00 loops=1)
+         Index Cond: ((event_type)::text < 'Collect'::text)
+         Index Searches: 1
+         Buffers: shared hit=3 read=31
+ Planning:
+   Buffers: shared hit=99
+ Planning Time: 1.580 ms
+ Execution Time: 4.667 ms
+(12 rows)
+
+-- Query D
+EXPLAIN (ANALYZE, BUFFERS) SELECT * FROM BOOKING_EVENTS WHERE event_type >= 'Collect';
+                                                        QUERY PLAN                                                        
+--------------------------------------------------------------------------------------------------------------------------
+ Seq Scan on booking_events  (cost=0.00..4091.51 rows=188826 width=38) (actual time=0.017..10.615 rows=188283.00 loops=1)
+   Filter: ((event_type)::text >= 'Collect'::text)
+   Rows Removed by Filter: 8158
+   Buffers: shared hit=1636
+ Planning:
+   Buffers: shared hit=3
+ Planning Time: 0.065 ms
+ Execution Time: 14.145 ms
+(8 rows)
+
+-- Setting 2: index scans enabled; sequential scans suppressed.
+SET enable_indexscan = on;
+SET
+SET enable_indexonlyscan = on;
+SET
+SET enable_bitmapscan = on;
+SET
+SET enable_seqscan = off;
+SET
+-- Query C
+EXPLAIN (ANALYZE, BUFFERS) SELECT * FROM BOOKING_EVENTS WHERE event_type < 'Collect';
+                                                              QUERY PLAN                                                               
+---------------------------------------------------------------------------------------------------------------------------------------
+ Bitmap Heap Scan on booking_events  (cost=179.44..1910.62 rows=7615 width=38) (actual time=0.403..1.914 rows=8158.00 loops=1)
+   Recheck Cond: ((event_type)::text < 'Collect'::text)
+   Heap Blocks: exact=1625
+   Buffers: shared hit=1659
+   ->  Bitmap Index Scan on idx_event_type_time  (cost=0.00..177.53 rows=7615 width=0) (actual time=0.272..0.272 rows=8158.00 loops=1)
+         Index Cond: ((event_type)::text < 'Collect'::text)
+         Index Searches: 1
+         Buffers: shared hit=34
+ Planning Time: 0.082 ms
+ Execution Time: 2.242 ms
+(10 rows)
+
+-- Query D
+EXPLAIN (ANALYZE, BUFFERS) SELECT * FROM BOOKING_EVENTS WHERE event_type >= 'Collect';
+                                                                 QUERY PLAN                                                                 
+--------------------------------------------------------------------------------------------------------------------------------------------
+ Bitmap Heap Scan on booking_events  (cost=4387.82..8384.15 rows=188826 width=38) (actual time=6.280..13.643 rows=188283.00 loops=1)
+   Recheck Cond: ((event_type)::text >= 'Collect'::text)
+   Heap Blocks: exact=1636
+   Buffers: shared hit=1868 read=493
+   ->  Bitmap Index Scan on idx_event_type_time  (cost=0.00..4340.61 rows=188826 width=0) (actual time=6.180..6.181 rows=188283.00 loops=1)
+         Index Cond: ((event_type)::text >= 'Collect'::text)
+         Index Searches: 1
+         Buffers: shared hit=232 read=493
+ Planning Time: 0.065 ms
+ Execution Time: 17.270 ms
+(10 rows)
+
+-- Setting 3: index scans suppressed; sequential scans enabled.
+SET enable_indexscan = off;
+SET
+SET enable_indexonlyscan = off;
+SET
+SET enable_bitmapscan = off;
+SET
+SET enable_seqscan = on;
+SET
+-- Query C
+EXPLAIN (ANALYZE, BUFFERS) SELECT * FROM BOOKING_EVENTS WHERE event_type < 'Collect';
+                                                     QUERY PLAN                                                      
+---------------------------------------------------------------------------------------------------------------------
+ Seq Scan on booking_events  (cost=0.00..4091.51 rows=7615 width=38) (actual time=0.009..7.727 rows=8158.00 loops=1)
+   Filter: ((event_type)::text < 'Collect'::text)
+   Rows Removed by Filter: 188283
+   Buffers: shared hit=1636
+ Planning Time: 0.066 ms
+ Execution Time: 7.886 ms
+(6 rows)
+
+-- Query D
+EXPLAIN (ANALYZE, BUFFERS) SELECT * FROM BOOKING_EVENTS WHERE event_type >= 'Collect';
+                                                        QUERY PLAN                                                        
+--------------------------------------------------------------------------------------------------------------------------
+ Seq Scan on booking_events  (cost=0.00..4091.51 rows=188826 width=38) (actual time=0.008..10.409 rows=188283.00 loops=1)
+   Filter: ((event_type)::text >= 'Collect'::text)
+   Rows Removed by Filter: 8158
+   Buffers: shared hit=1636
+ Planning Time: 0.073 ms
+ Execution Time: 13.995 ms
+(6 rows)
+
+-- Restore all four scan settings.
+SET enable_indexscan = on;
+SET
+SET enable_indexonlyscan = on;
+SET
+SET enable_bitmapscan = on;
+SET
+SET enable_seqscan = on;
+SET

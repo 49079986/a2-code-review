@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="440" viewBox="0 0 1200 440">
+  <rect width="1200" height="440" fill="white"/>
+  <defs>
+    <marker id="arrow" markerWidth="11" markerHeight="11" refX="9" refY="5" orient="auto">
+      <path d="M 0 0 L 10 5 L 0 10 Z" fill="#b91c1c"/>
+    </marker>
+  </defs>
+  <g font-family="Arial, sans-serif" text-anchor="middle" fill="#111827">
+    <text x="600" y="48" font-size="28" font-weight="700">Wait-for graph before deadlock detection</text>
+    <rect x="100" y="145" width="360" height="120" rx="10" fill="#f1f5f9" stroke="#334155" stroke-width="2"/>
+    <rect x="740" y="145" width="360" height="120" rx="10" fill="#f1f5f9" stroke="#334155" stroke-width="2"/>
+    <text x="280" y="188" font-size="24" font-weight="700">T1  LEFT  PID 8668</text>
+    <text x="280" y="226" font-size="23">Holds VEH-0401</text>
+    <text x="920" y="188" font-size="24" font-weight="700">T2  RIGHT  PID 40916</text>
+    <text x="920" y="226" font-size="23">Holds VEH-0501</text>
+    <path d="M 460 176 C 545 92, 655 92, 738 176" fill="none" stroke="#b91c1c" stroke-width="3" marker-end="url(#arrow)"/>
+    <path d="M 740 235 C 655 321, 545 321, 462 235" fill="none" stroke="#b91c1c" stroke-width="3" marker-end="url(#arrow)"/>
+    <text x="600" y="96" font-size="22">waits for VEH-0501</text>
+    <text x="600" y="338" font-size="22">waits for VEH-0401</text>
+    <text x="600" y="405" font-size="24" font-weight="700" fill="#b91c1c">Cycle: T1 -&gt; T2 -&gt; T1</text>
+  </g>
+</svg>

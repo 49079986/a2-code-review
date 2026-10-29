@@ -1,0 +1,7 @@
+SELECT vehicle_id, odometer FROM VEHICLES WHERE vehicle_id IN ('VEH-0401', 'VEH-0501') ORDER BY vehicle_id;
+ vehicle_id | odometer 
+------------+----------
+ VEH-0401   |   149120
+ VEH-0501   |   122170
+(2 rows)
+

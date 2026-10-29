@@ -1,0 +1,53 @@
+                          check                           | passed 
+----------------------------------------------------------+--------
+ recursive liability matches independent upward traversal | t
+(1 row)
+
+                       check                        | passed 
+----------------------------------------------------+--------
+ anti join formulations return the same 75 vehicles | t
+(1 row)
+
+ member_id | sponsor_id | depth 
+-----------+------------+-------
+     24000 |      22086 |     0
+     22086 |      18148 |     1
+     18148 |      13943 |     2
+     13943 |            |     3
+(4 rows)
+
+               check               | passed 
+-----------------------------------+--------
+ one busiest station per body type | t
+(1 row)
+
+                  check                  | passed 
+-----------------------------------------+--------
+ materialized view matches after refresh | t
+(1 row)
+
+              check              | passed 
+---------------------------------+--------
+ failed Collect was not recorded | t
+(1 row)
+
+ enable_indexscan 
+------------------
+ on
+(1 row)
+
+ enable_indexonlyscan 
+----------------------
+ on
+(1 row)
+
+ enable_bitmapscan 
+-------------------
+ on
+(1 row)
+
+ enable_seqscan 
+----------------
+ on
+(1 row)
+

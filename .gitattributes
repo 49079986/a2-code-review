@@ -1,0 +1,10 @@
+* text=auto eol=lf
+# Preserve original course materials and experiment evidence byte-for-byte.
+materials/** -text
+assets/images/** -text
+*.pdf -text
+*.docx -text
+*.png -text
+*.jpg -text
+*.jpeg -text
+*.zip -text

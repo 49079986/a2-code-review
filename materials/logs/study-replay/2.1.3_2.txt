@@ -1,0 +1,22 @@
+EXPLAIN (ANALYZE, BUFFERS) SELECT count(*), sum(amount) FROM BOOKING_EVENTS
+WHERE event_type = 'Incident'
+  AND event_time >= TIMESTAMP '2026-03-01'
+  AND event_time <  TIMESTAMP '2026-04-01';
+                                                                                                    QUERY PLAN                                                                                                    
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Aggregate  (cost=410.92..410.93 rows=1 width=40) (actual time=0.244..0.244 rows=1.00 loops=1)
+   Buffers: shared hit=82
+   ->  Bitmap Heap Scan on booking_events  (cost=6.10..410.26 rows=132 width=6) (actual time=0.051..0.207 rows=116.00 loops=1)
+         Recheck Cond: (((event_type)::text = 'Incident'::text) AND (event_time >= '2026-03-01 00:00:00'::timestamp without time zone) AND (event_time < '2026-04-01 00:00:00'::timestamp without time zone))
+         Heap Blocks: exact=79
+         Buffers: shared hit=82
+         ->  Bitmap Index Scan on idx_event_type_time  (cost=0.00..6.07 rows=132 width=0) (actual time=0.034..0.034 rows=116.00 loops=1)
+               Index Cond: (((event_type)::text = 'Incident'::text) AND (event_time >= '2026-03-01 00:00:00'::timestamp without time zone) AND (event_time < '2026-04-01 00:00:00'::timestamp without time zone))
+               Index Searches: 1
+               Buffers: shared hit=3
+ Planning:
+   Buffers: shared hit=126
+ Planning Time: 1.412 ms
+ Execution Time: 0.292 ms
+(14 rows)
+

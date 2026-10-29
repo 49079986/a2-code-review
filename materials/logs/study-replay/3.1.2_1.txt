@@ -1,0 +1,37 @@
+-- Statement A
+EXPLAIN (ANALYZE, BUFFERS) SELECT v.vehicle_id
+FROM VEHICLES v
+WHERE NOT EXISTS (
+    SELECT 1 FROM BOOKING_EVENTS e
+    WHERE e.vehicle_id = v.vehicle_id
+      AND e.event_type = 'Collect'
+)
+ORDER BY v.vehicle_id;
+                                                                      QUERY PLAN                                                                      
+------------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=4579.18..4579.30 rows=48 width=9) (actual time=12.704..12.707 rows=75.00 loops=1)
+   Sort Key: v.vehicle_id
+   Sort Method: quicksort  Memory: 25kB
+   Buffers: shared hit=1877
+   ->  Hash Right Anti Join  (cost=1413.37..4577.84 rows=48 width=9) (actual time=12.659..12.670 rows=75.00 loops=1)
+         Hash Cond: ((e.vehicle_id)::text = (v.vehicle_id)::text)
+         Buffers: shared hit=1874
+         ->  Bitmap Heap Scan on booking_events e  (cost=1386.12..3766.79 rows=59574 width=9) (actual time=1.465..8.881 rows=59539.00 loops=1)
+               Recheck Cond: ((event_type)::text = 'Collect'::text)
+               Heap Blocks: exact=1636
+               Buffers: shared hit=1867
+               ->  Bitmap Index Scan on idx_event_type_time  (cost=0.00..1371.23 rows=59574 width=0) (actual time=1.360..1.360 rows=59539.00 loops=1)
+                     Index Cond: ((event_type)::text = 'Collect'::text)
+                     Index Searches: 1
+                     Buffers: shared hit=231
+         ->  Hash  (cost=16.00..16.00 rows=900 width=9) (actual time=0.099..0.100 rows=900.00 loops=1)
+               Buckets: 1024  Batches: 1  Memory Usage: 45kB
+               Buffers: shared hit=7
+               ->  Seq Scan on vehicles v  (cost=0.00..16.00 rows=900 width=9) (actual time=0.010..0.050 rows=900.00 loops=1)
+                     Buffers: shared hit=7
+ Planning:
+   Buffers: shared hit=233
+ Planning Time: 2.249 ms
+ Execution Time: 12.788 ms
+(24 rows)
+

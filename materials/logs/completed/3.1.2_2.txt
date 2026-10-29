@@ -1,0 +1,36 @@
+-- Statement B
+EXPLAIN (ANALYZE, BUFFERS) SELECT v.vehicle_id
+FROM VEHICLES v
+LEFT JOIN BOOKING_EVENTS e
+  ON e.vehicle_id = v.vehicle_id
+ AND e.event_type = 'Collect'
+WHERE e.vehicle_id IS NULL
+ORDER BY v.vehicle_id;
+                                                                      QUERY PLAN                                                                      
+------------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=4579.18..4579.30 rows=48 width=9) (actual time=12.478..12.482 rows=75.00 loops=1)
+   Sort Key: v.vehicle_id
+   Sort Method: quicksort  Memory: 25kB
+   Buffers: shared hit=1877
+   ->  Hash Right Anti Join  (cost=1413.37..4577.84 rows=48 width=9) (actual time=12.438..12.448 rows=75.00 loops=1)
+         Hash Cond: ((e.vehicle_id)::text = (v.vehicle_id)::text)
+         Buffers: shared hit=1874
+         ->  Bitmap Heap Scan on booking_events e  (cost=1386.12..3766.79 rows=59574 width=9) (actual time=1.413..8.671 rows=59539.00 loops=1)
+               Recheck Cond: ((event_type)::text = 'Collect'::text)
+               Heap Blocks: exact=1636
+               Buffers: shared hit=1867
+               ->  Bitmap Index Scan on idx_event_type_time  (cost=0.00..1371.23 rows=59574 width=0) (actual time=1.318..1.318 rows=59539.00 loops=1)
+                     Index Cond: ((event_type)::text = 'Collect'::text)
+                     Index Searches: 1
+                     Buffers: shared hit=231
+         ->  Hash  (cost=16.00..16.00 rows=900 width=9) (actual time=0.101..0.102 rows=900.00 loops=1)
+               Buckets: 1024  Batches: 1  Memory Usage: 45kB
+               Buffers: shared hit=7
+               ->  Seq Scan on vehicles v  (cost=0.00..16.00 rows=900 width=9) (actual time=0.010..0.052 rows=900.00 loops=1)
+                     Buffers: shared hit=7
+ Planning:
+   Buffers: shared hit=233
+ Planning Time: 2.697 ms
+ Execution Time: 12.558 ms
+(24 rows)
+

@@ -1,0 +1,15 @@
+-- Step 1 | connection 1
+BEGIN;
+BEGIN
+
+-- Step 2 | connection 2
+BEGIN;
+BEGIN
+
+-- Step 3 | connection 1
+UPDATE VEHICLES SET odometer = odometer + 10 WHERE vehicle_id = 'VEH-0401';
+UPDATE 1
+
+-- Step 4 | connection 2
+UPDATE VEHICLES SET odometer = odometer + 20 WHERE vehicle_id = 'VEH-0501';
+UPDATE 1

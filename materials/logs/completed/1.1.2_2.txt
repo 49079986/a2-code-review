@@ -1,0 +1,73 @@
+EXPLAIN (ANALYZE, BUFFERS) SELECT * FROM V_BUSIEST_BAYS;
+                                                                                               QUERY PLAN                                                                                                
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=4782.24..4782.25 rows=2 width=32) (actual time=28.169..31.781 rows=6.00 loops=1)
+   Sort Key: ranked_stations.collections DESC, ranked_stations.body_type
+   Sort Method: quicksort  Memory: 25kB
+   Buffers: shared hit=1665
+   ->  Subquery Scan on ranked_stations  (cost=4682.66..4782.23 rows=2 width=32) (actual time=27.988..31.772 rows=6.00 loops=1)
+         Filter: (ranked_stations.rn = 1)
+         Buffers: shared hit=1662
+         ->  WindowAgg  (cost=4682.66..4777.73 rows=360 width=47) (actual time=27.986..31.770 rows=6.00 loops=1)
+               Window: w1 AS (PARTITION BY collection_counts.body_type ORDER BY collection_counts.collections, collection_counts.station_id ROWS UNBOUNDED PRECEDING)
+               Run Condition: (row_number() OVER w1 <= 1)
+               Storage: Memory  Maximum Storage: 17kB
+               Buffers: shared hit=1662
+               ->  Incremental Sort  (cost=4682.39..4770.53 rows=360 width=39) (actual time=27.975..31.746 rows=279.00 loops=1)
+                     Sort Key: collection_counts.body_type, collection_counts.collections DESC, collection_counts.station_id
+                     Presorted Key: collection_counts.body_type
+                     Full-sort Groups: 6  Sort Method: quicksort  Average Memory: 28kB  Peak Memory: 28kB
+                     Buffers: shared hit=1662
+                     ->  Subquery Scan on collection_counts  (cost=4681.99..4759.93 rows=360 width=39) (actual time=27.937..31.667 rows=279.00 loops=1)
+                           Buffers: shared hit=1662
+                           ->  Finalize GroupAggregate  (cost=4681.99..4759.93 rows=360 width=39) (actual time=27.935..31.652 rows=279.00 loops=1)
+                                 Group Key: m.body_type, s.station_id
+                                 Buffers: shared hit=1662
+                                 ->  Gather Merge  (cost=4681.99..4751.74 rows=612 width=39) (actual time=27.930..31.597 rows=558.00 loops=1)
+                                       Workers Planned: 1
+                                       Workers Launched: 1
+                                       Buffers: shared hit=1662
+                                       ->  Sort  (cost=3681.98..3682.88 rows=360 width=39) (actual time=18.952..18.961 rows=279.00 loops=2)
+                                             Sort Key: m.body_type, s.station_id
+                                             Sort Method: quicksort  Memory: 41kB
+                                             Buffers: shared hit=1662
+                                             Worker 0:  Sort Method: quicksort  Memory: 41kB
+                                             ->  Partial HashAggregate  (cost=3663.10..3666.70 rows=360 width=39) (actual time=18.822..18.843 rows=279.00 loops=2)
+                                                   Group Key: m.body_type, s.station_id
+                                                   Batches: 1  Memory Usage: 72kB
+                                                   Buffers: shared hit=1654
+                                                   Worker 0:  Batches: 1  Memory Usage: 72kB
+                                                   ->  Hash Join  (cost=32.62..3400.27 rows=35044 width=31) (actual time=0.697..15.367 rows=29769.50 loops=2)
+                                                         Hash Cond: ((v.station_id)::text = (s.station_id)::text)
+                                                         Buffers: shared hit=1654
+                                                         ->  Hash Join  (cost=30.27..3299.43 rows=35044 width=14) (actual time=0.550..12.549 rows=29769.50 loops=2)
+                                                               Hash Cond: ((v.model_code)::text = (m.model_code)::text)
+                                                               Buffers: shared hit=1652
+                                                               ->  Hash Join  (cost=27.25..3200.09 rows=35044 width=15) (actual time=0.368..9.712 rows=29769.50 loops=2)
+                                                                     Hash Cond: ((e.vehicle_id)::text = (v.vehicle_id)::text)
+                                                                     Buffers: shared hit=1650
+                                                                     ->  Parallel Seq Scan on booking_events e  (cost=0.00..3080.41 rows=35044 width=9) (actual time=0.008..6.405 rows=29769.50 loops=2)
+                                                                           Filter: ((event_type)::text = 'Collect'::text)
+                                                                           Rows Removed by Filter: 68450
+                                                                           Buffers: shared hit=1636
+                                                                     ->  Hash  (cost=16.00..16.00 rows=900 width=24) (actual time=0.354..0.354 rows=900.00 loops=2)
+                                                                           Buckets: 1024  Batches: 1  Memory Usage: 58kB
+                                                                           Buffers: shared hit=14
+                                                                           ->  Seq Scan on vehicles v  (cost=0.00..16.00 rows=900 width=24) (actual time=0.229..0.280 rows=900.00 loops=2)
+                                                                                 Buffers: shared hit=14
+                                                               ->  Hash  (cost=1.90..1.90 rows=90 width=15) (actual time=0.177..0.178 rows=90.00 loops=2)
+                                                                     Buckets: 1024  Batches: 1  Memory Usage: 13kB
+                                                                     Buffers: shared hit=2
+                                                                     ->  Seq Scan on models m  (cost=0.00..1.90 rows=90 width=15) (actual time=0.164..0.168 rows=90.00 loops=2)
+                                                                           Buffers: shared hit=2
+                                                         ->  Hash  (cost=1.60..1.60 rows=60 width=24) (actual time=0.143..0.144 rows=60.00 loops=2)
+                                                               Buckets: 1024  Batches: 1  Memory Usage: 12kB
+                                                               Buffers: shared hit=2
+                                                               ->  Seq Scan on stations s  (cost=0.00..1.60 rows=60 width=24) (actual time=0.130..0.133 rows=60.00 loops=2)
+                                                                     Buffers: shared hit=2
+ Planning:
+   Buffers: shared hit=335
+ Planning Time: 3.490 ms
+ Execution Time: 31.959 ms
+(68 rows)
+

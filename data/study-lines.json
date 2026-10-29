@@ -1,0 +1,1632 @@
+{
+  "1.1.1": [
+    {
+      "number": 1,
+      "code": "-- INFS7903 Assignment 2 | Yuyang Gong | 49079984",
+      "zh": "文件身份注释：标明课程、作业、姓名和学号。-- 后直到行末都不作为 SQL 执行；它不会建立对象、改变会话或影响查询结果。下面的行号按实际下载文件计算。",
+      "en": "This file header identifies the course, assignment, name and student ID. Text after -- is a comment, creating no object and changing no query or session behavior. Line numbers match the downloadable file."
+    },
+    {
+      "number": 2,
+      "code": "CREATE VIEW V_BUSIEST_BAYS AS",
+      "zh": "CREATE VIEW 建立名为 V_BUSIEST_BAYS 的普通视图，AS 后面的 SELECT 是它保存的查询定义。普通视图不是结果快照，读取时由数据库规划并计算这条查询。",
+      "en": "CREATE VIEW names the ordinary view V_BUSIEST_BAYS; AS introduces its stored query definition. It stores a query rather than a snapshot of result rows."
+    },
+    {
+      "number": 3,
+      "code": "WITH collection_counts AS (",
+      "zh": "WITH 定义只在当前查询内可见的 CTE collection_counts。括号内先解决“每种车型在每站取过几次车”，把计数和后面的排名分开；CTE 不等于永久表，也不保证一定物化。",
+      "en": "WITH introduces the query-local CTE collection_counts. It separates counting from ranking; a CTE is neither a permanent table nor necessarily materialized."
+    },
+    {
+      "number": 4,
+      "code": "    SELECT m.body_type, s.station_id, s.station_name,",
+      "zh": "取出车型类别，以及站点 ID 和名称。m、s 是后面 JOIN 定义的别名；保留 station_id 能区分同名站点，也能在排名次数相同时确定顺序。",
+      "en": "Select the body type and station identifier/name. The aliases m and s are defined by later joins; station_id distinguishes equal names and provides a deterministic tie-breaker."
+    },
+    {
+      "number": 5,
+      "code": "           COUNT(*) AS collections",
+      "zh": "COUNT(*) 数分组中的事件行，并把结果列命名为 collections。后面 WHERE 只保留 Collect，连接目标的主键又是唯一的，因此这里数的是取车事件次数，不是车辆数。",
+      "en": "COUNT(*) counts event rows in each group and names the column collections. The Collect filter and joins to unique keys make this a count of collections, not distinct vehicles."
+    },
+    {
+      "number": 6,
+      "code": "    FROM BOOKING_EVENTS e",
+      "zh": "从事件日志 BOOKING_EVENTS 开始，给它别名 e。车可以多次被取用，所以不能只从 VEHICLES 数车辆来替代事件次数。",
+      "en": "Read BOOKING_EVENTS as e. A vehicle may be collected repeatedly, so counting fleet vehicles cannot replace counting events."
+    },
+    {
+      "number": 7,
+      "code": "    JOIN VEHICLES v ON v.vehicle_id = e.vehicle_id",
+      "zh": "按 vehicle_id 把每条事件接到它对应的车辆 v。车辆主键唯一，因而一条事件最多接到一辆车；这一步取得车辆的 model_code 与 station_id。",
+      "en": "Join each event to its vehicle v through vehicle_id. The unique vehicle key prevents multiplication and exposes the model and recorded station."
+    },
+    {
+      "number": 8,
+      "code": "    JOIN MODELS m ON m.model_code = v.model_code",
+      "zh": "把车辆的 model_code 接到 MODELS 主键，给车型表别名 m，从而取得 body_type。事件日志本身没有车型类别，必须经过车辆再找到车型。",
+      "en": "Join the vehicle model_code to MODELS as m to obtain body_type; the event log does not store this attribute directly."
+    },
+    {
+      "number": 9,
+      "code": "    JOIN STATIONS s ON s.station_id = v.station_id",
+      "zh": "把车辆记录的 station_id 接到 STATIONS，给站点表别名 s，取得站名。原 schema 没有事件发生地点字段，所以这里使用车辆所记录的站点。",
+      "en": "Join the vehicle’s station_id to STATIONS as s for its name. This uses the vehicle’s recorded station because events have no location column."
+    },
+    {
+      "number": 10,
+      "code": "    WHERE e.event_type = 'Collect'",
+      "zh": "只保留事件类型等于字符串 Collect 的行；单引号表示字符串，e.event_type 是列。Reserve、Return 等其他事件不进入后续计数。",
+      "en": "Keep only rows whose event_type equals the string Collect. Single quotes delimit a string literal; other event types are excluded before counting."
+    },
+    {
+      "number": 11,
+      "code": "    GROUP BY m.body_type, s.station_id, s.station_name",
+      "zh": "按“车型类别＋站点”分组，再计算每组 COUNT(*)。站点 ID 和名称一起写清输出语义；名字相同但 ID 不同的站点不会被合并。",
+      "en": "Group by body type and station, then count each group. Including the station identifier keeps distinct stations separate even if names match."
+    },
+    {
+      "number": 12,
+      "code": "), ranked_stations AS (",
+      "zh": "前面的右括号结束 collection_counts；逗号开启第二个 CTE ranked_stations。两个 CTE 属于同一条 WITH 查询，不是两条独立执行的 SQL。",
+      "en": "Close collection_counts and introduce ranked_stations after the comma. Both CTEs belong to one WITH query, not separate SQL commands."
+    },
+    {
+      "number": 13,
+      "code": "    SELECT *, ROW_NUMBER() OVER (",
+      "zh": "SELECT * 保留上一层的所有列；ROW_NUMBER() OVER 开始添加一个窗口排名列。窗口函数不会把这些计数行再次合并，而是为每行增加序号。",
+      "en": "Retain all CTE columns and add a ROW_NUMBER window result. Window processing assigns a number to each row without collapsing rows into new groups."
+    },
+    {
+      "number": 14,
+      "code": "        PARTITION BY body_type",
+      "zh": "PARTITION BY body_type 让每种车型分别从 1 开始排名。如果省略这一行，就会把所有车型混在同一个总排名里。",
+      "en": "PARTITION BY body_type restarts numbering for each body type. Without it, all body types would compete in a single global ranking."
+    },
+    {
+      "number": 15,
+      "code": "        ORDER BY collections DESC, station_id",
+      "zh": "每种车型内部按 collections 降序，次数最多的排前面；相同次数时 station_id 默认升序。这个额外规则使 ROW_NUMBER 恰好选出一个确定的站点，而 RANK 可能产生多个并列第一。",
+      "en": "Within each body type, sort counts descending and station_id ascending for ties. The extra key gives ROW_NUMBER one deterministic winner; RANK could retain tied winners."
+    },
+    {
+      "number": 16,
+      "code": "    ) AS rn",
+      "zh": "关闭 OVER 的窗口定义，并把排名结果命名为 rn。rn 是这一层新增的列，下一层才能用 WHERE rn = 1 过滤，不能直接在同层 WHERE 中引用窗口结果。",
+      "en": "Close OVER and name the window output rn. An outer query can filter rn; the same SELECT level’s WHERE cannot directly filter its window result."
+    },
+    {
+      "number": 17,
+      "code": "    FROM collection_counts",
+      "zh": "第二个 CTE 的输入是刚才已经计数的 collection_counts。排名作用于“每站的计数行”，不是直接对 59,539 条原始 Collect 事件编号。",
+      "en": "Rank the already aggregated collection_counts rows, rather than numbering all raw Collect events."
+    },
+    {
+      "number": 18,
+      "code": ")",
+      "zh": "结束 ranked_stations 的查询定义；下面的 SELECT 是整条 WITH 查询的最终输出。括号只划定语法范围，不是事务结束。",
+      "en": "Close ranked_stations. The following SELECT is the final WITH-query output; this parenthesis is a scope boundary, not a transaction boundary."
+    },
+    {
+      "number": 19,
+      "code": "SELECT body_type, station_name, collections",
+      "zh": "最终只输出题目要求的 body_type、station_name 和 collections。station_id 与 rn 是实现排名所需的辅助列，不暴露为视图的结果列。",
+      "en": "Project only the required body type, station name and count. station_id and rn are internal ranking helpers, not final view columns."
+    },
+    {
+      "number": 20,
+      "code": "FROM ranked_stations",
+      "zh": "从含有每组序号的 ranked_stations 读取。此时每一行仍代表一个车型与站点组合，但已经知道它在本车型中的排名。",
+      "en": "Read ranked_stations, where each body-type/station row now has its within-type rank."
+    },
+    {
+      "number": 21,
+      "code": "WHERE rn = 1",
+      "zh": "每种车型仅保留 rn 为 1 的行，所以结果是一种车型一个站点。这里是每组取第一，不是全表 LIMIT 1；本数据返回 6 种车型。",
+      "en": "Keep rank one within each body type. This is one winner per group, not LIMIT 1 over the whole table; the dataset yields six body types."
+    },
+    {
+      "number": 22,
+      "code": "ORDER BY collections DESC, body_type;",
+      "zh": "把六个获胜站点按取车次数从多到少排列；次数相同再按 body_type 排序。分号结束 CREATE VIEW 整条语句，后续查询该视图即可执行这个定义。",
+      "en": "Sort the six winners by count descending and then body type. The semicolon ends CREATE VIEW; subsequent reads use this definition."
+    }
+  ],
+  "1.1.2": [
+    {
+      "number": 1,
+      "code": "-- INFS7903 Assignment 2 | Yuyang Gong | 49079984",
+      "zh": "文件身份注释：标明课程、作业、姓名和学号。-- 后直到行末都不作为 SQL 执行；它不会建立对象、改变会话或影响查询结果。下面的行号按实际下载文件计算。",
+      "en": "This file header identifies the course, assignment, name and student ID. Text after -- is a comment, creating no object and changing no query or session behavior. Line numbers match the downloadable file."
+    },
+    {
+      "number": 2,
+      "code": "SELECT * FROM V_BUSIEST_BAYS;",
+      "zh": "读取 V_BUSIEST_BAYS 的全部结果列。这个 SELECT 才用于展示结果；下一条 EXPLAIN ANALYZE 另用于研究执行方式，两次运行的缓存和计时可能不同。",
+      "en": "Read all result columns from V_BUSIEST_BAYS. This SELECT displays tuples; the separate EXPLAIN ANALYZE studies execution, and the two runs may see different cache state and timing."
+    },
+    {
+      "number": 3,
+      "code": "EXPLAIN (ANALYZE, BUFFERS) SELECT * FROM V_BUSIEST_BAYS;",
+      "zh": "EXPLAIN 显示“V_BUSIEST_BAYS”的物理执行计划；ANALYZE 会真正运行该查询并记录实际耗时、行数与 loops，BUFFERS 增加缓冲页访问统计。这里不逐行打印普通查询结果；cost 是估计单位，不能直接当毫秒，也不能把父子节点时间简单相加。",
+      "en": "EXPLAIN shows the physical plan for V_BUSIEST_BAYS. ANALYZE really executes it and records actual timing, rows and loops; BUFFERS adds page-access statistics. It does not return ordinary result tuples, cost is not milliseconds, and parent/child timings must not simply be summed."
+    }
+  ],
+  "1.2": [
+    {
+      "number": 1,
+      "code": "-- INFS7903 Assignment 2 | Yuyang Gong | 49079984",
+      "zh": "文件身份注释：标明课程、作业、姓名和学号。-- 后直到行末都不作为 SQL 执行；它不会建立对象、改变会话或影响查询结果。下面的行号按实际下载文件计算。",
+      "en": "This file header identifies the course, assignment, name and student ID. Text after -- is a comment, creating no object and changing no query or session behavior. Line numbers match the downloadable file."
+    },
+    {
+      "number": 2,
+      "code": "CREATE VIEW V_ACCOUNT_LIABILITY AS",
+      "zh": "创建普通视图 V_ACCOUNT_LIABILITY，结果列由后面的 SELECT 决定。它保存“最终由谁付款”的查询定义，不把当前前十名永久冻结。",
+      "en": "Create V_ACCOUNT_LIABILITY as an ordinary view. Its SELECT determines the columns and recalculates ultimately liable accounts when read."
+    },
+    {
+      "number": 3,
+      "code": "WITH RECURSIVE account_tree AS (",
+      "zh": "WITH RECURSIVE 允许 account_tree 在后半段引用自己的当前递归结果。这里从无赞助人的根账号往下找孩子，把每个成员映射到最终付款账号。",
+      "en": "WITH RECURSIVE lets account_tree refer to its current recursive rows. The traversal starts at unsponsored roots and propagates the ultimate payer down to descendants."
+    },
+    {
+      "number": 4,
+      "code": "    SELECT member_id, member_id AS account_id",
+      "zh": "基础层把根账号的 member_id 同时输出为 member_id 和 account_id。前者是“当前成员”，后者是“一直保留的最终付款根”，例如根 13943 对应 (13943,13943)。",
+      "en": "The seed emits a root’s member_id twice: the current member and its ultimate account_id. Root 13943 therefore begins as (13943,13943)."
+    },
+    {
+      "number": 5,
+      "code": "    FROM MEMBERS",
+      "zh": "基础层从 MEMBERS 成员表读取，尚未访问收费日志。先建立成员到根的对应关系，再连接收费，能清楚区分层级关系与金额汇总。",
+      "en": "Read MEMBERS for the seed, before joining any charges. This separates hierarchy resolution from monetary aggregation."
+    },
+    {
+      "number": 6,
+      "code": "    WHERE sponsor_id IS NULL",
+      "zh": "sponsor_id 为 NULL 的成员没有上级，需要自己付款，因此是根节点。判断 NULL 必须用 IS NULL，写 = NULL 不会得到期望的真值。",
+      "en": "Members with sponsor_id IS NULL are self-paying roots. IS NULL is required because ordinary equality with NULL does not test for nullness."
+    },
+    {
+      "number": 7,
+      "code": "    UNION ALL",
+      "zh": "UNION ALL 合并基础层和后面一轮轮找出的孩子，不做去重。对给定的无环、每人至多一个 sponsor 的层级，每个成员只有一条根路径；这段代码本身不是通用的环检测器。",
+      "en": "UNION ALL appends recursive descendants without deduplication. In the supplied acyclic single-sponsor hierarchy, each member has one root path; this query is not a general cycle detector."
+    },
+    {
+      "number": 8,
+      "code": "    SELECT child.member_id, parent.account_id",
+      "zh": "每次输出孩子自己的 member_id，但 account_id 仍复制父行携带的根账号。不能在此改成 parent.member_id，否则深层成员会被错误归到直接父母。",
+      "en": "Emit the child’s own member_id but retain the parent row’s ultimate account_id. Using parent.member_id instead would incorrectly bill deeper descendants to an intermediate sponsor."
+    },
+    {
+      "number": 9,
+      "code": "    FROM MEMBERS child",
+      "zh": "把成员表中的候选孩子命名为 child。它们可能属于任意一层；是否接上当前递归结果，由下一行的连接条件决定。",
+      "en": "Read candidate child members from MEMBERS. The next join decides which ones descend from the current recursive frontier."
+    },
+    {
+      "number": 10,
+      "code": "    JOIN account_tree parent ON child.sponsor_id = parent.member_id",
+      "zh": "child.sponsor_id 等于当前 parent.member_id 时，说明这个成员直接受该 parent 赞助；递归继续往下扩展。parent 是 CTE 的递归行别名，不一定是最终根。",
+      "en": "Match a child’s sponsor_id to a current parent member_id and extend the traversal. parent names a recursive row, which may itself be an intermediate account."
+    },
+    {
+      "number": 11,
+      "code": ")",
+      "zh": "结束递归 CTE。此时给定数据中的 24,000 名成员各有一个 account_id；后面的聚合使用这份映射，递归本身不负责金额相加。",
+      "en": "Close the recursive CTE. The supplied data maps all 24,000 members to account_id; monetary aggregation happens afterward."
+    },
+    {
+      "number": 12,
+      "code": "SELECT root.member_id, root.member_name,",
+      "zh": "输出根账号的 ID 和姓名，而不是产生费用的下属姓名。root 是下一步连接得到的最终付款成员记录。",
+      "en": "Select the root account’s identifier and name, not the descendant who incurred the charge. root will identify that ultimately liable member."
+    },
+    {
+      "number": 13,
+      "code": "       SUM(e.amount) AS total_amount",
+      "zh": "SUM(e.amount) 把同一根账号下的有效收费相加，结果列叫 total_amount。SUM 会忽略 NULL；下面仍显式限定 Return 和 Incident 来表达业务含义。",
+      "en": "Sum charge amounts for each root as total_amount. SUM ignores NULL, while the explicit event-type filter states which events are charges."
+    },
+    {
+      "number": 14,
+      "code": "FROM account_tree t",
+      "zh": "给 account_tree 结果别名 t。t.member_id 表示收费成员，t.account_id 表示该成员最终归属的付款账号。",
+      "en": "Read account_tree as t: t.member_id is the charged member and t.account_id is the ultimately liable account."
+    },
+    {
+      "number": 15,
+      "code": "JOIN MEMBERS root ON root.member_id = t.account_id",
+      "zh": "用 t.account_id 找到 MEMBERS 中的根账号 root，取得它的姓名。不能把 root 接到 t.member_id，否则输出会变成每位驾驶成员的个人账单。",
+      "en": "Join t.account_id to the root member record for its name. Joining root to t.member_id instead would report individual drivers rather than ultimate payers."
+    },
+    {
+      "number": 16,
+      "code": "JOIN BOOKING_EVENTS e ON e.member_id = t.member_id",
+      "zh": "把每条收费事件按 e.member_id 接到映射中的收费成员 t.member_id。一次事件只接到它唯一的根映射，避免在多个祖先账户重复累加。",
+      "en": "Join each event’s member_id to the charged member in the mapping. Its unique root mapping prevents counting one event once at each ancestor."
+    },
+    {
+      "number": 17,
+      "code": "WHERE e.event_type IN ('Return', 'Incident')",
+      "zh": "只保留 Return 车费和 Incident 损坏收费。Reserve、Collect、Cancel 不属于本题费用事件，即使它们与同一成员有关也不应计入收费总额。",
+      "en": "Keep Return fares and Incident damage charges, excluding Reserve, Collect and Cancel from the monetary totals."
+    },
+    {
+      "number": 18,
+      "code": "  AND e.event_time >= TIMESTAMP '2026-01-01'",
+      "zh": "使用带类型的 TIMESTAMP 字面量，从 2026-01-01 零点起包含记录。>= 保留恰好在年初零点发生的收费。",
+      "en": "Use a typed TIMESTAMP lower bound and include records at or after midnight on 1 January 2026."
+    },
+    {
+      "number": 19,
+      "code": "  AND e.event_time <  TIMESTAMP '2026-07-01'",
+      "zh": "排除 2026-07-01 零点及之后，因而包含 6 月 30 日的全部时间。这种半开区间不会像 <= 2026-06-30 零点那样漏掉最后一天后续事件。",
+      "en": "Exclude midnight on 1 July and later, thereby including all of 30 June. The half-open interval avoids truncating the final day at its midnight."
+    },
+    {
+      "number": 20,
+      "code": "GROUP BY root.member_id, root.member_name",
+      "zh": "按最终根账号分组，同一个根名下的自己、子账号及更深层成员的费用合成一行。member_id 是主键，也避免把同名但不同 ID 的人合并。",
+      "en": "Group charges by the ultimate root account, including its own and all descendants’ charges. The identifier keeps distinct people with equal names separate."
+    },
+    {
+      "number": 21,
+      "code": "ORDER BY total_amount DESC, root.member_id",
+      "zh": "先按总金额降序，金额相同再按根 member_id 升序。这个稳定的次排序让恰好前十名在并列边界时仍有确定选择。",
+      "en": "Sort total liability descending, then member_id ascending to make selection deterministic at a tied top-ten boundary."
+    },
+    {
+      "number": 22,
+      "code": "LIMIT 10;",
+      "zh": "LIMIT 10 在排序后只保留最高的十个根账户。不能先截取十条收费事件或十个成员再求和，否则会改变题目要计算的全体费用。",
+      "en": "After sorting, retain the ten highest-liability root accounts. Limiting charge rows or members before aggregation would compute the wrong population."
+    }
+  ],
+  "1.3.1": [
+    {
+      "number": 1,
+      "code": "-- INFS7903 Assignment 2 | Yuyang Gong | 49079984",
+      "zh": "文件身份注释：标明课程、作业、姓名和学号。-- 后直到行末都不作为 SQL 执行；它不会建立对象、改变会话或影响查询结果。下面的行号按实际下载文件计算。",
+      "en": "This file header identifies the course, assignment, name and student ID. Text after -- is a comment, creating no object and changing no query or session behavior. Line numbers match the downloadable file."
+    },
+    {
+      "number": 2,
+      "code": "CREATE MATERIALIZED VIEW MV_ACCOUNT_LIABILITY AS",
+      "zh": "CREATE MATERIALIZED VIEW 把同一个递归查询的当前结果实际存成 MV_ACCOUNT_LIABILITY。与普通视图不同，后续底层表变化不会自动更新这份结果，需要 REFRESH。",
+      "en": "CREATE MATERIALIZED VIEW stores the current recursive-query result as MV_ACCOUNT_LIABILITY. Unlike an ordinary view, it does not automatically reflect later base-table changes and requires REFRESH."
+    },
+    {
+      "number": 3,
+      "code": "WITH RECURSIVE account_tree AS (",
+      "zh": "WITH RECURSIVE 允许 account_tree 在后半段引用自己的当前递归结果。这里从无赞助人的根账号往下找孩子，把每个成员映射到最终付款账号。",
+      "en": "WITH RECURSIVE lets account_tree refer to its current recursive rows. The traversal starts at unsponsored roots and propagates the ultimate payer down to descendants."
+    },
+    {
+      "number": 4,
+      "code": "    SELECT member_id, member_id AS account_id",
+      "zh": "基础层把根账号的 member_id 同时输出为 member_id 和 account_id。前者是“当前成员”，后者是“一直保留的最终付款根”，例如根 13943 对应 (13943,13943)。",
+      "en": "The seed emits a root’s member_id twice: the current member and its ultimate account_id. Root 13943 therefore begins as (13943,13943)."
+    },
+    {
+      "number": 5,
+      "code": "    FROM MEMBERS",
+      "zh": "基础层从 MEMBERS 成员表读取，尚未访问收费日志。先建立成员到根的对应关系，再连接收费，能清楚区分层级关系与金额汇总。",
+      "en": "Read MEMBERS for the seed, before joining any charges. This separates hierarchy resolution from monetary aggregation."
+    },
+    {
+      "number": 6,
+      "code": "    WHERE sponsor_id IS NULL",
+      "zh": "sponsor_id 为 NULL 的成员没有上级，需要自己付款，因此是根节点。判断 NULL 必须用 IS NULL，写 = NULL 不会得到期望的真值。",
+      "en": "Members with sponsor_id IS NULL are self-paying roots. IS NULL is required because ordinary equality with NULL does not test for nullness."
+    },
+    {
+      "number": 7,
+      "code": "    UNION ALL",
+      "zh": "UNION ALL 合并基础层和后面一轮轮找出的孩子，不做去重。对给定的无环、每人至多一个 sponsor 的层级，每个成员只有一条根路径；这段代码本身不是通用的环检测器。",
+      "en": "UNION ALL appends recursive descendants without deduplication. In the supplied acyclic single-sponsor hierarchy, each member has one root path; this query is not a general cycle detector."
+    },
+    {
+      "number": 8,
+      "code": "    SELECT child.member_id, parent.account_id",
+      "zh": "每次输出孩子自己的 member_id，但 account_id 仍复制父行携带的根账号。不能在此改成 parent.member_id，否则深层成员会被错误归到直接父母。",
+      "en": "Emit the child’s own member_id but retain the parent row’s ultimate account_id. Using parent.member_id instead would incorrectly bill deeper descendants to an intermediate sponsor."
+    },
+    {
+      "number": 9,
+      "code": "    FROM MEMBERS child",
+      "zh": "把成员表中的候选孩子命名为 child。它们可能属于任意一层；是否接上当前递归结果，由下一行的连接条件决定。",
+      "en": "Read candidate child members from MEMBERS. The next join decides which ones descend from the current recursive frontier."
+    },
+    {
+      "number": 10,
+      "code": "    JOIN account_tree parent ON child.sponsor_id = parent.member_id",
+      "zh": "child.sponsor_id 等于当前 parent.member_id 时，说明这个成员直接受该 parent 赞助；递归继续往下扩展。parent 是 CTE 的递归行别名，不一定是最终根。",
+      "en": "Match a child’s sponsor_id to a current parent member_id and extend the traversal. parent names a recursive row, which may itself be an intermediate account."
+    },
+    {
+      "number": 11,
+      "code": ")",
+      "zh": "结束递归 CTE。此时给定数据中的 24,000 名成员各有一个 account_id；后面的聚合使用这份映射，递归本身不负责金额相加。",
+      "en": "Close the recursive CTE. The supplied data maps all 24,000 members to account_id; monetary aggregation happens afterward."
+    },
+    {
+      "number": 12,
+      "code": "SELECT root.member_id, root.member_name,",
+      "zh": "输出根账号的 ID 和姓名，而不是产生费用的下属姓名。root 是下一步连接得到的最终付款成员记录。",
+      "en": "Select the root account’s identifier and name, not the descendant who incurred the charge. root will identify that ultimately liable member."
+    },
+    {
+      "number": 13,
+      "code": "       SUM(e.amount) AS total_amount",
+      "zh": "SUM(e.amount) 把同一根账号下的有效收费相加，结果列叫 total_amount。SUM 会忽略 NULL；下面仍显式限定 Return 和 Incident 来表达业务含义。",
+      "en": "Sum charge amounts for each root as total_amount. SUM ignores NULL, while the explicit event-type filter states which events are charges."
+    },
+    {
+      "number": 14,
+      "code": "FROM account_tree t",
+      "zh": "给 account_tree 结果别名 t。t.member_id 表示收费成员，t.account_id 表示该成员最终归属的付款账号。",
+      "en": "Read account_tree as t: t.member_id is the charged member and t.account_id is the ultimately liable account."
+    },
+    {
+      "number": 15,
+      "code": "JOIN MEMBERS root ON root.member_id = t.account_id",
+      "zh": "用 t.account_id 找到 MEMBERS 中的根账号 root，取得它的姓名。不能把 root 接到 t.member_id，否则输出会变成每位驾驶成员的个人账单。",
+      "en": "Join t.account_id to the root member record for its name. Joining root to t.member_id instead would report individual drivers rather than ultimate payers."
+    },
+    {
+      "number": 16,
+      "code": "JOIN BOOKING_EVENTS e ON e.member_id = t.member_id",
+      "zh": "把每条收费事件按 e.member_id 接到映射中的收费成员 t.member_id。一次事件只接到它唯一的根映射，避免在多个祖先账户重复累加。",
+      "en": "Join each event’s member_id to the charged member in the mapping. Its unique root mapping prevents counting one event once at each ancestor."
+    },
+    {
+      "number": 17,
+      "code": "WHERE e.event_type IN ('Return', 'Incident')",
+      "zh": "只保留 Return 车费和 Incident 损坏收费。Reserve、Collect、Cancel 不属于本题费用事件，即使它们与同一成员有关也不应计入收费总额。",
+      "en": "Keep Return fares and Incident damage charges, excluding Reserve, Collect and Cancel from the monetary totals."
+    },
+    {
+      "number": 18,
+      "code": "  AND e.event_time >= TIMESTAMP '2026-01-01'",
+      "zh": "使用带类型的 TIMESTAMP 字面量，从 2026-01-01 零点起包含记录。>= 保留恰好在年初零点发生的收费。",
+      "en": "Use a typed TIMESTAMP lower bound and include records at or after midnight on 1 January 2026."
+    },
+    {
+      "number": 19,
+      "code": "  AND e.event_time <  TIMESTAMP '2026-07-01'",
+      "zh": "排除 2026-07-01 零点及之后，因而包含 6 月 30 日的全部时间。这种半开区间不会像 <= 2026-06-30 零点那样漏掉最后一天后续事件。",
+      "en": "Exclude midnight on 1 July and later, thereby including all of 30 June. The half-open interval avoids truncating the final day at its midnight."
+    },
+    {
+      "number": 20,
+      "code": "GROUP BY root.member_id, root.member_name",
+      "zh": "按最终根账号分组，同一个根名下的自己、子账号及更深层成员的费用合成一行。member_id 是主键，也避免把同名但不同 ID 的人合并。",
+      "en": "Group charges by the ultimate root account, including its own and all descendants’ charges. The identifier keeps distinct people with equal names separate."
+    },
+    {
+      "number": 21,
+      "code": "ORDER BY total_amount DESC, root.member_id",
+      "zh": "先按总金额降序，金额相同再按根 member_id 升序。这个稳定的次排序让恰好前十名在并列边界时仍有确定选择。",
+      "en": "Sort total liability descending, then member_id ascending to make selection deterministic at a tied top-ten boundary."
+    },
+    {
+      "number": 22,
+      "code": "LIMIT 10;",
+      "zh": "LIMIT 10 在排序后只保留最高的十个根账户。不能先截取十条收费事件或十个成员再求和，否则会改变题目要计算的全体费用。",
+      "en": "After sorting, retain the ten highest-liability root accounts. Limiting charge rows or members before aggregation would compute the wrong population."
+    }
+  ],
+  "1.3.2": [
+    {
+      "number": 1,
+      "code": "-- INFS7903 Assignment 2 | Yuyang Gong | 49079984",
+      "zh": "文件身份注释：标明课程、作业、姓名和学号。-- 后直到行末都不作为 SQL 执行；它不会建立对象、改变会话或影响查询结果。下面的行号按实际下载文件计算。",
+      "en": "This file header identifies the course, assignment, name and student ID. Text after -- is a comment, creating no object and changing no query or session behavior. Line numbers match the downloadable file."
+    },
+    {
+      "number": 2,
+      "code": "-- Query A",
+      "zh": "注释标记 Query A，读取普通视图；-- 后的文字不会执行。",
+      "en": "Label Query A, the ordinary-view read; the comment is not executed."
+    },
+    {
+      "number": 3,
+      "code": "SELECT * FROM V_ACCOUNT_LIABILITY;",
+      "zh": "读取 V_ACCOUNT_LIABILITY 的全部结果列。这个 SELECT 才用于展示结果；下一条 EXPLAIN ANALYZE 另用于研究执行方式，两次运行的缓存和计时可能不同。",
+      "en": "Read all result columns from V_ACCOUNT_LIABILITY. This SELECT displays tuples; the separate EXPLAIN ANALYZE studies execution, and the two runs may see different cache state and timing."
+    },
+    {
+      "number": 4,
+      "code": "EXPLAIN (ANALYZE, BUFFERS) SELECT * FROM V_ACCOUNT_LIABILITY;",
+      "zh": "EXPLAIN 显示“the ordinary liability view”的物理执行计划；ANALYZE 会真正运行该查询并记录实际耗时、行数与 loops，BUFFERS 增加缓冲页访问统计。这里不逐行打印普通查询结果；cost 是估计单位，不能直接当毫秒，也不能把父子节点时间简单相加。",
+      "en": "EXPLAIN shows the physical plan for the ordinary liability view. ANALYZE really executes it and records actual timing, rows and loops; BUFFERS adds page-access statistics. It does not return ordinary result tuples, cost is not milliseconds, and parent/child timings must not simply be summed."
+    },
+    {
+      "number": 5,
+      "code": "-- Query B",
+      "zh": "注释标记 Query B，读取已保存结果的物化视图。A 与 B 必须在同一数据阶段比较。",
+      "en": "Label Query B, the stored materialized result. Compare A and B at the same data stage."
+    },
+    {
+      "number": 6,
+      "code": "SELECT * FROM MV_ACCOUNT_LIABILITY;",
+      "zh": "读取 MV_ACCOUNT_LIABILITY 的全部结果列。这个 SELECT 才用于展示结果；下一条 EXPLAIN ANALYZE 另用于研究执行方式，两次运行的缓存和计时可能不同。",
+      "en": "Read all result columns from MV_ACCOUNT_LIABILITY. This SELECT displays tuples; the separate EXPLAIN ANALYZE studies execution, and the two runs may see different cache state and timing."
+    },
+    {
+      "number": 7,
+      "code": "EXPLAIN (ANALYZE, BUFFERS) SELECT * FROM MV_ACCOUNT_LIABILITY;",
+      "zh": "EXPLAIN 显示“the materialized liability view”的物理执行计划；ANALYZE 会真正运行该查询并记录实际耗时、行数与 loops，BUFFERS 增加缓冲页访问统计。这里不逐行打印普通查询结果；cost 是估计单位，不能直接当毫秒，也不能把父子节点时间简单相加。",
+      "en": "EXPLAIN shows the physical plan for the materialized liability view. ANALYZE really executes it and records actual timing, rows and loops; BUFFERS adds page-access statistics. It does not return ordinary result tuples, cost is not milliseconds, and parent/child timings must not simply be summed."
+    }
+  ],
+  "1.3.3": [
+    {
+      "number": 1,
+      "code": "-- INFS7903 Assignment 2 | Yuyang Gong | 49079984",
+      "zh": "文件身份注释：标明课程、作业、姓名和学号。-- 后直到行末都不作为 SQL 执行；它不会建立对象、改变会话或影响查询结果。下面的行号按实际下载文件计算。",
+      "en": "This file header identifies the course, assignment, name and student ID. Text after -- is a comment, creating no object and changing no query or session behavior. Line numbers match the downloadable file."
+    },
+    {
+      "number": 2,
+      "code": "INSERT INTO BOOKING_EVENTS (member_id, vehicle_id, event_type, event_time, amount)",
+      "zh": "INSERT INTO 指定要往事件表写入的五列，后面的 SELECT 为它产生一行值。没有写 event_id，让 SERIAL 的默认序列自动生成事件 ID。",
+      "en": "INSERT INTO lists the five target event columns; the following SELECT supplies a row. Omitted event_id uses its SERIAL default sequence."
+    },
+    {
+      "number": 3,
+      "code": "SELECT member_id, 'VEH-0001', 'Incident', TIMESTAMP '2026-05-04 09:15:00', 90000.00",
+      "zh": "为选中的成员生成 VEH-0001、Incident、指定时间和 90000.00 五个值，与 INSERT 列顺序对应。这里用题目指定的 5 月时间，属于 Q1.2 的计费区间；不是把损坏费分摊给所有成员。",
+      "en": "Build one row with the selected member, VEH-0001, Incident, the specified May timestamp and 90000.00 in target-column order. The charge lies within the liability window and is not assigned to every member."
+    },
+    {
+      "number": 4,
+      "code": "FROM MEMBERS WHERE sponsor_id IS NOT NULL ORDER BY member_id DESC LIMIT 1;",
+      "zh": "从有 sponsor 的成员中按 member_id 降序取 1 人，实际为 24000。WHERE 确保选中被赞助成员，ORDER BY DESC 与 LIMIT 1 决定唯一被收费的人；递归再把费用传到根 13943。",
+      "en": "Choose the highest-ID sponsored member, 24000. WHERE requires sponsorship and descending order plus LIMIT 1 selects one person; recursion later bills root 13943."
+    },
+    {
+      "number": 5,
+      "code": "-- Query A reflects the inserted charge immediately.",
+      "zh": "注释提醒下一次查询应反映新收费。它本身既不刷新视图，也不产生任何结果。",
+      "en": "This comment introduces the ordinary-view rerun; it performs no refresh or query itself."
+    },
+    {
+      "number": 6,
+      "code": "SELECT * FROM V_ACCOUNT_LIABILITY;",
+      "zh": "读取 V_ACCOUNT_LIABILITY 的全部结果列。这个 SELECT 才用于展示结果；下一条 EXPLAIN ANALYZE 另用于研究执行方式，两次运行的缓存和计时可能不同。",
+      "en": "Read all result columns from V_ACCOUNT_LIABILITY. This SELECT displays tuples; the separate EXPLAIN ANALYZE studies execution, and the two runs may see different cache state and timing."
+    },
+    {
+      "number": 7,
+      "code": "-- Query B still contains its stored result.",
+      "zh": "注释指出此刻物化视图仍保存创建时的旧结果，用于对照陈旧性。",
+      "en": "The comment introduces the still-stale stored result for comparison."
+    },
+    {
+      "number": 8,
+      "code": "SELECT * FROM MV_ACCOUNT_LIABILITY;",
+      "zh": "读取 MV_ACCOUNT_LIABILITY 的全部结果列。这个 SELECT 才用于展示结果；下一条 EXPLAIN ANALYZE 另用于研究执行方式，两次运行的缓存和计时可能不同。",
+      "en": "Read all result columns from MV_ACCOUNT_LIABILITY. This SELECT displays tuples; the separate EXPLAIN ANALYZE studies execution, and the two runs may see different cache state and timing."
+    },
+    {
+      "number": 9,
+      "code": "REFRESH MATERIALIZED VIEW MV_ACCOUNT_LIABILITY;",
+      "zh": "REFRESH 重新执行物化视图的定义并替换其已保存结果。它刷新的是整个定义结果，不是只手动给某行加 90000；刷新后前十名单也可能变化。",
+      "en": "REFRESH reruns the defining query and replaces the stored result, rather than manually adding 90000 to one row. Membership of the top ten may change."
+    },
+    {
+      "number": 10,
+      "code": "-- Query B after refresh.",
+      "zh": "注释标记刷新后的最后一次读取，以便与刷新前的 Query B 区分。",
+      "en": "Label the final read after refresh, distinct from the stale Query B read."
+    },
+    {
+      "number": 11,
+      "code": "SELECT * FROM MV_ACCOUNT_LIABILITY;",
+      "zh": "读取 MV_ACCOUNT_LIABILITY after refresh 的全部结果列。这个 SELECT 才用于展示结果；下一条 EXPLAIN ANALYZE 另用于研究执行方式，两次运行的缓存和计时可能不同。",
+      "en": "Read all result columns from MV_ACCOUNT_LIABILITY after refresh. This SELECT displays tuples; the separate EXPLAIN ANALYZE studies execution, and the two runs may see different cache state and timing."
+    }
+  ],
+  "2.1.1": [
+    {
+      "number": 1,
+      "code": "-- INFS7903 Assignment 2 | Yuyang Gong | 49079984",
+      "zh": "文件身份注释：标明课程、作业、姓名和学号。-- 后直到行末都不作为 SQL 执行；它不会建立对象、改变会话或影响查询结果。下面的行号按实际下载文件计算。",
+      "en": "This file header identifies the course, assignment, name and student ID. Text after -- is a comment, creating no object and changing no query or session behavior. Line numbers match the downloadable file."
+    },
+    {
+      "number": 2,
+      "code": "CREATE INDEX IDX_EVENT_TYPE_TIME",
+      "zh": "创建名为 IDX_EVENT_TYPE_TIME 的索引。没有指定 USING 时 PostgreSQL 默认使用 B-tree；创建索引增加一种可选访问路径，不强迫查询使用它。",
+      "en": "Create IDX_EVENT_TYPE_TIME using PostgreSQL’s default B-tree access method. It adds an available path rather than forcing its use."
+    },
+    {
+      "number": 3,
+      "code": "ON BOOKING_EVENTS (event_type, event_time);",
+      "zh": "在 BOOKING_EVENTS 上依次索引 event_type、event_time。先固定类型，再限制其内部时间范围很有效；两列不是两份独立单列索引，后续写入也要维护这棵索引。",
+      "en": "Index event_type first and event_time second on BOOKING_EVENTS. Type equality plus an internal time range is effective; this is one composite index, and writes must maintain it."
+    }
+  ],
+  "2.1.2": [
+    {
+      "number": 1,
+      "code": "-- INFS7903 Assignment 2 | Yuyang Gong | 49079984",
+      "zh": "文件身份注释：标明课程、作业、姓名和学号。-- 后直到行末都不作为 SQL 执行；它不会建立对象、改变会话或影响查询结果。下面的行号按实际下载文件计算。",
+      "en": "This file header identifies the course, assignment, name and student ID. Text after -- is a comment, creating no object and changing no query or session behavior. Line numbers match the downloadable file."
+    },
+    {
+      "number": 2,
+      "code": "SELECT * FROM V_BUSIEST_BAYS;",
+      "zh": "用与 Q1.1 完全相同的 SELECT 读取最忙站点视图；改变的是数据库中多了复合索引，而不是查询语义。保持查询一致才便于比较访问路径。",
+      "en": "Repeat exactly the Q1.1 SELECT after adding the composite index. Holding query semantics constant makes the access-path comparison meaningful."
+    },
+    {
+      "number": 3,
+      "code": "EXPLAIN (ANALYZE, BUFFERS) SELECT * FROM V_BUSIEST_BAYS;",
+      "zh": "EXPLAIN 显示“V_BUSIEST_BAYS”的物理执行计划；ANALYZE 会真正运行该查询并记录实际耗时、行数与 loops，BUFFERS 增加缓冲页访问统计。这里不逐行打印普通查询结果；cost 是估计单位，不能直接当毫秒，也不能把父子节点时间简单相加。",
+      "en": "EXPLAIN shows the physical plan for V_BUSIEST_BAYS. ANALYZE really executes it and records actual timing, rows and loops; BUFFERS adds page-access statistics. It does not return ordinary result tuples, cost is not milliseconds, and parent/child timings must not simply be summed."
+    }
+  ],
+  "2.1.3": [
+    {
+      "number": 1,
+      "code": "-- INFS7903 Assignment 2 | Yuyang Gong | 49079984",
+      "zh": "文件身份注释：标明课程、作业、姓名和学号。-- 后直到行末都不作为 SQL 执行；它不会建立对象、改变会话或影响查询结果。下面的行号按实际下载文件计算。",
+      "en": "This file header identifies the course, assignment, name and student ID. Text after -- is a comment, creating no object and changing no query or session behavior. Line numbers match the downloadable file."
+    },
+    {
+      "number": 2,
+      "code": "SELECT count(*), sum(amount) FROM BOOKING_EVENTS",
+      "zh": "COUNT(*) 数匹配事件，SUM(amount) 加总这些事件的金额；没有 GROUP BY 时对全部匹配行返回一个聚合结果。本次为 116 与 86382.67，不是 116 行结果。",
+      "en": "Count matching events and sum their amounts. Without GROUP BY this returns one aggregate row: 116 and 86382.67, not 116 output rows."
+    },
+    {
+      "number": 3,
+      "code": "WHERE event_type = 'Incident'",
+      "zh": "固定复合索引的第一列为 Incident，先排除其他事件类型。它不是 LIKE 模糊匹配。",
+      "en": "Fix the composite index’s leading event_type to Incident using equality, excluding other types."
+    },
+    {
+      "number": 4,
+      "code": "  AND event_time >= TIMESTAMP '2026-03-01'",
+      "zh": "时间下界含 2026-03-01 零点，约束索引的第二列。",
+      "en": "Apply an inclusive lower bound at midnight on 1 March 2026 to the second index key."
+    },
+    {
+      "number": 5,
+      "code": "  AND event_time <  TIMESTAMP '2026-04-01';",
+      "zh": "时间上界不含 2026-04-01 零点，完整包含 3 月最后一天，不依赖写出当月最后一秒。",
+      "en": "Apply an exclusive upper bound at midnight on 1 April, including all of March without guessing its last representable second."
+    },
+    {
+      "number": 6,
+      "code": "EXPLAIN (ANALYZE, BUFFERS) SELECT count(*), sum(amount) FROM BOOKING_EVENTS",
+      "zh": "EXPLAIN 显示“the same March Incident aggregate”的物理执行计划；ANALYZE 会真正运行该查询并记录实际耗时、行数与 loops，BUFFERS 增加缓冲页访问统计。这里不逐行打印普通查询结果；cost 是估计单位，不能直接当毫秒，也不能把父子节点时间简单相加。",
+      "en": "EXPLAIN shows the physical plan for the same March Incident aggregate. ANALYZE really executes it and records actual timing, rows and loops; BUFFERS adds page-access statistics. It does not return ordinary result tuples, cost is not milliseconds, and parent/child timings must not simply be summed."
+    },
+    {
+      "number": 7,
+      "code": "WHERE event_type = 'Incident'",
+      "zh": "固定复合索引的第一列为 Incident，先排除其他事件类型。它不是 LIKE 模糊匹配。",
+      "en": "Fix the composite index’s leading event_type to Incident using equality, excluding other types."
+    },
+    {
+      "number": 8,
+      "code": "  AND event_time >= TIMESTAMP '2026-03-01'",
+      "zh": "时间下界含 2026-03-01 零点，约束索引的第二列。",
+      "en": "Apply an inclusive lower bound at midnight on 1 March 2026 to the second index key."
+    },
+    {
+      "number": 9,
+      "code": "  AND event_time <  TIMESTAMP '2026-04-01';",
+      "zh": "时间上界不含 2026-04-01 零点，完整包含 3 月最后一天，不依赖写出当月最后一秒。",
+      "en": "Apply an exclusive upper bound at midnight on 1 April, including all of March without guessing its last representable second."
+    }
+  ],
+  "2.2.1": [
+    {
+      "number": 1,
+      "code": "-- INFS7903 Assignment 2 | Yuyang Gong | 49079984",
+      "zh": "文件身份注释：标明课程、作业、姓名和学号。-- 后直到行末都不作为 SQL 执行；它不会建立对象、改变会话或影响查询结果。下面的行号按实际下载文件计算。",
+      "en": "This file header identifies the course, assignment, name and student ID. Text after -- is a comment, creating no object and changing no query or session behavior. Line numbers match the downloadable file."
+    },
+    {
+      "number": 2,
+      "code": "SELECT LOWER(SPLIT_PART(email, '@', 2)) AS provider_domain,",
+      "zh": "SPLIT_PART(email, '@', 2) 取 @ 分隔后的第二段，再由 LOWER 统一小写；provider_domain 是输出列名。本数据使用正常的单 @ 邮箱，表达式不负责校验任意格式的邮箱。",
+      "en": "Extract the second @-separated field and normalize it with LOWER, naming it provider_domain. This assumes the dataset’s normal single-@ addresses; it is not an email validator."
+    },
+    {
+      "number": 3,
+      "code": "       COUNT(*) AS member_count",
+      "zh": "COUNT(*) 数每个规范化域名下的成员行，输出名为 member_count。每位成员一行，即使 local part 不同，只要域名相同也会进入同一组。",
+      "en": "COUNT(*) counts member rows per normalized domain as member_count. Different address prefixes still contribute to the same domain group."
+    },
+    {
+      "number": 4,
+      "code": "FROM MEMBERS",
+      "zh": "从 MEMBERS 读全部成员。这里没有稀有域名 WHERE，因为问题要求统计所有不同 provider，而不只某一家。",
+      "en": "Read every member from MEMBERS. There is no rare-domain WHERE because the question asks for all providers."
+    },
+    {
+      "number": 5,
+      "code": "GROUP BY LOWER(SPLIT_PART(email, '@', 2))",
+      "zh": "按同一个 LOWER(SPLIT_PART(...)) 表达式分组。若只在 SELECT 中 LOWER、分组却用原字符串，大小写变体仍可能先被拆成不同组。",
+      "en": "Group by exactly the same normalized expression. Normalizing only the displayed SELECT value would not correctly merge groups formed from differently cased raw strings."
+    },
+    {
+      "number": 6,
+      "code": "ORDER BY member_count DESC, provider_domain;",
+      "zh": "按 member_count 降序把最常用域名排前；同人数按域名升序。最终 12 组共覆盖 24,000 人；索引按域名排序也不能直接提供按人数排序。",
+      "en": "Sort counts descending and domain names ascending for ties. Twelve groups cover 24,000 members; domain index order does not directly order aggregate counts."
+    }
+  ],
+  "2.2.2": [
+    {
+      "number": 1,
+      "code": "-- INFS7903 Assignment 2 | Yuyang Gong | 49079984",
+      "zh": "文件身份注释：标明课程、作业、姓名和学号。-- 后直到行末都不作为 SQL 执行；它不会建立对象、改变会话或影响查询结果。下面的行号按实际下载文件计算。",
+      "en": "This file header identifies the course, assignment, name and student ID. Text after -- is a comment, creating no object and changing no query or session behavior. Line numbers match the downloadable file."
+    },
+    {
+      "number": 2,
+      "code": "EXPLAIN (ANALYZE, BUFFERS) SELECT LOWER(SPLIT_PART(email, '@', 2)) AS provider_domain,",
+      "zh": "EXPLAIN 显示“the all-provider aggregation”的物理执行计划；ANALYZE 会真正运行该查询并记录实际耗时、行数与 loops，BUFFERS 增加缓冲页访问统计。这里不逐行打印普通查询结果；cost 是估计单位，不能直接当毫秒，也不能把父子节点时间简单相加。",
+      "en": "EXPLAIN shows the physical plan for the all-provider aggregation. ANALYZE really executes it and records actual timing, rows and loops; BUFFERS adds page-access statistics. It does not return ordinary result tuples, cost is not milliseconds, and parent/child timings must not simply be summed."
+    },
+    {
+      "number": 3,
+      "code": "       COUNT(*) AS member_count",
+      "zh": "COUNT(*) 数每个规范化域名下的成员行，输出名为 member_count。每位成员一行，即使 local part 不同，只要域名相同也会进入同一组。",
+      "en": "COUNT(*) counts member rows per normalized domain as member_count. Different address prefixes still contribute to the same domain group."
+    },
+    {
+      "number": 4,
+      "code": "FROM MEMBERS",
+      "zh": "从 MEMBERS 读全部成员。这里没有稀有域名 WHERE，因为问题要求统计所有不同 provider，而不只某一家。",
+      "en": "Read every member from MEMBERS. There is no rare-domain WHERE because the question asks for all providers."
+    },
+    {
+      "number": 5,
+      "code": "GROUP BY LOWER(SPLIT_PART(email, '@', 2))",
+      "zh": "按同一个 LOWER(SPLIT_PART(...)) 表达式分组。若只在 SELECT 中 LOWER、分组却用原字符串，大小写变体仍可能先被拆成不同组。",
+      "en": "Group by exactly the same normalized expression. Normalizing only the displayed SELECT value would not correctly merge groups formed from differently cased raw strings."
+    },
+    {
+      "number": 6,
+      "code": "ORDER BY member_count DESC, provider_domain;",
+      "zh": "按 member_count 降序把最常用域名排前；同人数按域名升序。最终 12 组共覆盖 24,000 人；索引按域名排序也不能直接提供按人数排序。",
+      "en": "Sort counts descending and domain names ascending for ties. Twelve groups cover 24,000 members; domain index order does not directly order aggregate counts."
+    }
+  ],
+  "2.2.4": [
+    {
+      "number": 1,
+      "code": "-- INFS7903 Assignment 2 | Yuyang Gong | 49079984",
+      "zh": "文件身份注释：标明课程、作业、姓名和学号。-- 后直到行末都不作为 SQL 执行；它不会建立对象、改变会话或影响查询结果。下面的行号按实际下载文件计算。",
+      "en": "This file header identifies the course, assignment, name and student ID. Text after -- is a comment, creating no object and changing no query or session behavior. Line numbers match the downloadable file."
+    },
+    {
+      "number": 2,
+      "code": "CREATE INDEX IDX_MEMBER_DOMAIN",
+      "zh": "创建函数/表达式索引 IDX_MEMBER_DOMAIN。它保存计算出来的域名键，区别于已有 email UNIQUE 索引保存完整邮箱。",
+      "en": "Create expression index IDX_MEMBER_DOMAIN, whose keys are computed domains rather than complete email addresses."
+    },
+    {
+      "number": 3,
+      "code": "ON MEMBERS (LOWER(SPLIT_PART(email, '@', 2)));",
+      "zh": "对 MEMBERS 的 LOWER(SPLIT_PART(email, '@', 2)) 建索引，表达式要与查询一致。双层括号区分索引列列表与表达式；此处不会新增一个实体 provider_domain 列。",
+      "en": "Index the matching normalized-domain expression on MEMBERS. Parentheses delimit the index key expression; this does not add a stored provider_domain column."
+    }
+  ],
+  "2.2.5": [
+    {
+      "number": 1,
+      "code": "-- INFS7903 Assignment 2 | Yuyang Gong | 49079984",
+      "zh": "文件身份注释：标明课程、作业、姓名和学号。-- 后直到行末都不作为 SQL 执行；它不会建立对象、改变会话或影响查询结果。下面的行号按实际下载文件计算。",
+      "en": "This file header identifies the course, assignment, name and student ID. Text after -- is a comment, creating no object and changing no query or session behavior. Line numbers match the downloadable file."
+    },
+    {
+      "number": 2,
+      "code": "EXPLAIN (ANALYZE, BUFFERS) SELECT LOWER(SPLIT_PART(email, '@', 2)) AS provider_domain,",
+      "zh": "EXPLAIN 显示“the full provider aggregation with the expression index present”的物理执行计划；ANALYZE 会真正运行该查询并记录实际耗时、行数与 loops，BUFFERS 增加缓冲页访问统计。这里不逐行打印普通查询结果；cost 是估计单位，不能直接当毫秒，也不能把父子节点时间简单相加。",
+      "en": "EXPLAIN shows the physical plan for the full provider aggregation with the expression index present. ANALYZE really executes it and records actual timing, rows and loops; BUFFERS adds page-access statistics. It does not return ordinary result tuples, cost is not milliseconds, and parent/child timings must not simply be summed."
+    },
+    {
+      "number": 3,
+      "code": "       COUNT(*) AS member_count",
+      "zh": "COUNT(*) 数每个规范化域名下的成员行，输出名为 member_count。每位成员一行，即使 local part 不同，只要域名相同也会进入同一组。",
+      "en": "COUNT(*) counts member rows per normalized domain as member_count. Different address prefixes still contribute to the same domain group."
+    },
+    {
+      "number": 4,
+      "code": "FROM MEMBERS",
+      "zh": "从 MEMBERS 读全部成员。这里没有稀有域名 WHERE，因为问题要求统计所有不同 provider，而不只某一家。",
+      "en": "Read every member from MEMBERS. There is no rare-domain WHERE because the question asks for all providers."
+    },
+    {
+      "number": 5,
+      "code": "GROUP BY LOWER(SPLIT_PART(email, '@', 2))",
+      "zh": "按同一个 LOWER(SPLIT_PART(...)) 表达式分组。若只在 SELECT 中 LOWER、分组却用原字符串，大小写变体仍可能先被拆成不同组。",
+      "en": "Group by exactly the same normalized expression. Normalizing only the displayed SELECT value would not correctly merge groups formed from differently cased raw strings."
+    },
+    {
+      "number": 6,
+      "code": "ORDER BY member_count DESC, provider_domain;",
+      "zh": "按 member_count 降序把最常用域名排前；同人数按域名升序。最终 12 组共覆盖 24,000 人；索引按域名排序也不能直接提供按人数排序。",
+      "en": "Sort counts descending and domain names ascending for ties. Twelve groups cover 24,000 members; domain index order does not directly order aggregate counts."
+    },
+    {
+      "number": 7,
+      "code": "SELECT member_id, member_name, email FROM MEMBERS",
+      "zh": "稀有域名查询只输出成员 ID、姓名、完整邮箱。它需要索引键以外的数据，所以这份表达式索引本身不能直接提供全部输出列。",
+      "en": "The selective lookup projects member ID, name and full address. These columns are not all supplied by the domain expression index alone."
+    },
+    {
+      "number": 8,
+      "code": "WHERE LOWER(SPLIT_PART(email, '@', 2)) = 'exemail.com.au';",
+      "zh": "WHERE 使用与索引完全相同的规范化表达式，只要 exemail.com.au。匹配 248 人而不是全体 24,000 人，因此与全量聚合的访问需求不同。",
+      "en": "Match the indexed normalized expression to exemail.com.au. Selecting 248 of 24,000 members differs materially from aggregating the whole table."
+    },
+    {
+      "number": 9,
+      "code": "EXPLAIN (ANALYZE, BUFFERS) SELECT member_id, member_name, email FROM MEMBERS",
+      "zh": "EXPLAIN 显示“the rare-provider lookup”的物理执行计划；ANALYZE 会真正运行该查询并记录实际耗时、行数与 loops，BUFFERS 增加缓冲页访问统计。这里不逐行打印普通查询结果；cost 是估计单位，不能直接当毫秒，也不能把父子节点时间简单相加。",
+      "en": "EXPLAIN shows the physical plan for the rare-provider lookup. ANALYZE really executes it and records actual timing, rows and loops; BUFFERS adds page-access statistics. It does not return ordinary result tuples, cost is not milliseconds, and parent/child timings must not simply be summed."
+    },
+    {
+      "number": 10,
+      "code": "WHERE LOWER(SPLIT_PART(email, '@', 2)) = 'exemail.com.au';",
+      "zh": "EXPLAIN 所研究的 WHERE 与刚才普通 SELECT 一样，保证计划和所展示的结果对应同一谓词。本次使用 bitmap 索引与 heap 访问，而不是全表逐个计算域名。",
+      "en": "Use the same predicate in EXPLAIN as in the displayed SELECT. The observed plan uses bitmap index and heap access rather than evaluating every member’s domain."
+    }
+  ],
+  "3.1.1": [
+    {
+      "number": 1,
+      "code": "-- INFS7903 Assignment 2 | Yuyang Gong | 49079984",
+      "zh": "文件身份注释：标明课程、作业、姓名和学号。-- 后直到行末都不作为 SQL 执行；它不会建立对象、改变会话或影响查询结果。下面的行号按实际下载文件计算。",
+      "en": "This file header identifies the course, assignment, name and student ID. Text after -- is a comment, creating no object and changing no query or session behavior. Line numbers match the downloadable file."
+    },
+    {
+      "number": 2,
+      "code": "-- Statement A",
+      "zh": "注释把接下来的查询标为 Statement A，方便与 B 比较；-- 到行末都不执行。",
+      "en": "This comment labels Statement A for comparison with B; text following -- is not executed."
+    },
+    {
+      "number": 3,
+      "code": "SELECT v.vehicle_id",
+      "zh": "只输出题目要求的车辆编号。查询外层的 v 表示“正在判断是否从未被取用的那辆车”。",
+      "en": "Return only the required vehicle identifier. Outer alias v is the candidate vehicle whose collection history is being tested."
+    },
+    {
+      "number": 4,
+      "code": "FROM VEHICLES v",
+      "zh": "从完整 VEHICLES 表出发，包含没有事件或只有预约/取消事件的车辆。若从 Collect 日志出发，反而找不到“从未出现”的车辆。",
+      "en": "Start from the entire fleet, including vehicles with no events or only reservations/cancellations. Starting from Collect events would omit the very absences being sought."
+    },
+    {
+      "number": 5,
+      "code": "WHERE NOT EXISTS (",
+      "zh": "NOT EXISTS 要求括号内找不到任何匹配行。它回答“是否不存在一次 Collect”，而不是检查车辆的最后一个事件。",
+      "en": "NOT EXISTS requires no matching inner row. It tests absence of any Collect, not merely the type of the latest event."
+    },
+    {
+      "number": 6,
+      "code": "    SELECT 1 FROM BOOKING_EVENTS e",
+      "zh": "SELECT 1 只是为 EXISTS 构造一行；1 的数值没有业务意义，也不是计数。EXISTS 只关心有没有符合条件的行，不关心输出的列值。",
+      "en": "SELECT 1 supplies an arbitrary value for EXISTS; it is not a count. EXISTS cares only whether a qualifying row exists, not its selected value."
+    },
+    {
+      "number": 7,
+      "code": "    WHERE e.vehicle_id = v.vehicle_id",
+      "zh": "只看与外层这辆 v 相同 vehicle_id 的事件，形成相关子查询。如果漏掉相关条件，一辆车被取用就可能让所有候选都被排除。",
+      "en": "Correlate inner events to the current outer vehicle. Omitting this condition could make one Collect event incorrectly disqualify every candidate."
+    },
+    {
+      "number": 8,
+      "code": "      AND e.event_type = 'Collect'",
+      "zh": "还必须是 Collect，其他事件不证明车辆真正被驾驶。只有同车且 Collect 的事件存在时，外层 NOT EXISTS 才为假。",
+      "en": "Require Collect as well: other events do not prove the car was driven. A same-vehicle Collect makes the outer NOT EXISTS false."
+    },
+    {
+      "number": 9,
+      "code": ")",
+      "zh": "关闭 NOT EXISTS 子查询。这个逻辑相关性不强制物理计划逐车完整重扫；优化器可以改写成 anti-join。",
+      "en": "Close the NOT EXISTS subquery. Logical correlation does not force a full rescan per vehicle; the optimizer can transform it into an anti-join."
+    },
+    {
+      "number": 10,
+      "code": "ORDER BY v.vehicle_id;",
+      "zh": "按车辆 ID 排序，便于稳定比对 A 与 B 的全部 75 行，而不是只看前几行。没有 ORDER BY 时，SQL 不保证结果顺序相同。",
+      "en": "Sort identifiers for stable comparison of all 75 rows from A and B. Without ORDER BY, equal sets need not appear in equal order."
+    },
+    {
+      "number": 11,
+      "code": "-- Statement B",
+      "zh": "注释标记 Statement B；它使用外连接表达同一个“没有 Collect”的问题。",
+      "en": "Label Statement B, which expresses the same absence test using an outer join."
+    },
+    {
+      "number": 12,
+      "code": "SELECT v.vehicle_id",
+      "zh": "只输出题目要求的车辆编号。查询外层的 v 表示“正在判断是否从未被取用的那辆车”。",
+      "en": "Return only the required vehicle identifier. Outer alias v is the candidate vehicle whose collection history is being tested."
+    },
+    {
+      "number": 13,
+      "code": "FROM VEHICLES v",
+      "zh": "从完整 VEHICLES 表出发，包含没有事件或只有预约/取消事件的车辆。若从 Collect 日志出发，反而找不到“从未出现”的车辆。",
+      "en": "Start from the entire fleet, including vehicles with no events or only reservations/cancellations. Starting from Collect events would omit the very absences being sought."
+    },
+    {
+      "number": 14,
+      "code": "LEFT JOIN BOOKING_EVENTS e",
+      "zh": "LEFT JOIN 保留左侧的所有车辆。匹配不到右侧事件时，右侧的 e 列会被补成 NULL，为后面的未匹配检查提供依据。",
+      "en": "LEFT JOIN preserves every vehicle, filling right-side event columns with NULL when no matching event exists."
+    },
+    {
+      "number": 15,
+      "code": "  ON e.vehicle_id = v.vehicle_id",
+      "zh": "连接条件先限定事件属于同一辆车。此条件决定哪些事件能和车辆配对，不是在最终结果上检查 NULL。",
+      "en": "The first ON condition pairs an event with the same vehicle. It defines matches before the later unmatched-row filter."
+    },
+    {
+      "number": 16,
+      "code": " AND e.event_type = 'Collect'",
+      "zh": "Collect 条件继续放在 ON 中，只把取车事件视作匹配。若把它移到 WHERE，无匹配行的 e.event_type 为 NULL，会被过滤掉，破坏反连接语义。",
+      "en": "Keep the Collect predicate inside ON. Moving it to WHERE would discard unmatched rows with NULL event_type and break the anti-join."
+    },
+    {
+      "number": 17,
+      "code": "WHERE e.vehicle_id IS NULL",
+      "zh": "e.vehicle_id 在真实事件中 NOT NULL，所以这一列为 NULL 能可靠识别 LEFT JOIN 没有匹配的车辆。匹配过 Collect 的车辆不会通过这个条件。",
+      "en": "Real event vehicle_id values are NOT NULL, so NULL here reliably identifies an unmatched vehicle. Vehicles having a Collect match fail this condition."
+    },
+    {
+      "number": 18,
+      "code": "ORDER BY v.vehicle_id;",
+      "zh": "按车辆 ID 排序，便于稳定比对 A 与 B 的全部 75 行，而不是只看前几行。没有 ORDER BY 时，SQL 不保证结果顺序相同。",
+      "en": "Sort identifiers for stable comparison of all 75 rows from A and B. Without ORDER BY, equal sets need not appear in equal order."
+    }
+  ],
+  "3.1.2": [
+    {
+      "number": 1,
+      "code": "-- INFS7903 Assignment 2 | Yuyang Gong | 49079984",
+      "zh": "文件身份注释：标明课程、作业、姓名和学号。-- 后直到行末都不作为 SQL 执行；它不会建立对象、改变会话或影响查询结果。下面的行号按实际下载文件计算。",
+      "en": "This file header identifies the course, assignment, name and student ID. Text after -- is a comment, creating no object and changing no query or session behavior. Line numbers match the downloadable file."
+    },
+    {
+      "number": 2,
+      "code": "-- Statement A",
+      "zh": "注释把接下来的查询标为 Statement A，方便与 B 比较；-- 到行末都不执行。",
+      "en": "This comment labels Statement A for comparison with B; text following -- is not executed."
+    },
+    {
+      "number": 3,
+      "code": "EXPLAIN (ANALYZE, BUFFERS) SELECT v.vehicle_id",
+      "zh": "EXPLAIN 显示“Statement A: NOT EXISTS”的物理执行计划；ANALYZE 会真正运行该查询并记录实际耗时、行数与 loops，BUFFERS 增加缓冲页访问统计。这里不逐行打印普通查询结果；cost 是估计单位，不能直接当毫秒，也不能把父子节点时间简单相加。",
+      "en": "EXPLAIN shows the physical plan for Statement A: NOT EXISTS. ANALYZE really executes it and records actual timing, rows and loops; BUFFERS adds page-access statistics. It does not return ordinary result tuples, cost is not milliseconds, and parent/child timings must not simply be summed."
+    },
+    {
+      "number": 4,
+      "code": "FROM VEHICLES v",
+      "zh": "从完整 VEHICLES 表出发，包含没有事件或只有预约/取消事件的车辆。若从 Collect 日志出发，反而找不到“从未出现”的车辆。",
+      "en": "Start from the entire fleet, including vehicles with no events or only reservations/cancellations. Starting from Collect events would omit the very absences being sought."
+    },
+    {
+      "number": 5,
+      "code": "WHERE NOT EXISTS (",
+      "zh": "NOT EXISTS 要求括号内找不到任何匹配行。它回答“是否不存在一次 Collect”，而不是检查车辆的最后一个事件。",
+      "en": "NOT EXISTS requires no matching inner row. It tests absence of any Collect, not merely the type of the latest event."
+    },
+    {
+      "number": 6,
+      "code": "    SELECT 1 FROM BOOKING_EVENTS e",
+      "zh": "SELECT 1 只是为 EXISTS 构造一行；1 的数值没有业务意义，也不是计数。EXISTS 只关心有没有符合条件的行，不关心输出的列值。",
+      "en": "SELECT 1 supplies an arbitrary value for EXISTS; it is not a count. EXISTS cares only whether a qualifying row exists, not its selected value."
+    },
+    {
+      "number": 7,
+      "code": "    WHERE e.vehicle_id = v.vehicle_id",
+      "zh": "只看与外层这辆 v 相同 vehicle_id 的事件，形成相关子查询。如果漏掉相关条件，一辆车被取用就可能让所有候选都被排除。",
+      "en": "Correlate inner events to the current outer vehicle. Omitting this condition could make one Collect event incorrectly disqualify every candidate."
+    },
+    {
+      "number": 8,
+      "code": "      AND e.event_type = 'Collect'",
+      "zh": "还必须是 Collect，其他事件不证明车辆真正被驾驶。只有同车且 Collect 的事件存在时，外层 NOT EXISTS 才为假。",
+      "en": "Require Collect as well: other events do not prove the car was driven. A same-vehicle Collect makes the outer NOT EXISTS false."
+    },
+    {
+      "number": 9,
+      "code": ")",
+      "zh": "关闭 NOT EXISTS 子查询。这个逻辑相关性不强制物理计划逐车完整重扫；优化器可以改写成 anti-join。",
+      "en": "Close the NOT EXISTS subquery. Logical correlation does not force a full rescan per vehicle; the optimizer can transform it into an anti-join."
+    },
+    {
+      "number": 10,
+      "code": "ORDER BY v.vehicle_id;",
+      "zh": "按车辆 ID 排序，便于稳定比对 A 与 B 的全部 75 行，而不是只看前几行。没有 ORDER BY 时，SQL 不保证结果顺序相同。",
+      "en": "Sort identifiers for stable comparison of all 75 rows from A and B. Without ORDER BY, equal sets need not appear in equal order."
+    },
+    {
+      "number": 11,
+      "code": "-- Statement B",
+      "zh": "注释标记 Statement B；它使用外连接表达同一个“没有 Collect”的问题。",
+      "en": "Label Statement B, which expresses the same absence test using an outer join."
+    },
+    {
+      "number": 12,
+      "code": "EXPLAIN (ANALYZE, BUFFERS) SELECT v.vehicle_id",
+      "zh": "EXPLAIN 显示“Statement B: LEFT JOIN with an unmatched-row test”的物理执行计划；ANALYZE 会真正运行该查询并记录实际耗时、行数与 loops，BUFFERS 增加缓冲页访问统计。这里不逐行打印普通查询结果；cost 是估计单位，不能直接当毫秒，也不能把父子节点时间简单相加。",
+      "en": "EXPLAIN shows the physical plan for Statement B: LEFT JOIN with an unmatched-row test. ANALYZE really executes it and records actual timing, rows and loops; BUFFERS adds page-access statistics. It does not return ordinary result tuples, cost is not milliseconds, and parent/child timings must not simply be summed."
+    },
+    {
+      "number": 13,
+      "code": "FROM VEHICLES v",
+      "zh": "从完整 VEHICLES 表出发，包含没有事件或只有预约/取消事件的车辆。若从 Collect 日志出发，反而找不到“从未出现”的车辆。",
+      "en": "Start from the entire fleet, including vehicles with no events or only reservations/cancellations. Starting from Collect events would omit the very absences being sought."
+    },
+    {
+      "number": 14,
+      "code": "LEFT JOIN BOOKING_EVENTS e",
+      "zh": "LEFT JOIN 保留左侧的所有车辆。匹配不到右侧事件时，右侧的 e 列会被补成 NULL，为后面的未匹配检查提供依据。",
+      "en": "LEFT JOIN preserves every vehicle, filling right-side event columns with NULL when no matching event exists."
+    },
+    {
+      "number": 15,
+      "code": "  ON e.vehicle_id = v.vehicle_id",
+      "zh": "连接条件先限定事件属于同一辆车。此条件决定哪些事件能和车辆配对，不是在最终结果上检查 NULL。",
+      "en": "The first ON condition pairs an event with the same vehicle. It defines matches before the later unmatched-row filter."
+    },
+    {
+      "number": 16,
+      "code": " AND e.event_type = 'Collect'",
+      "zh": "Collect 条件继续放在 ON 中，只把取车事件视作匹配。若把它移到 WHERE，无匹配行的 e.event_type 为 NULL，会被过滤掉，破坏反连接语义。",
+      "en": "Keep the Collect predicate inside ON. Moving it to WHERE would discard unmatched rows with NULL event_type and break the anti-join."
+    },
+    {
+      "number": 17,
+      "code": "WHERE e.vehicle_id IS NULL",
+      "zh": "e.vehicle_id 在真实事件中 NOT NULL，所以这一列为 NULL 能可靠识别 LEFT JOIN 没有匹配的车辆。匹配过 Collect 的车辆不会通过这个条件。",
+      "en": "Real event vehicle_id values are NOT NULL, so NULL here reliably identifies an unmatched vehicle. Vehicles having a Collect match fail this condition."
+    },
+    {
+      "number": 18,
+      "code": "ORDER BY v.vehicle_id;",
+      "zh": "按车辆 ID 排序，便于稳定比对 A 与 B 的全部 75 行，而不是只看前几行。没有 ORDER BY 时，SQL 不保证结果顺序相同。",
+      "en": "Sort identifiers for stable comparison of all 75 rows from A and B. Without ORDER BY, equal sets need not appear in equal order."
+    }
+  ],
+  "3.2": [
+    {
+      "number": 1,
+      "code": "-- INFS7903 Assignment 2 | Yuyang Gong | 49079984",
+      "zh": "文件身份注释：标明课程、作业、姓名和学号。-- 后直到行末都不作为 SQL 执行；它不会建立对象、改变会话或影响查询结果。下面的行号按实际下载文件计算。",
+      "en": "This file header identifies the course, assignment, name and student ID. Text after -- is a comment, creating no object and changing no query or session behavior. Line numbers match the downloadable file."
+    },
+    {
+      "number": 2,
+      "code": "-- Setting 1: index scans enabled; sequential scans enabled.",
+      "zh": "本段是第 1 组访问方法设置；注释只标记实验阶段，真正改变规划器选项的是下面四条 SET。同一文件必须在同一连接中执行，才能让设置影响后面的 EXPLAIN。",
+      "en": "Label scan-setting group 1. The following SET commands, not the comment, change planner options; run the file within one connection."
+    },
+    {
+      "number": 3,
+      "code": "SET enable_indexscan = on;",
+      "zh": "enable_indexscan 控制普通 Index Scan 路径，也会影响 index-only 路径能否被考虑。本行设为 on，作用于当前会话后续语句，不修改表内容；三种索引相关开关要一起处理，才符合本题定义。",
+      "en": "Set enable_indexscan to on for subsequent statements in this session: ordinary index scans, also required when considering index-only scans. This changes planner options, not table data."
+    },
+    {
+      "number": 4,
+      "code": "SET enable_indexonlyscan = on;",
+      "zh": "enable_indexonlyscan 控制Index Only Scan 路径；它还要求普通 index scan 被允许，并满足覆盖列等条件。本行设为 on，作用于当前会话后续语句，不修改表内容；三种索引相关开关要一起处理，才符合本题定义。",
+      "en": "Set enable_indexonlyscan to on for subsequent statements in this session: index-only scans, which additionally require ordinary index scans and suitable coverage. This changes planner options, not table data."
+    },
+    {
+      "number": 5,
+      "code": "SET enable_bitmapscan = on;",
+      "zh": "enable_bitmapscan 控制Bitmap Index/Heap Scan 路径；只关普通 Index Scan 并不会连带关闭它。本行设为 on，作用于当前会话后续语句，不修改表内容；三种索引相关开关要一起处理，才符合本题定义。",
+      "en": "Set enable_bitmapscan to on for subsequent statements in this session: bitmap access, which is not disabled merely by turning off ordinary index scans. This changes planner options, not table data."
+    },
+    {
+      "number": 6,
+      "code": "SET enable_seqscan = on;",
+      "zh": "enable_seqscan 控制Sequential Scan 路径；off 是抑制，并非保证任何情况下都绝对不会出现。本行设为 on，作用于当前会话后续语句，不修改表内容；三种索引相关开关要一起处理，才符合本题定义。",
+      "en": "Set enable_seqscan to on for subsequent statements in this session: sequential scans; off discourages this method rather than guaranteeing its absence in every possible query. This changes planner options, not table data."
+    },
+    {
+      "number": 7,
+      "code": "-- Query C",
+      "zh": "标记接下来研究 Query C。注释本身不执行查询，结果应与同一设置组的另一条查询比较。",
+      "en": "Label Query C; compare its plan with the other query under the same settings."
+    },
+    {
+      "number": 8,
+      "code": "EXPLAIN (ANALYZE, BUFFERS) SELECT * FROM BOOKING_EVENTS WHERE event_type < 'Collect';",
+      "zh": "EXPLAIN (ANALYZE, BUFFERS) 实际执行 Query C，SELECT * 需要整行事件。比较 event_type 小于字符串 Collect，是按数据库排序规则比较文字，不是比较事件发生先后；C collation 下匹配 8,158 行。本组实测用 Bitmap Heap Scan，数字和完整计划在后面的证据中。",
+      "en": "Execute and explain Query C, projecting complete event rows. Its text comparison with Collect follows database collation, not event chronology. It matches 8,158 rows under C collation; this setting produced Bitmap Heap Scan in the recorded run."
+    },
+    {
+      "number": 9,
+      "code": "-- Query D",
+      "zh": "标记接下来研究 Query D。注释本身不执行查询，结果应与同一设置组的另一条查询比较。",
+      "en": "Label Query D; compare its plan with the other query under the same settings."
+    },
+    {
+      "number": 10,
+      "code": "EXPLAIN (ANALYZE, BUFFERS) SELECT * FROM BOOKING_EVENTS WHERE event_type >= 'Collect';",
+      "zh": "EXPLAIN (ANALYZE, BUFFERS) 实际执行 Query D，SELECT * 需要整行事件。比较 event_type 大于等于字符串 Collect，是按数据库排序规则比较文字，不是比较事件发生先后；C collation 下匹配 188,283 行。本组实测用 Seq Scan，数字和完整计划在后面的证据中。",
+      "en": "Execute and explain Query D, projecting complete event rows. Its text comparison with Collect follows database collation, not event chronology. It matches 188,283 rows under C collation; this setting produced Seq Scan in the recorded run."
+    },
+    {
+      "number": 11,
+      "code": "-- Setting 2: index scans enabled; sequential scans suppressed.",
+      "zh": "本段是第 2 组访问方法设置；注释只标记实验阶段，真正改变规划器选项的是下面四条 SET。同一文件必须在同一连接中执行，才能让设置影响后面的 EXPLAIN。",
+      "en": "Label scan-setting group 2. The following SET commands, not the comment, change planner options; run the file within one connection."
+    },
+    {
+      "number": 12,
+      "code": "SET enable_indexscan = on;",
+      "zh": "enable_indexscan 控制普通 Index Scan 路径，也会影响 index-only 路径能否被考虑。本行设为 on，作用于当前会话后续语句，不修改表内容；三种索引相关开关要一起处理，才符合本题定义。",
+      "en": "Set enable_indexscan to on for subsequent statements in this session: ordinary index scans, also required when considering index-only scans. This changes planner options, not table data."
+    },
+    {
+      "number": 13,
+      "code": "SET enable_indexonlyscan = on;",
+      "zh": "enable_indexonlyscan 控制Index Only Scan 路径；它还要求普通 index scan 被允许，并满足覆盖列等条件。本行设为 on，作用于当前会话后续语句，不修改表内容；三种索引相关开关要一起处理，才符合本题定义。",
+      "en": "Set enable_indexonlyscan to on for subsequent statements in this session: index-only scans, which additionally require ordinary index scans and suitable coverage. This changes planner options, not table data."
+    },
+    {
+      "number": 14,
+      "code": "SET enable_bitmapscan = on;",
+      "zh": "enable_bitmapscan 控制Bitmap Index/Heap Scan 路径；只关普通 Index Scan 并不会连带关闭它。本行设为 on，作用于当前会话后续语句，不修改表内容；三种索引相关开关要一起处理，才符合本题定义。",
+      "en": "Set enable_bitmapscan to on for subsequent statements in this session: bitmap access, which is not disabled merely by turning off ordinary index scans. This changes planner options, not table data."
+    },
+    {
+      "number": 15,
+      "code": "SET enable_seqscan = off;",
+      "zh": "enable_seqscan 控制Sequential Scan 路径；off 是抑制，并非保证任何情况下都绝对不会出现。本行设为 off，作用于当前会话后续语句，不修改表内容；三种索引相关开关要一起处理，才符合本题定义。",
+      "en": "Set enable_seqscan to off for subsequent statements in this session: sequential scans; off discourages this method rather than guaranteeing its absence in every possible query. This changes planner options, not table data."
+    },
+    {
+      "number": 16,
+      "code": "-- Query C",
+      "zh": "标记接下来研究 Query C。注释本身不执行查询，结果应与同一设置组的另一条查询比较。",
+      "en": "Label Query C; compare its plan with the other query under the same settings."
+    },
+    {
+      "number": 17,
+      "code": "EXPLAIN (ANALYZE, BUFFERS) SELECT * FROM BOOKING_EVENTS WHERE event_type < 'Collect';",
+      "zh": "EXPLAIN (ANALYZE, BUFFERS) 实际执行 Query C，SELECT * 需要整行事件。比较 event_type 小于字符串 Collect，是按数据库排序规则比较文字，不是比较事件发生先后；C collation 下匹配 8,158 行。本组实测用 Bitmap Heap Scan，数字和完整计划在后面的证据中。",
+      "en": "Execute and explain Query C, projecting complete event rows. Its text comparison with Collect follows database collation, not event chronology. It matches 8,158 rows under C collation; this setting produced Bitmap Heap Scan in the recorded run."
+    },
+    {
+      "number": 18,
+      "code": "-- Query D",
+      "zh": "标记接下来研究 Query D。注释本身不执行查询，结果应与同一设置组的另一条查询比较。",
+      "en": "Label Query D; compare its plan with the other query under the same settings."
+    },
+    {
+      "number": 19,
+      "code": "EXPLAIN (ANALYZE, BUFFERS) SELECT * FROM BOOKING_EVENTS WHERE event_type >= 'Collect';",
+      "zh": "EXPLAIN (ANALYZE, BUFFERS) 实际执行 Query D，SELECT * 需要整行事件。比较 event_type 大于等于字符串 Collect，是按数据库排序规则比较文字，不是比较事件发生先后；C collation 下匹配 188,283 行。本组实测用 Bitmap Heap Scan，数字和完整计划在后面的证据中。",
+      "en": "Execute and explain Query D, projecting complete event rows. Its text comparison with Collect follows database collation, not event chronology. It matches 188,283 rows under C collation; this setting produced Bitmap Heap Scan in the recorded run."
+    },
+    {
+      "number": 20,
+      "code": "-- Setting 3: index scans suppressed; sequential scans enabled.",
+      "zh": "本段是第 3 组访问方法设置；注释只标记实验阶段，真正改变规划器选项的是下面四条 SET。同一文件必须在同一连接中执行，才能让设置影响后面的 EXPLAIN。",
+      "en": "Label scan-setting group 3. The following SET commands, not the comment, change planner options; run the file within one connection."
+    },
+    {
+      "number": 21,
+      "code": "SET enable_indexscan = off;",
+      "zh": "enable_indexscan 控制普通 Index Scan 路径，也会影响 index-only 路径能否被考虑。本行设为 off，作用于当前会话后续语句，不修改表内容；三种索引相关开关要一起处理，才符合本题定义。",
+      "en": "Set enable_indexscan to off for subsequent statements in this session: ordinary index scans, also required when considering index-only scans. This changes planner options, not table data."
+    },
+    {
+      "number": 22,
+      "code": "SET enable_indexonlyscan = off;",
+      "zh": "enable_indexonlyscan 控制Index Only Scan 路径；它还要求普通 index scan 被允许，并满足覆盖列等条件。本行设为 off，作用于当前会话后续语句，不修改表内容；三种索引相关开关要一起处理，才符合本题定义。",
+      "en": "Set enable_indexonlyscan to off for subsequent statements in this session: index-only scans, which additionally require ordinary index scans and suitable coverage. This changes planner options, not table data."
+    },
+    {
+      "number": 23,
+      "code": "SET enable_bitmapscan = off;",
+      "zh": "enable_bitmapscan 控制Bitmap Index/Heap Scan 路径；只关普通 Index Scan 并不会连带关闭它。本行设为 off，作用于当前会话后续语句，不修改表内容；三种索引相关开关要一起处理，才符合本题定义。",
+      "en": "Set enable_bitmapscan to off for subsequent statements in this session: bitmap access, which is not disabled merely by turning off ordinary index scans. This changes planner options, not table data."
+    },
+    {
+      "number": 24,
+      "code": "SET enable_seqscan = on;",
+      "zh": "enable_seqscan 控制Sequential Scan 路径；off 是抑制，并非保证任何情况下都绝对不会出现。本行设为 on，作用于当前会话后续语句，不修改表内容；三种索引相关开关要一起处理，才符合本题定义。",
+      "en": "Set enable_seqscan to on for subsequent statements in this session: sequential scans; off discourages this method rather than guaranteeing its absence in every possible query. This changes planner options, not table data."
+    },
+    {
+      "number": 25,
+      "code": "-- Query C",
+      "zh": "标记接下来研究 Query C。注释本身不执行查询，结果应与同一设置组的另一条查询比较。",
+      "en": "Label Query C; compare its plan with the other query under the same settings."
+    },
+    {
+      "number": 26,
+      "code": "EXPLAIN (ANALYZE, BUFFERS) SELECT * FROM BOOKING_EVENTS WHERE event_type < 'Collect';",
+      "zh": "EXPLAIN (ANALYZE, BUFFERS) 实际执行 Query C，SELECT * 需要整行事件。比较 event_type 小于字符串 Collect，是按数据库排序规则比较文字，不是比较事件发生先后；C collation 下匹配 8,158 行。本组实测用 Seq Scan，数字和完整计划在后面的证据中。",
+      "en": "Execute and explain Query C, projecting complete event rows. Its text comparison with Collect follows database collation, not event chronology. It matches 8,158 rows under C collation; this setting produced Seq Scan in the recorded run."
+    },
+    {
+      "number": 27,
+      "code": "-- Query D",
+      "zh": "标记接下来研究 Query D。注释本身不执行查询，结果应与同一设置组的另一条查询比较。",
+      "en": "Label Query D; compare its plan with the other query under the same settings."
+    },
+    {
+      "number": 28,
+      "code": "EXPLAIN (ANALYZE, BUFFERS) SELECT * FROM BOOKING_EVENTS WHERE event_type >= 'Collect';",
+      "zh": "EXPLAIN (ANALYZE, BUFFERS) 实际执行 Query D，SELECT * 需要整行事件。比较 event_type 大于等于字符串 Collect，是按数据库排序规则比较文字，不是比较事件发生先后；C collation 下匹配 188,283 行。本组实测用 Seq Scan，数字和完整计划在后面的证据中。",
+      "en": "Execute and explain Query D, projecting complete event rows. Its text comparison with Collect follows database collation, not event chronology. It matches 188,283 rows under C collation; this setting produced Seq Scan in the recorded run."
+    },
+    {
+      "number": 29,
+      "code": "-- Restore all four scan settings.",
+      "zh": "实验结束，下面四行把全部扫描选项明确恢复为 on。必须清理会话设置，避免下一题继承被抑制的访问方法。",
+      "en": "Finish the experiment by explicitly restoring all four scan options to on so the next question does not inherit suppressed methods."
+    },
+    {
+      "number": 30,
+      "code": "SET enable_indexscan = on;",
+      "zh": "enable_indexscan 控制普通 Index Scan 路径，也会影响 index-only 路径能否被考虑。本行设为 on，作用于当前会话后续语句，不修改表内容；这属于最后的恢复步骤。",
+      "en": "Set enable_indexscan to on for subsequent statements in this session: ordinary index scans, also required when considering index-only scans. This changes planner options, not table data."
+    },
+    {
+      "number": 31,
+      "code": "SET enable_indexonlyscan = on;",
+      "zh": "enable_indexonlyscan 控制Index Only Scan 路径；它还要求普通 index scan 被允许，并满足覆盖列等条件。本行设为 on，作用于当前会话后续语句，不修改表内容；这属于最后的恢复步骤。",
+      "en": "Set enable_indexonlyscan to on for subsequent statements in this session: index-only scans, which additionally require ordinary index scans and suitable coverage. This changes planner options, not table data."
+    },
+    {
+      "number": 32,
+      "code": "SET enable_bitmapscan = on;",
+      "zh": "enable_bitmapscan 控制Bitmap Index/Heap Scan 路径；只关普通 Index Scan 并不会连带关闭它。本行设为 on，作用于当前会话后续语句，不修改表内容；这属于最后的恢复步骤。",
+      "en": "Set enable_bitmapscan to on for subsequent statements in this session: bitmap access, which is not disabled merely by turning off ordinary index scans. This changes planner options, not table data."
+    },
+    {
+      "number": 33,
+      "code": "SET enable_seqscan = on;",
+      "zh": "enable_seqscan 控制Sequential Scan 路径；off 是抑制，并非保证任何情况下都绝对不会出现。本行设为 on，作用于当前会话后续语句，不修改表内容；这属于最后的恢复步骤。",
+      "en": "Set enable_seqscan to on for subsequent statements in this session: sequential scans; off discourages this method rather than guaranteeing its absence in every possible query. This changes planner options, not table data."
+    }
+  ],
+  "4.1.1": [
+    {
+      "number": 1,
+      "code": "-- INFS7903 Assignment 2 | Yuyang Gong | 49079984",
+      "zh": "文件身份注释：标明课程、作业、姓名和学号。-- 后直到行末都不作为 SQL 执行；它不会建立对象、改变会话或影响查询结果。下面的行号按实际下载文件计算。",
+      "en": "This file header identifies the course, assignment, name and student ID. Text after -- is a comment, creating no object and changing no query or session behavior. Line numbers match the downloadable file."
+    },
+    {
+      "number": 2,
+      "code": "-- connection 1",
+      "zh": "下面的语句只发送给连接 1。-- connection 1 是给操作者看的标签，并不会让 psql 自动切换连接。",
+      "en": "Send the following statements only to connection 1. The comment labels a session for the operator; it does not switch psql connections."
+    },
+    {
+      "number": 3,
+      "code": "BEGIN;",
+      "zh": "SQL BEGIN 开始显式事务，后续保持在同一连接。READ COMMITTED 下事务不等于固定一张快照；每条语句仍可能看到更新的已提交数据。",
+      "en": "SQL BEGIN starts an explicit transaction in this connection. At READ COMMITTED it does not freeze one snapshot for every later statement."
+    },
+    {
+      "number": 4,
+      "code": "SHOW transaction_isolation;",
+      "zh": "SHOW 查看当前事务隔离级别，用输出确认是 read committed。它只检查设置，不会把隔离级别改成别的值。",
+      "en": "SHOW reports the current transaction isolation level, verifying read committed without changing it."
+    },
+    {
+      "number": 5,
+      "code": "SELECT v.vehicle_id, latest.event_id,",
+      "zh": "外层输出车辆编号和最新事件 ID，便于两个连接确认谈论的是同一辆车、同一条历史状态。v 来自 VEHICLES，latest 来自后面的 lateral 子查询。",
+      "en": "Select the vehicle and latest-event identifier so both connections can verify the same car and historical state. v is the vehicle and latest is the lateral result."
+    },
+    {
+      "number": 6,
+      "code": "       latest.event_type, latest.event_time",
+      "zh": "继续输出最新事件类型和时间。这些列用于解释为什么车辆此刻被题目规则判为可用，而不是只显示一个无法复查的车辆编号。",
+      "en": "Also show the latest event type and time so the availability decision can be checked against its actual historical state."
+    },
+    {
+      "number": 7,
+      "code": "FROM VEHICLES v",
+      "zh": "从 VEHICLES 车辆表逐个考虑候选，给它别名 v。本次外层稍后固定测试车辆为 VEH-0001。",
+      "en": "Read candidate vehicles as v; the outer filter later fixes this experiment to VEH-0001."
+    },
+    {
+      "number": 8,
+      "code": "CROSS JOIN LATERAL (",
+      "zh": "LATERAL 允许右侧子查询引用左侧 v 的 vehicle_id；CROSS JOIN 把该车找到的最新事件接上。若车辆完全没有事件，右侧为零行，这种写法不会把它当成“最新为 Return”。",
+      "en": "LATERAL lets the inner query reference v.vehicle_id. CROSS JOIN attaches its latest event; a vehicle with no events does not qualify as having a latest Return."
+    },
+    {
+      "number": 9,
+      "code": "    SELECT e.event_id, e.event_type, e.event_time",
+      "zh": "从这辆车的事件中准备输出 ID、类型和时间。必须先考虑全部类型，不能在这里先筛掉非 Return。",
+      "en": "Select the identifier, type and time from the car’s events. All event types must remain eligible at this stage."
+    },
+    {
+      "number": 10,
+      "code": "    FROM BOOKING_EVENTS e",
+      "zh": "读取完整 BOOKING_EVENTS，给事件表别名 e。可用性来自日志状态，而不是 VEHICLES 的 odometer 或 in_service。",
+      "en": "Read BOOKING_EVENTS as e. Availability comes from event history, not the vehicle’s odometer or in_service date."
+    },
+    {
+      "number": 11,
+      "code": "    WHERE e.vehicle_id = v.vehicle_id",
+      "zh": "只让子查询查看当前外层 v 所对应的车辆事件。这就是 lateral 子查询与当前车之间的相关条件。",
+      "en": "Restrict the inner query to events for the current outer vehicle; this is the lateral correlation condition."
+    },
+    {
+      "number": 12,
+      "code": "    ORDER BY e.event_time DESC, e.event_id DESC",
+      "zh": "按 event_time 倒序找最新事件，时间相同再用 event_id 倒序确定唯一顺序。它按事件记录的时间排序，因此未来的 Reserve 也可能排在最前。",
+      "en": "Order by event_time descending and then event_id descending for deterministic ties. Future-dated Reserve events can therefore sort first."
+    },
+    {
+      "number": 13,
+      "code": "    LIMIT 1",
+      "zh": "排序后只取第一条事件，代表该车按题目规则的当前状态。LIMIT 1 在检查 Return 之前执行，这是防止误用旧 Return 的关键。",
+      "en": "Take the first event after ordering. Selecting this latest event before testing for Return prevents an older Return from falsely establishing availability."
+    },
+    {
+      "number": 14,
+      "code": ") latest",
+      "zh": "关闭 lateral 子查询并把它的输出表命名为 latest，所以外层能写 latest.event_type 等列名。latest 不是原数据库中的实体表。",
+      "en": "Close the lateral subquery and alias its derived output latest. It is a query result, not a stored database table."
+    },
+    {
+      "number": 15,
+      "code": "WHERE v.vehicle_id = 'VEH-0001'",
+      "zh": "外层固定为 VEH-0001，确保两个连接抢同一辆车；新载入数据时它最新事件是 Return。完成 Q4 后它变成 Reserve，再直接重跑不应假定仍可用。",
+      "en": "Fix the candidate to VEH-0001 so both sessions contend for the same car. It has a latest Return on fresh data; after Q4 its Reserve means a rerun cannot assume availability."
+    },
+    {
+      "number": 16,
+      "code": "  AND latest.event_type = 'Return';",
+      "zh": "最后才要求 latest.event_type = Return。若最新是 Reserve、Collect 或 Incident，即使更早有 Return，也会返回零行，而不是错误宣称可用。",
+      "en": "Only now require the latest event to be Return. A later Reserve, Collect or Incident excludes the car even if it has an older Return."
+    },
+    {
+      "number": 17,
+      "code": "-- Keep this transaction open. Run 4.1.2 in connection 2.",
+      "zh": "按注释停在这里，保留连接 1 的事务，再去连接 2 运行下一文件。若立刻 COMMIT 或在同一连接执行两个角色，就不再是题目给定的交错。",
+      "en": "Pause with connection 1’s transaction open and run the next file in connection 2. Committing now or using one connection for both roles changes the required schedule."
+    }
+  ],
+  "4.1.2": [
+    {
+      "number": 1,
+      "code": "-- INFS7903 Assignment 2 | Yuyang Gong | 49079984",
+      "zh": "文件身份注释：标明课程、作业、姓名和学号。-- 后直到行末都不作为 SQL 执行；它不会建立对象、改变会话或影响查询结果。下面的行号按实际下载文件计算。",
+      "en": "This file header identifies the course, assignment, name and student ID. Text after -- is a comment, creating no object and changing no query or session behavior. Line numbers match the downloadable file."
+    },
+    {
+      "number": 2,
+      "code": "-- connection 2",
+      "zh": "本文件只发到连接 2，它必须是另一个持续打开的 psql 会话。注释不创建连接。",
+      "en": "Run this file in a second persistent psql session; the comment does not create one."
+    },
+    {
+      "number": 3,
+      "code": "BEGIN;",
+      "zh": "连接 2 开始自己的事务，与尚未结束的连接 1 并发存在。",
+      "en": "Begin connection 2’s own transaction while connection 1 remains open."
+    },
+    {
+      "number": 4,
+      "code": "SHOW transaction_isolation;",
+      "zh": "同样检查连接 2 的隔离级别，避免两边设置不同却误归因于触发器。",
+      "en": "Verify connection 2’s isolation level too, so an unintended difference is not mistaken for trigger behavior."
+    },
+    {
+      "number": 5,
+      "code": "SELECT v.vehicle_id, latest.event_id,",
+      "zh": "外层输出车辆编号和最新事件 ID，便于两个连接确认谈论的是同一辆车、同一条历史状态。v 来自 VEHICLES，latest 来自后面的 lateral 子查询。",
+      "en": "Select the vehicle and latest-event identifier so both connections can verify the same car and historical state. v is the vehicle and latest is the lateral result."
+    },
+    {
+      "number": 6,
+      "code": "       latest.event_type, latest.event_time",
+      "zh": "继续输出最新事件类型和时间。这些列用于解释为什么车辆此刻被题目规则判为可用，而不是只显示一个无法复查的车辆编号。",
+      "en": "Also show the latest event type and time so the availability decision can be checked against its actual historical state."
+    },
+    {
+      "number": 7,
+      "code": "FROM VEHICLES v",
+      "zh": "从 VEHICLES 车辆表逐个考虑候选，给它别名 v。本次外层稍后固定测试车辆为 VEH-0001。",
+      "en": "Read candidate vehicles as v; the outer filter later fixes this experiment to VEH-0001."
+    },
+    {
+      "number": 8,
+      "code": "CROSS JOIN LATERAL (",
+      "zh": "LATERAL 允许右侧子查询引用左侧 v 的 vehicle_id；CROSS JOIN 把该车找到的最新事件接上。若车辆完全没有事件，右侧为零行，这种写法不会把它当成“最新为 Return”。",
+      "en": "LATERAL lets the inner query reference v.vehicle_id. CROSS JOIN attaches its latest event; a vehicle with no events does not qualify as having a latest Return."
+    },
+    {
+      "number": 9,
+      "code": "    SELECT e.event_id, e.event_type, e.event_time",
+      "zh": "从这辆车的事件中准备输出 ID、类型和时间。必须先考虑全部类型，不能在这里先筛掉非 Return。",
+      "en": "Select the identifier, type and time from the car’s events. All event types must remain eligible at this stage."
+    },
+    {
+      "number": 10,
+      "code": "    FROM BOOKING_EVENTS e",
+      "zh": "读取完整 BOOKING_EVENTS，给事件表别名 e。可用性来自日志状态，而不是 VEHICLES 的 odometer 或 in_service。",
+      "en": "Read BOOKING_EVENTS as e. Availability comes from event history, not the vehicle’s odometer or in_service date."
+    },
+    {
+      "number": 11,
+      "code": "    WHERE e.vehicle_id = v.vehicle_id",
+      "zh": "只让子查询查看当前外层 v 所对应的车辆事件。这就是 lateral 子查询与当前车之间的相关条件。",
+      "en": "Restrict the inner query to events for the current outer vehicle; this is the lateral correlation condition."
+    },
+    {
+      "number": 12,
+      "code": "    ORDER BY e.event_time DESC, e.event_id DESC",
+      "zh": "按 event_time 倒序找最新事件，时间相同再用 event_id 倒序确定唯一顺序。它按事件记录的时间排序，因此未来的 Reserve 也可能排在最前。",
+      "en": "Order by event_time descending and then event_id descending for deterministic ties. Future-dated Reserve events can therefore sort first."
+    },
+    {
+      "number": 13,
+      "code": "    LIMIT 1",
+      "zh": "排序后只取第一条事件，代表该车按题目规则的当前状态。LIMIT 1 在检查 Return 之前执行，这是防止误用旧 Return 的关键。",
+      "en": "Take the first event after ordering. Selecting this latest event before testing for Return prevents an older Return from falsely establishing availability."
+    },
+    {
+      "number": 14,
+      "code": ") latest",
+      "zh": "关闭 lateral 子查询并把它的输出表命名为 latest，所以外层能写 latest.event_type 等列名。latest 不是原数据库中的实体表。",
+      "en": "Close the lateral subquery and alias its derived output latest. It is a query result, not a stored database table."
+    },
+    {
+      "number": 15,
+      "code": "WHERE v.vehicle_id = 'VEH-0001'",
+      "zh": "外层固定为 VEH-0001，确保两个连接抢同一辆车；新载入数据时它最新事件是 Return。完成 Q4 后它变成 Reserve，再直接重跑不应假定仍可用。",
+      "en": "Fix the candidate to VEH-0001 so both sessions contend for the same car. It has a latest Return on fresh data; after Q4 its Reserve means a rerun cannot assume availability."
+    },
+    {
+      "number": 16,
+      "code": "  AND latest.event_type = 'Return';",
+      "zh": "最后才要求 latest.event_type = Return。若最新是 Reserve、Collect 或 Incident，即使更早有 Return，也会返回零行，而不是错误宣称可用。",
+      "en": "Only now require the latest event to be Return. A later Reserve, Collect or Incident excludes the car even if it has an older Return."
+    },
+    {
+      "number": 17,
+      "code": "INSERT INTO BOOKING_EVENTS",
+      "zh": "开始插入一个新预约事件。INSERT 不会把原 Return 覆盖掉，因为事件表按新增日志保留历史。",
+      "en": "Start insertion of a reservation event; it appends history rather than overwriting the earlier Return."
+    },
+    {
+      "number": 18,
+      "code": "    (member_id, vehicle_id, event_type, event_time, amount)",
+      "zh": "声明五个目标列，并省略自动生成的 event_id。VALUES 的五个位置必须依此对应 member、vehicle、type、time、amount。",
+      "en": "List the five target columns, omitting generated event_id; VALUES must follow this exact member/vehicle/type/time/amount order."
+    },
+    {
+      "number": 19,
+      "code": "VALUES (2, 'VEH-0001', 'Reserve', NOW() + INTERVAL '3 days', NULL);",
+      "zh": "为 member 2 预约 VEH-0001，类型 Reserve、amount 为 NULL；NOW()+INTERVAL 给出事务开始时刻后三天。NOW() 在 PostgreSQL 中是事务开始时间，不是每次调用重新跳动的墙上时钟；与无时区 event_time 的转换使用会话时区。",
+      "en": "Reserve VEH-0001 for member 2 with a NULL amount and a time three days after NOW(). PostgreSQL NOW() is the transaction-start time, not a ticking wall clock; conversion to event_time uses the session timezone."
+    },
+    {
+      "number": 20,
+      "code": "COMMIT;",
+      "zh": "提交连接 2 的预约，使之后启动的 READ COMMITTED 语句能够看到它。连接 1 保持开启不阻止这个普通插入提交。",
+      "en": "Commit connection 2’s reservation so later READ COMMITTED statements can see it even though connection 1 remains open."
+    }
+  ],
+  "4.1.3": [
+    {
+      "number": 1,
+      "code": "-- INFS7903 Assignment 2 | Yuyang Gong | 49079984",
+      "zh": "文件身份注释：标明课程、作业、姓名和学号。-- 后直到行末都不作为 SQL 执行；它不会建立对象、改变会话或影响查询结果。下面的行号按实际下载文件计算。",
+      "en": "This file header identifies the course, assignment, name and student ID. Text after -- is a comment, creating no object and changing no query or session behavior. Line numbers match the downloadable file."
+    },
+    {
+      "number": 2,
+      "code": "-- connection 1, after connection 2 has committed",
+      "zh": "切回原来的连接 1，且必须等连接 2 已提交。重新开一个连接不能代表保留着旧查询结果的 T1。",
+      "en": "Return to the original connection 1 after connection 2 commits; a newly opened connection would not represent the same T1."
+    },
+    {
+      "number": 3,
+      "code": "INSERT INTO BOOKING_EVENTS",
+      "zh": "尝试向事件表追加 Collect；这次插入会触发已有的 BEFORE INSERT 触发器。",
+      "en": "Attempt to append a Collect event, invoking the supplied BEFORE INSERT trigger."
+    },
+    {
+      "number": 4,
+      "code": "    (member_id, vehicle_id, event_type, event_time, amount)",
+      "zh": "按列名列出五个输入，event_id 仍交给序列。触发器能通过 NEW 访问这行尚未成功插入的数据。",
+      "en": "List the five input columns while leaving event_id to the sequence. The trigger sees this pending row through NEW."
+    },
+    {
+      "number": 5,
+      "code": "VALUES (1, 'VEH-0001', 'Collect', NOW(), NULL);",
+      "zh": "车辆相同但成员换成 1、类型改成 Collect，amount 仍 NULL。NOW() 是 T1 开始时间；即便时间比 T2 早，触发器读取使用的后续语句快照仍能看到 T2 的提交。",
+      "en": "Use the same vehicle but member 1 and Collect, with NULL amount. NOW() is T1’s start time, yet the later trigger read can still see T2’s committed reservation."
+    },
+    {
+      "number": 6,
+      "code": "-- The trigger raises an exception, so COMMIT ends this failed transaction as ROLLBACK.",
+      "zh": "注释说明预期错误后的事务状态；它不捕获或忽略异常。本脚本在 psql 中必须允许预期错误之后继续发送 COMMIT，才能记录 ROLLBACK 输出。",
+      "en": "The comment explains the expected failed transaction; it does not catch the exception. psql must continue past the expected error to record COMMIT’s ROLLBACK result."
+    },
+    {
+      "number": 7,
+      "code": "COMMIT;",
+      "zh": "因为触发器异常使该事务失败，这个 COMMIT 实际结束为 ROLLBACK；不会把拒绝的 Collect 提交。若想继续事务内工作，需要事先设计 SAVEPOINT 等恢复机制，本次没有使用。",
+      "en": "The trigger exception has failed the transaction, so COMMIT ends it as ROLLBACK and does not save the Collect. No savepoint recovery is used here."
+    },
+    {
+      "number": 8,
+      "code": "SELECT event_id, member_id, vehicle_id, event_type, event_time, amount",
+      "zh": "事务清理后再查询事件 ID、成员、车辆、类型、时间与金额，核对究竟留下了哪些记录，而不是只根据成功/失败消息猜测。",
+      "en": "After transaction cleanup, query event details to verify which records survived rather than inferring them solely from command messages."
+    },
+    {
+      "number": 9,
+      "code": "FROM BOOKING_EVENTS",
+      "zh": "验证仍从实际事件日志读取，普通 SELECT 在前一个失败事务结束后开始新的隐式语句事务。",
+      "en": "Read the actual event log in a new statement after the failed transaction has ended."
+    },
+    {
+      "number": 10,
+      "code": "WHERE vehicle_id = 'VEH-0001'",
+      "zh": "只检查争用车辆 VEH-0001，避免其他车辆的新旧事件干扰观察。",
+      "en": "Limit verification to contested vehicle VEH-0001."
+    },
+    {
+      "number": 11,
+      "code": "ORDER BY event_time DESC, event_id DESC LIMIT 3;",
+      "zh": "按最新时间、再按最大事件 ID 取前三条，看到 Reserve 196442 和两条历史记录。LIMIT 3 只是展示范围；它不表示数据库只保留了三条历史事件。",
+      "en": "Show the three latest records, including Reserve 196442 and historical events. LIMIT 3 limits display, not the amount of history stored."
+    }
+  ],
+  "4.2.1": [
+    {
+      "number": 1,
+      "code": "-- INFS7903 Assignment 2 | Yuyang Gong | 49079984",
+      "zh": "文件身份注释：标明课程、作业、姓名和学号。-- 后直到行末都不作为 SQL 执行；它不会建立对象、改变会话或影响查询结果。下面的行号按实际下载文件计算。",
+      "en": "This file header identifies the course, assignment, name and student ID. Text after -- is a comment, creating no object and changing no query or session behavior. Line numbers match the downloadable file."
+    },
+    {
+      "number": 2,
+      "code": "-- Run the statements one at a time in the labelled connections.",
+      "zh": "这是人工交错执行清单：必须把每条语句发给其标记的连接。把整份文件在一个连接中一次运行，不会产生题目要求的双事务死锁。",
+      "en": "This is a manually interleaved two-connection schedule. Running the whole list in one connection cannot demonstrate the requested deadlock."
+    },
+    {
+      "number": 3,
+      "code": "-- When step 5 blocks, leave it waiting and run step 6 in connection 2.",
+      "zh": "连接 1 在第 5 步阻塞时保持等待，切到连接 2 发送第 6 步。若等到超时、取消第一条更新或先结束事务，环就可能无法形成。",
+      "en": "Leave step 5 waiting and issue step 6 in connection 2. Canceling or ending the waiting transaction changes the schedule and may prevent the cycle."
+    },
+    {
+      "number": 4,
+      "code": "-- step 1: connection 1",
+      "zh": "执行顺序第 1 步，目标是连接 1。这只是标签，不会自动切换会话；后面的 SQL 才是真正送到数据库的操作。",
+      "en": "Schedule step 1 belongs to connection 1. This label does not switch sessions; send the following SQL to that connection."
+    },
+    {
+      "number": 5,
+      "code": "BEGIN;",
+      "zh": "连接 1 开始独立事务，之后取得的冲突行锁会保留到事务结束。另一连接也要 BEGIN，才能让两边持锁期间重叠。",
+      "en": "Begin connection 1’s independent transaction. Conflicting row locks acquired by its updates are retained until transaction end."
+    },
+    {
+      "number": 6,
+      "code": "-- step 2: connection 2",
+      "zh": "执行顺序第 2 步，目标是连接 2。这只是标签，不会自动切换会话；后面的 SQL 才是真正送到数据库的操作。",
+      "en": "Schedule step 2 belongs to connection 2. This label does not switch sessions; send the following SQL to that connection."
+    },
+    {
+      "number": 7,
+      "code": "BEGIN;",
+      "zh": "连接 2 开始独立事务，之后取得的冲突行锁会保留到事务结束。另一连接也要 BEGIN，才能让两边持锁期间重叠。",
+      "en": "Begin connection 2’s independent transaction. Conflicting row locks acquired by its updates are retained until transaction end."
+    },
+    {
+      "number": 8,
+      "code": "-- step 3: connection 1",
+      "zh": "执行顺序第 3 步，目标是连接 1。这只是标签，不会自动切换会话；后面的 SQL 才是真正送到数据库的操作。",
+      "en": "Schedule step 3 belongs to connection 1. This label does not switch sessions; send the following SQL to that connection."
+    },
+    {
+      "number": 9,
+      "code": "UPDATE VEHICLES SET odometer = odometer + 10 WHERE vehicle_id = 'VEH-0401';",
+      "zh": "只对 VEH-0401 做 odometer = odometer + 10，用原值加增量而不是写死总里程。WHERE 主键条件避免更新整张车辆表。本次先成功更新，并持有 VEH-0401 的行锁。",
+      "en": "Increment only VEH-0401 by 10, rather than overwriting it with a guessed total. The primary-key WHERE avoids updating the whole fleet. It succeeds and holds the VEH-0401 row lock."
+    },
+    {
+      "number": 10,
+      "code": "-- step 4: connection 2",
+      "zh": "执行顺序第 4 步，目标是连接 2。这只是标签，不会自动切换会话；后面的 SQL 才是真正送到数据库的操作。",
+      "en": "Schedule step 4 belongs to connection 2. This label does not switch sessions; send the following SQL to that connection."
+    },
+    {
+      "number": 11,
+      "code": "UPDATE VEHICLES SET odometer = odometer + 20 WHERE vehicle_id = 'VEH-0501';",
+      "zh": "只对 VEH-0501 做 odometer = odometer + 20，用原值加增量而不是写死总里程。WHERE 主键条件避免更新整张车辆表。本次先成功更新，并持有 VEH-0501 的行锁。",
+      "en": "Increment only VEH-0501 by 20, rather than overwriting it with a guessed total. The primary-key WHERE avoids updating the whole fleet. It succeeds and holds the VEH-0501 row lock."
+    },
+    {
+      "number": 12,
+      "code": "-- step 5: connection 1",
+      "zh": "执行顺序第 5 步，目标是连接 1。这只是标签，不会自动切换会话；后面的 SQL 才是真正送到数据库的操作。",
+      "en": "Schedule step 5 belongs to connection 1. This label does not switch sessions; send the following SQL to that connection."
+    },
+    {
+      "number": 13,
+      "code": "UPDATE VEHICLES SET odometer = odometer + 10 WHERE vehicle_id = 'VEH-0501';",
+      "zh": "只对 VEH-0501 做 odometer = odometer + 10，用原值加增量而不是写死总里程。WHERE 主键条件避免更新整张车辆表。T2 已持有 VEH-0501，所以 T1 在这里等待；它仍持有第一辆车的锁。",
+      "en": "Increment only VEH-0501 by 10, rather than overwriting it with a guessed total. The primary-key WHERE avoids updating the whole fleet. It waits for T2’s VEH-0501 lock while retaining its first lock."
+    },
+    {
+      "number": 14,
+      "code": "-- step 6: connection 2",
+      "zh": "执行顺序第 6 步，目标是连接 2。这只是标签，不会自动切换会话；后面的 SQL 才是真正送到数据库的操作。",
+      "en": "Schedule step 6 belongs to connection 2. This label does not switch sessions; send the following SQL to that connection."
+    },
+    {
+      "number": 15,
+      "code": "UPDATE VEHICLES SET odometer = odometer + 20 WHERE vehicle_id = 'VEH-0401';",
+      "zh": "只对 VEH-0401 做 odometer = odometer + 20，用原值加增量而不是写死总里程。WHERE 主键条件避免更新整张车辆表。T1 已持有 VEH-0401，所以 T2 也开始等待，形成 T1 → T2 → T1 的环，触发死锁检测。",
+      "en": "Increment only VEH-0401 by 20, rather than overwriting it with a guessed total. The primary-key WHERE avoids updating the whole fleet. It waits for T1’s VEH-0401 lock, completing the T1 → T2 → T1 cycle."
+    },
+    {
+      "number": 16,
+      "code": "-- step 7: connection 1",
+      "zh": "执行顺序第 7 步，目标是连接 1。这只是标签，不会自动切换会话；后面的 SQL 才是真正送到数据库的操作。",
+      "en": "Schedule step 7 belongs to connection 1. This label does not switch sessions; send the following SQL to that connection."
+    },
+    {
+      "number": 17,
+      "code": "COMMIT;",
+      "zh": "结束连接 1 的事务；在这次实测中 T1 被选为受害者，所以 COMMIT 输出 ROLLBACK，第一次成功的 +10 也不能留下。受害者选择可能随重跑调度变化。",
+      "en": "End connection 1’s transaction: it was the victim in this run, so COMMIT reports ROLLBACK and even its first +10 is undone. Victim choice may change on reruns."
+    },
+    {
+      "number": 18,
+      "code": "-- step 8: connection 2",
+      "zh": "执行顺序第 8 步，目标是连接 2。这只是标签，不会自动切换会话；后面的 SQL 才是真正送到数据库的操作。",
+      "en": "Schedule step 8 belongs to connection 2. This label does not switch sessions; send the following SQL to that connection."
+    },
+    {
+      "number": 19,
+      "code": "COMMIT;",
+      "zh": "结束连接 2 的事务；本次 T1 被中止后释放锁，T2 的第二条更新得以完成，COMMIT 提交两次 +20，并释放它的锁。",
+      "en": "End connection 2’s transaction: after T1 releases its locks, T2 completes and commits both +20 changes, releasing its locks."
+    },
+    {
+      "number": 20,
+      "code": "-- step 9: connection 1",
+      "zh": "执行顺序第 9 步，目标是连接 1。这只是标签，不会自动切换会话；后面的 SQL 才是真正送到数据库的操作。",
+      "en": "Schedule step 9 belongs to connection 1. This label does not switch sessions; send the following SQL to that connection."
+    },
+    {
+      "number": 21,
+      "code": "SELECT vehicle_id, odometer FROM VEHICLES WHERE vehicle_id IN ('VEH-0401', 'VEH-0501') ORDER BY vehicle_id;",
+      "zh": "在事务都结束后查询两辆车的里程，并按 ID 排序。IN 只选这两个主键；本次 T2 提交后结果为 VEH-0401 149120、VEH-0501 122170，用来核对回滚并非只撤销报错的第二句。",
+      "en": "After both transactions end, select the two odometers with IN and sort by identifier. Values 149120 and 122170 confirm that victim rollback undoes its first successful update too."
+    }
+  ]
+}

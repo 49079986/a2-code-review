@@ -1,0 +1,18 @@
+EXPLAIN (ANALYZE, BUFFERS) SELECT member_id, member_name, email FROM MEMBERS
+WHERE LOWER(SPLIT_PART(email, '@', 2)) = 'exemail.com.au';
+                                                           QUERY PLAN                                                            
+---------------------------------------------------------------------------------------------------------------------------------
+ Bitmap Heap Scan on members  (cost=5.22..226.08 rows=120 width=45) (actual time=0.044..0.367 rows=248.00 loops=1)
+   Recheck Cond: (lower(split_part((email)::text, '@'::text, 2)) = 'exemail.com.au'::text)
+   Heap Blocks: exact=164
+   Buffers: shared hit=166
+   ->  Bitmap Index Scan on idx_member_domain  (cost=0.00..5.19 rows=120 width=0) (actual time=0.022..0.022 rows=248.00 loops=1)
+         Index Cond: (lower(split_part((email)::text, '@'::text, 2)) = 'exemail.com.au'::text)
+         Index Searches: 1
+         Buffers: shared hit=2
+ Planning:
+   Buffers: shared hit=125
+ Planning Time: 1.657 ms
+ Execution Time: 0.440 ms
+(12 rows)
+

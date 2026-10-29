@@ -1,0 +1,23 @@
+EXPLAIN (ANALYZE, BUFFERS) SELECT LOWER(SPLIT_PART(email, '@', 2)) AS provider_domain,
+       COUNT(*) AS member_count
+FROM MEMBERS
+GROUP BY LOWER(SPLIT_PART(email, '@', 2))
+ORDER BY member_count DESC, provider_domain;
+                                                        QUERY PLAN                                                         
+---------------------------------------------------------------------------------------------------------------------------
+ Sort  (cost=2864.09..2924.09 rows=24000 width=40) (actual time=4.664..4.665 rows=12.00 loops=1)
+   Sort Key: (count(*)) DESC, (lower(split_part((email)::text, '@'::text, 2)))
+   Sort Method: quicksort  Memory: 25kB
+   Buffers: shared hit=284
+   ->  HashAggregate  (cost=758.00..1118.00 rows=24000 width=40) (actual time=4.619..4.641 rows=12.00 loops=1)
+         Group Key: lower(split_part((email)::text, '@'::text, 2))
+         Batches: 1  Memory Usage: 545kB
+         Buffers: shared hit=278
+         ->  Seq Scan on members  (cost=0.00..638.00 rows=24000 width=32) (actual time=0.020..3.136 rows=24000.00 loops=1)
+               Buffers: shared hit=278
+ Planning:
+   Buffers: shared hit=153 read=1
+ Planning Time: 2.017 ms
+ Execution Time: 4.825 ms
+(14 rows)
+

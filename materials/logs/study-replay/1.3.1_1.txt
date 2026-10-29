@@ -1,0 +1,22 @@
+CREATE MATERIALIZED VIEW MV_ACCOUNT_LIABILITY AS
+WITH RECURSIVE account_tree AS (
+    SELECT member_id, member_id AS account_id
+    FROM MEMBERS
+    WHERE sponsor_id IS NULL
+    UNION ALL
+    SELECT child.member_id, parent.account_id
+    FROM MEMBERS child
+    JOIN account_tree parent ON child.sponsor_id = parent.member_id
+)
+SELECT root.member_id, root.member_name,
+       SUM(e.amount) AS total_amount
+FROM account_tree t
+JOIN MEMBERS root ON root.member_id = t.account_id
+JOIN BOOKING_EVENTS e ON e.member_id = t.member_id
+WHERE e.event_type IN ('Return', 'Incident')
+  AND e.event_time >= TIMESTAMP '2026-01-01'
+  AND e.event_time <  TIMESTAMP '2026-07-01'
+GROUP BY root.member_id, root.member_name
+ORDER BY total_amount DESC, root.member_id
+LIMIT 10;
+SELECT 10
