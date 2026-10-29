@@ -16,7 +16,7 @@
 
 直接双击 **index.html**。这是纯HTML/CSS/JavaScript网站，阅读无需安装依赖，无CDN、在线字体或构建工具。核心文字已经写在HTML中，不依赖fetch加载，所以双击、离线和禁用JavaScript仍能阅读与下载。搜索、图片弹窗、复制、进度等增强功能需要JavaScript。
 
-需要搬到Mac或另一台电脑时，可复制整个项目，或解压已提供的 **A2-code-review.zip**。压缩包包含完整339个项目文件，排除了中间提取文本、浏览器检查副本、缓存和运行环境；解压后从A2-code-review/index.html进入。
+需要搬到Mac或另一台电脑时，可复制整个项目，或解压本地交付的 **A2-code-review.zip**（该压缩包不提交到仓库）。本地交付压缩包包含完整项目文件，排除了中间提取文本、浏览器检查副本、缓存和运行环境；解压后从A2-code-review/index.html进入。
 
 Windows：在资源管理器打开项目文件夹，双击index.html，用Edge或Chrome打开。Mac：把**整个文件夹**复制到Mac，在Finder双击index.html，用Safari或Chrome打开。不能只复制首页一个文件。
 
