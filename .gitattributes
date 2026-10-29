@@ -2,6 +2,9 @@
 # Preserve original course materials and experiment evidence byte-for-byte.
 materials/** -text
 assets/images/** -text
+data/original-tasks.json -text
+data/study-lines.json -text
+data/study-notes.json -text
 *.pdf -text
 *.docx -text
 *.png -text
