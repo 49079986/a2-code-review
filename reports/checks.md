@@ -58,6 +58,8 @@
 
 初次本地交付时未部署；用户随后要求上传GitHub，并明确确认公开发布。仓库现为公开，GitHub Pages配置为main分支根目录，入口为https://49079986.github.io/a2-code-review/ 。发布前的仓库子路径兼容性已用本地嵌套路径验证。
 
+2026-10-29线上验证：GitHub Pages构建状态built，首次公开部署提交31ad74d1dde85bec09d90eb7ff826e2a3c04345e，无构建错误，HTTPS enforced=true。公开首页HTTP 200且标题匹配。Q1.1.1、Q3.2、资料页、本地CSS、核心JS、搜索索引、原题PDF和SQL下载均返回HTTP 200，响应类型符合用途。请求明细保存在Git忽略的reports/qa/online-validation.json。
+
 ## 未实测与明确限制
 
 - **未在真实Mac、Safari、外部Chrome/Edge/Firefox、Retina设备上实测**。跨平台字体、响应式、触控板容器、焦点与剪贴板降级由实现支持，不把静态检查称为这些环境的实际运行。
